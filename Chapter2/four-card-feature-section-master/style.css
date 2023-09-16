@@ -1,0 +1,51 @@
+body {
+  background-color: antiquewhite;
+}
+.s1 {
+  text-align: center;
+  width: 30%;
+  left: 35%;
+  position: absolute;
+}
+.p1 {
+  font-size: x-large;
+}
+.d1,
+.d2,
+.d3,
+.d4 {
+  padding: 10px;
+  border-top: 5px solid;
+  width: 25%;
+  height: 30%;
+  background-color: aliceblue;
+  position: absolute;
+  border-radius: 8px;
+}
+.d1 {
+  border-color: red;
+  top: 50%;
+  left: 10%;
+}
+.d2 {
+  border-color: blue;
+  right: 10%;
+  top: 50%;
+}
+.d3 {
+  border-color: yellow;
+  top: 30%;
+  left: 37%;
+}
+.d4 {
+  border-color: green;
+  top: 70%;
+  left: 37%;
+}
+.i {
+  position: absolute;
+  left: 80%;
+}
+
+div:nth-child(1) {
+}

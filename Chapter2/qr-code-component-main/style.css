@@ -1,0 +1,36 @@
+body {
+  padding: 50px;
+}
+main {
+  padding: 50px;
+  background-color: aqua;
+  position: relative;
+}
+.d1 {
+  padding: 10px;
+  text-align: center;
+  background-color: white;
+  width: 30%;
+  height: 70%;
+}
+.i1 {
+  width: 90%;
+  height: 50%;
+}
+
+.i2 {
+  width: 50%;
+  height: 80%;
+  position: absolute;
+  right: 10%;
+  top: 10%;
+}
+button {
+  background-color: greenyellow;
+  border: none;
+  width: 90%;
+}
+h1,
+p {
+  width: 90%;
+}

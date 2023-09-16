@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  padding: 50px;
+}
+.d1 {
+  padding: 10px;
+  width: 30%;
+  height: 30%;
+  position: absolute;
+  left: 10%;
+}
+h1,
+p {
+  color: rgb(162, 104, 216);
+}
+.d2 {
+  position: absolute;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+}
+.c1,
+.c2,
+.c3 {
+  background-color: beige;
+  width: 90%;
+  height: 15%;
+}
+.c1 {
+  position: absolute;
+}
+.c2 {
+  position: absolute;
+  top: 50%;
+  left: 40%;
+}
+.c3 {
+  position: absolute;
+  top: 25%;
+  left: 15%;
+}
+.d1 h1 {
+  font-size: 30px;
+}
+.c1 h1,
+.c2 h1,
+.c3 h1 {
+  position: absolute;
+  left: 40%;
+  top: 5%;
+}
+
+.sd1,
+.sd2,
+.sd3 {
+  background-color: rgb(77, 16, 134);
+  width: 20%;
+  padding: 25px;
+  position: absolute;
+  border-radius: 5px;
+}
+.sd1 {
+  top: 30%;
+  left: 10%;
+}
+.sd2 {
+  top: 32%;
+  left: 35%;
+}
+.sd3 {
+  top: 34%;
+  left: 60%;
+}
+.i {
+  border-radius: 100%;
+}
+.t {
+  color: aliceblue;
+  position: absolute;
+  left: 35%;
+  top: 10%;
+}
+.st {
+  color: brown;
+  position: absolute;
+  left: 35%;
+  top: 25%;
+}
