@@ -1,0 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;700&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: "League Spartan";
+
+  text-decoration-line: underline;
+}
+p {
+  color: hsl(0, 0%, 63%);
+}
+.container {
+  display: flex;
+}
+.left {
+  padding: 50px 0 0 50px;
+  width: 65%;
+  height: 60vh;
+  background-image: url(images/desktop-image-hero-1.jpg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.nav {
+  display: flex;
+  gap: 40px;
+}
+a {
+  font-size: 20px;
+  color: azure;
+}
+.right {
+  width: 35%;
+  height: 60vh;
+  padding: 0 100px 0 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  position: relative;
+}
+.right h1 {
+  padding-top: 100px;
+}
+.shop {
+  display: flex;
+  gap: 10px;
+}
+h4 {
+  font-weight: 200px;
+}
+.angle {
+  background-color: black;
+  width: 150px;
+  height: 70px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  top: 95.5%;
+  left: 0%;
+}
+.angle img {
+  width: 20%;
+  height: 30%;
+}
+.content {
+  display: flex;
+}
+.c-left {
+  width: 30%;
+  height: 40vh;
+}
+.c-right {
+  width: 30%;
+  height: 40vh;
+}
+.c-midel {
+  width: 40%;
+  height: 40vh;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
