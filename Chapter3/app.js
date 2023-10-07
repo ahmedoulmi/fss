@@ -38,7 +38,6 @@ function exist(company) {
 console.log(exist("Facebook"));
 console.log(exist("ali"));
 //14
-
 for (let i = 0; i < itCompanies.length; i++) {
   let result = 0;
   for (let j = 0; j < itCompanies[i].length; j++) {
@@ -50,7 +49,6 @@ for (let i = 0; i < itCompanies.length; i++) {
     console.log(itCompanies[i] + " contient double O");
   }
 }
-
 //15
 
 console.log(itCompanies.sort());
