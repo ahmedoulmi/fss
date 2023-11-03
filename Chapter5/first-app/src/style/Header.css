@@ -1,0 +1,8 @@
+.header{
+    background-color: rgb(156, 142, 142);
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: aliceblue;
+}

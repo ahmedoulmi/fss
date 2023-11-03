@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Servers :: Dzair-gaming.com</title>
+    <meta name="description" content="Counter-Strike Servers list (Automix 5v5).">
+    <meta name="keywords" content="Counter-Strike Servers list (Automix 5v5)">  
+    
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+    <link rel='shortcut icon' href='https://dzair-gaming.com/uploads/monthly_2022_10/fav.png' type="image/png">
+  <style>
+      /* Style for the avatar column */
+      .avatar-column {
+        float: left;
+        width: 15%;
+        text-align: center;
+      }
+      
+      /* Style for the information column */
+      .info-column {
+        float: right;
+        width: 75%;
+      }
+      
+      /* Style for the user's name */
+      h1 {
+        margin-top: 1;
+      }
+      
+      /* Style for the user's bio */
+      p {
+        margin-top: 0;
+      }
+      
+      /* Style for the user's avatar */
+      .avatar {
+        border-radius: 50%;
+        max-width: 100%;
+        height: auto;
+      }
+.menu {
+		background-color: #555; /* Set the background color */
+		overflow: hidden; /* Hide overflowing content */
+	}
+
+	/* Style the links in the menu bar */
+	.menu a {
+		float: left; /* Make the links float left */
+		color: white; /* Set the font color */
+		text-align: center; /* Center the text in the links */
+		padding: 20px 25px; /* Add some padding to the links */
+		text-decoration: none; /* Remove the underline from the links */
+	}
+
+	/* Add a hover effect to the links */
+	.menu a:hover {
+		background-color: #ddd; /* Change the background color */
+		color: black; /* Change the font color */
+	}
+
+	/* Add an active class to the current link */
+	.active {
+		background-color: #c53052; /* Set the background color */
+		color: white; /* Set the font color */
+	}
+	.menu h3 {
+      font-size: 20px;
+    }
+
+	/* Add an active class to the current link */
+	.active {
+		background-color: #c53052; /* Set the background color */
+		color: white; /* Set the font color */
+	}
+      
+      .pagination {
+        display: flex;
+        justify-content: right;
+        margin-top: 20px;
+      }
+
+      .pagination a,
+      .pagination span {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 0 3px;
+        background-color: #111318;
+        border: 1px solid #191c23;
+        color: #f5f5f5;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .5px;
+      }
+
+      .pagination .current {
+        background-color: #c53052;
+        color: #fff;
+        border-color: #c53052;
+      }
+
+      .pagination a:hover:not(.current) {
+        background-color: #ddd;
+      }
+      
+            .toggler {
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+.join-button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+.join-button:hover {
+    background-color: #555;
+    
+  </style>
+  
+      <script>
+        function togglePlayerInfo(id) {
+            var playerInfo = document.getElementById(id);
+            if (playerInfo.className == "hidden") {
+                playerInfo.className = "";
+            } else {
+                playerInfo.className = "hidden";
+            }
+        }
+
+        function copyToClipboard(text) {
+          const input = document.createElement('input');
+          input.value = text;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          document.body.removeChild(input);
+        }
+
+
+    </script>
+  
+</head>
+<body>
+  <div class="mainArea-content">
+    <div class="container">
+      <div class="indexRow row" id="index-ongoing-matches">
+        <div class="menu">
+            
+            <a href="https://dzair-gaming.com/"><img src="https://stats.dzair-gaming.com/imgs/logos.png"></a>
+            <a href="https://stats.dzair-gaming.com/"><h3>Automix Stats</h3></a>
+            <a href="https://stats.dzair-gaming.com/matches.php"><h3>Matches</h3></a>
+            <a class="active" href="https://stats.dzair-gaming.com/servers.php"><h3>Servers</h3></a>
+            <a href="https://stats.dzair-gaming.com/bans.php"><h3>List ban</h3></a>
+
+        </div>
+        <div class="index-title">
+          <h1>Servers List</h1>
+        </div>
+        <div id="paginations"></div>
+        <div class="table-overflow">
+          <table id="table-board">
+            <thead>
+              <tr>
+                <th class="score-tab-text">ID</th>
+                <th><i class="fa fa-flag" style="font-size:20px"></i></th>
+                <th class="score-tab-text">Hostname</th>
+                <th class="score-tab-text">Address</th>
+                <th class="score-tab-text">Map</th>
+                <th class="score-tab-text">Players</th> 
+              </tr>
+            </thead><?php
+                                                        include("cfg/config.php");
+                                                        include("cfg/functions.php");
+                                                        $mysqli = new mysqli($host, $user, $password, $dbname);
+
+                                                        // Check for errors
+                                                        if ($mysqli->connect_errno) {
+                                                                die("Failed to connect to MySQL: " . $mysqli->connect_error);
+                                                        }
+
+                                                        // Select all servers from the 'servers' table
+                                                        $query = "SELECT * FROM `servers` ORDER BY `server_ip` DESC";
+                                                        $result = $mysqli->query($query);
+
+                                                        if ($result->num_rows > 0) {
+                                                        $id = 1;    
+			                                            while ($row = mysqli_fetch_assoc($result)) {
+			                                                
+			                                                $query = "SELECT * FROM servers_players WHERE server_ip = '{$row['server_ip']}'";
+			                                                $players_result = $mysqli->query($query);
+			                                                
+			                                                $server_ip = explode(':', $row['server_ip'])[0];
+			                                                
+			                                                $flag_server = get_country_flag($server_ip);
+			                                                
+			                                                
+				                                            echo "<tr>";
+				                                            
+				                                            
+				                                            echo "<tr class='server-table-row toggler' onclick=\"togglePlayerInfo('{$row['server_ip']}');copyToClipboard('connect ${row['server_ip']}')\">";
+				                                            echo "<td class='score-tab-text'>" . $id . "</td>";
+				                                            echo '<td>' . $flag_server . '</td>';
+				                                            echo "<td class='score-tab-text'>" . $row['server_name'] . "</td>";
+				                                            echo "<td class='score-tab-text'>" . $row["server_ip"] . " <a href='steam://connect/{$row['server_ip']}'><button class='join-button'>Join</button></a></td>";
+				                                            echo "<td class='score-tab-text'>" . $row['map'] . "</td>";
+				                                            echo "<td class='score-tab-text'>" . $players_result->num_rows . "/{$row['max_players']}</td>";
+
+				                                            echo "</tr>";
+				                                            $id++;
+        		                                           
+				                                       		echo "<tr id='{$row['server_ip']}' class='hidden'>";
+				                                            echo "<td colspan='6'>";
+				                                            echo "<ul>";
+				                                            if ($players_result->num_rows > 0) {
+				                                                 while ($players_row = $players_result->fetch_assoc()) {
+				                                                     
+				                                                 $steamid = $players_row['steam_id'];
+				                                                 $flag_player = get_country_flag($players_row["player_ip"]);
+                      
+               	                                                 $pos_query = "SELECT * FROM `general_stats` WHERE `SteamID` = '$steamid'";     
+
+				                                                 $pos_result = mysqli_query($mysqli, $pos_query);
+               	                                                 $row1 = mysqli_fetch_assoc($pos_result);
+               	                                                 
+               	                                                 if (isset($row1['Elo'])) {
+                   	                                                 $elopts = $row1['Elo'];
+               	                                                 } else {
+                   	                                                 // Handle the case when 'Elo' is not set in $row1
+                   	                                                 $elopts = null; // or set it to a default value
+               	                                                 }
+				                                                 $rankImage = getRankImagePerElo($elopts);
+				                                                     
+				                                                 echo '<li><a href="profile.php?user=' . $players_row['steam_id'] . '">' . $flag_player . ' ' . htmlspecialchars(str_replace("<>", "", $players_row["player_name"])) . '<img src="' . $rankImage . '" style="width: 20px; height: 18px;"></a></li>';
+
+				                                                }
+				                                            } else {
+        				                                            echo "<li>No players online.</li>";
+    				                                            }
+    				                                            echo "</ul>";
+    				                                            echo "</td>";
+    				                                            echo "</tr>";
+			                                                }
+				                                       
+		                                            } else {
+			                                            echo "<tr><td colspan='6'>No matches found.</td></tr>";
+		                                            }
+          
+
+                                                   
+                                                    mysqli_close($mysqli);
+                                                    ?>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>		                                            
+            
+            
+            
