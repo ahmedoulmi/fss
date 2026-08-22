@@ -24,8 +24,10 @@ gmedic/
 
 ## Prévisualiser en local
 
-Les liens sont **racine-relatifs** (`/poles/`, `/assets/…`) : il faut servir le
-dossier `gmedic/` comme racine du site, pas ouvrir les fichiers en `file://`.
+Les liens sont **relatifs** : le site fonctionne aussi bien à la racine d'un
+domaine (`gmedic.dz/`) que dans un sous-dossier (`exemple.com/fss/`). Il faut
+en revanche le servir par HTTP, pas l'ouvrir en `file://` — sinon les URLs de
+dossier (`poles/`) ne trouvent pas leur `index.html`.
 
 ```sh
 cd gmedic
@@ -35,16 +37,31 @@ python3 -m http.server 4000
 
 ## Mise en ligne
 
-N'importe quel hébergeur statique (Netlify, Cloudflare Pages, GitHub Pages,
-un simple Nginx). Publier le contenu de `gmedic/` **à la racine du domaine**.
-Le fichier `404.html` sert de page d'erreur.
+### GitHub Pages (déploiement automatique)
 
-Avant la mise en ligne, remplacer le domaine d'exemple `https://www.gmedic.dz/`
-par le domaine réel dans :
+Le dépôt contient `.github/workflows/pages.yml` : à chaque push sur `main`
+touchant `gmedic/`, le dossier est publié tel quel sur GitHub Pages.
+
+À faire une seule fois, dans **Settings → Pages** du dépôt : choisir
+**Source : GitHub Actions**. Le site est alors servi sur
+`https://<compte>.github.io/<dépôt>/`. Le workflow peut aussi être lancé à la
+main depuis l'onglet **Actions** (« Run workflow »).
+
+### Autre hébergeur
+
+N'importe quel hébergeur statique convient (Netlify, Cloudflare Pages, un
+simple Nginx) : publier le contenu de `gmedic/`. Le fichier `404.html` sert de
+page d'erreur.
+
+Avant la mise en ligne définitive, remplacer le domaine d'exemple
+`https://www.gmedic.dz/` par le domaine réel dans :
 
 - les balises `<link rel="canonical">` et `og:url` des cinq pages ;
 - `robots.txt` et `sitemap.xml` ;
 - les données structurées `Organization` de `index.html`.
+
+Ces valeurs n'ont pas d'effet sur l'affichage : une prévisualisation sur
+GitHub Pages fonctionne sans y toucher.
 
 ## Formulaire de contact
 
