@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Gmedic</title>
+<meta name="description" content="Contacter Gmedic, groupement de pharmacies d'officine en Algérie. Oulmi Ahmed, manager du groupement — 0555 22 56 90.">
+<link rel="canonical" href="https://www.gmedic.dz/contact/">
+<meta name="theme-color" content="#07361B">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Gmedic">
+<meta property="og:title" content="Contact — Gmedic">
+<meta property="og:description" content="Écrivez-nous ou appelez le manager du groupement.">
+<meta property="og:url" content="https://www.gmedic.dz/contact/">
+<link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="logo" href="/">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="32" fill="#1E8F3C"/><path d="M26 14h12v12h12v12H38v12H26V38H14V26h12z" fill="#fff"/></svg>
+      <span>Gmedic</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-principal">
+      <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="nav-toggle__label">Menu</span>
+    </button>
+    <nav class="nav" id="nav-principal" aria-label="Navigation principale">
+      <ul class="nav__list">
+        <li><a class="nav__link" href="/">Accueil</a></li>
+        <li><a class="nav__link" href="/poles/">Les huit pôles</a></li>
+        <li><a class="nav__link" href="/fonctionnement/">Fonctionnement</a></li>
+        <li><a class="nav__link" href="/adherer/">Adhérer</a></li>
+      </ul>
+      <a class="btn btn--primary" href="/contact/" aria-current="page">Nous contacter</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <section class="hero hero--page">
+    <span class="deco deco--ring" style="inline-size:360px;block-size:360px;inset-block-start:-150px;inset-inline-end:-130px;" aria-hidden="true"></span>
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <h1>Prendre contact</h1>
+      <div class="hero__rule" aria-hidden="true"></div>
+      <p class="hero__lead">Laissez-nous un message, ou appelez directement le manager du groupement.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="form-layout">
+
+        <div>
+          <h2>Écrire à Gmedic</h2>
+          <!--
+            Formulaire sans base de données ni outil de suivi.
+            Remplacer VOTRE_ID ci-dessous par l'identifiant du point d'envoi
+            (Formspree ou équivalent) — voir gmedic/README.md.
+          -->
+          <form class="form" action="https://formspree.io/f/VOTRE_ID" method="post">
+            <div class="field">
+              <label for="nom">Nom et prénom <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="nom" name="nom" autocomplete="name" required>
+            </div>
+
+            <div class="field">
+              <label for="officine">Nom de l'officine <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="officine" name="officine" autocomplete="organization" required>
+            </div>
+
+            <div class="field">
+              <label for="wilaya">Wilaya <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="wilaya" name="wilaya" autocomplete="address-level1" required>
+            </div>
+
+            <div class="field">
+              <label for="telephone">Téléphone <span class="req" aria-hidden="true">*</span></label>
+              <input type="tel" id="telephone" name="telephone" inputmode="tel" autocomplete="tel" required>
+            </div>
+
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" name="email" inputmode="email" autocomplete="email">
+              <span class="field__hint">Facultatif.</span>
+            </div>
+
+            <div class="field">
+              <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+              <textarea id="message" name="message" rows="6" required></textarea>
+            </div>
+
+            <p class="hp" aria-hidden="true">
+              <label for="_gotcha">Ne pas remplir</label>
+              <input type="text" id="_gotcha" name="_gotcha" tabindex="-1" autocomplete="off">
+            </p>
+            <input type="hidden" name="_subject" value="Site Gmedic — demande de contact">
+
+            <div class="form__foot">
+              <button class="btn btn--primary" type="submit">Envoyer le message</button>
+              <p class="small muted">Les champs marqués d'un astérisque sont obligatoires. Ce formulaire n'utilise aucun outil de suivi.</p>
+            </div>
+          </form>
+        </div>
+
+        <aside class="contact-aside" aria-labelledby="coordonnees">
+          <h2 id="coordonnees">Coordonnées</h2>
+          <div class="contact-card">
+            <p class="contact-card__name">Oulmi Ahmed</p>
+            <p class="contact-card__role">Manager</p>
+            <a class="contact-card__phone" href="tel:+213555225690">0555 22 56 90</a>
+          </div>
+          <p class="small muted" style="margin-block-start:1.25rem;">Gmedic — groupement de pharmacies d'officine en Algérie.</p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark section--tight cta-band">
+    <div class="wrap">
+      <h2>Trois mois gratuits avant de vous engager</h2>
+      <p>Les conditions d'adhésion, le profil attendu et le principe tarifaire.</p>
+      <div class="btn-row">
+        <a class="btn btn--on-dark" href="/adherer/">Adhérer</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div>
+        <a class="logo" href="/">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="32" fill="#1E8F3C"/><path d="M26 14h12v12h12v12H38v12H26V38H14V26h12z" fill="#fff"/></svg>
+          <span>Gmedic</span>
+        </a>
+        <p class="site-footer__tagline">Groupement de pharmacies d'officine en Algérie. La force du collectif sans perte d'indépendance.</p>
+      </div>
+      <div>
+        <h2>Le groupement</h2>
+        <ul>
+          <li><a href="/poles/">Les huit pôles</a></li>
+          <li><a href="/fonctionnement/">Fonctionnement</a></li>
+          <li><a href="/adherer/">Adhérer</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Contact</h2>
+        <ul>
+          <li>Oulmi Ahmed — Manager</li>
+          <li><a href="tel:+213555225690" dir="ltr">0555 22 56 90</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 Gmedic</span>
+      <span>Plus qu'un groupement, un partenaire.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/js/nav.js" defer></script>
+</body>
+</html>
