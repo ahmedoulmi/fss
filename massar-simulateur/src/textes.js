@@ -11,7 +11,14 @@ var MASSAR_TEXTES = {
   accueil: {
     titre: 'Simulateur de remise',
     presentation: [
-      'Massar est un groupement d’achat et de services pour pharmacies d’officine.',
+      // Formulation reprise des tournures autorisées par les règles
+      // permanentes de vocabulaire. La phrase proposée par la spécification
+      // employait un terme frappé d’interdit absolu : il désigne en droit
+      // algérien une forme juridique à responsabilité solidaire, que Massar
+      // Development — SARL — n’a pas, et laisserait croire à un pharmacien
+      // qu’il engage son patrimoine personnel. Voir build/verifier.js.
+      'Massar Development négocie les conditions d’achat auprès des laboratoires '
+        + 'et des grossistes, pour les pharmacies d’officine.',
       'Estimez le montant de remise que vous pourriez percevoir sur vos achats annuels.'
     ],
     bouton: 'Commencer la simulation',

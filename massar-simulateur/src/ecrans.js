@@ -56,7 +56,7 @@
      'saisie-consigne', 'total-saisie-libelle', 'titre-resultat',
      'total-resultat-libelle', 'recapitulatif-titre', 'colonne-laboratoire',
      'colonne-montant', 'taux-moyen-libelle', 'mentions', 'avant-fermeture',
-     'titre-message', 'message-corps'].forEach(function (id) {
+     'titre-message', 'message-corps', 'signature'].forEach(function (id) {
       el[id] = document.getElementById(id);
     });
 
@@ -70,6 +70,7 @@
 
   /* Tous les libellés viennent de textes.js, aucun n'est écrit dans le HTML. */
   function poserTextes() {
+    el.signature.textContent = SIGNATURE;
     el['titre-accueil'].textContent = textes.accueil.titre;
     textes.accueil.presentation.forEach(function (phrase) {
       el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));

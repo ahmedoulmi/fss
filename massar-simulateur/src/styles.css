@@ -40,6 +40,13 @@ body {
 
 /* ---------- Commun ---------- */
 
+.signature {
+  margin: var(--m-espacement-xs) 0 0;
+  font-size: var(--m-echelle-xs);
+  color: var(--m-couleurs-encre-discrete);
+  letter-spacing: 0.04em;
+}
+
 .titre {
   margin: 0 0 var(--m-espacement-lg);
   font-family: var(--m-typographie-famille-titres);

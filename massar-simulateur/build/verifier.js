@@ -51,15 +51,72 @@ if (MASSAR_CHARTE.provisoire) {
   manques.push('La charte est marquée provisoire dans src/massar_charte.js.');
 }
 
-/* 3. L’étanchéité du barème — le contrôle central */
+/*
+ * 3. L'étanchéité du barème — le contrôle central
+ *
+ * Deux signaux, parce qu'un seul ne suffit pas.
+ *
+ * Le nom d'un laboratoire dans un fichier servi est une fuite en soi : la page
+ * ne doit connaître la liste que par l'API, jamais en dur.
+ *
+ * Pour les taux, chercher le nombre brut ne vaut rien : un taux rond comme
+ * 0,25 ou 0,2 se retrouve dans n'importe quelle feuille de style — 0.25rem,
+ * 0.2s — sans rien divulguer. On ne retient donc que les occurrences hors
+ * contexte d'unité, celles qui ressemblent à une donnée et non à une mesure.
+ */
 var servis = fs.readdirSync(path.join(RACINE, 'src'))
   .filter(function (nom) { return /\.(html|css|js)$/.test(nom); });
+
+function occurrencesHorsUnite(contenu, valeur) {
+  var texte = String(valeur);
+  var trouvees = 0;
+  var depuis = 0;
+  var index;
+  while ((index = contenu.indexOf(texte, depuis)) !== -1) {
+    var avant = index === 0 ? '' : contenu[index - 1];
+    var apres = contenu[index + texte.length] || '';
+    // 0.25rem, 0.2s, 0.3% : une mesure, pas une donnée.
+    var mesure = /[a-zA-Z%]/.test(apres);
+    // « 0.2 » trouvé à l'intérieur de « 0.22em » : ce n'est pas le taux.
+    var tronque = /[\d.]/.test(apres);
+    var fragment = /[\d.]/.test(avant);
+    if (!mesure && !tronque && !fragment) trouvees += 1;
+    depuis = index + texte.length;
+  }
+  return trouvees;
+}
 
 servis.forEach(function (nom) {
   var contenu = fs.readFileSync(path.join(RACINE, 'src', nom), 'utf8');
   (bareme.laboratoires || []).forEach(function (labo) {
-    if (typeof labo.taux === 'number' && contenu.indexOf(String(labo.taux)) !== -1) {
-      manques.push('FUITE : le taux de « ' + labo.nom + ' » apparaît dans src/' + nom + '.');
+    if (labo.nom && contenu.indexOf(labo.nom) !== -1) {
+      manques.push('FUITE : le nom de « ' + labo.nom + ' » apparaît dans src/' +
+        nom + '. La page ne doit connaître la liste que par l’API.');
+    }
+    if (typeof labo.taux === 'number' && occurrencesHorsUnite(contenu, labo.taux) > 0) {
+      manques.push('FUITE : le taux de « ' + labo.nom + ' » apparaît dans src/' +
+        nom + ', hors contexte d’unité.');
+    }
+  });
+});
+
+/*
+ * 4. Le vocabulaire (règles permanentes de Massar Development)
+ *
+ * « Groupement » et le vocabulaire d'achat collectif sont frappés d'interdit
+ * absolu : ils revendiquent une forme juridique que Massar n'a pas, et
+ * laissent croire à un pharmacien qu'il engage son patrimoine personnel.
+ * Le contrôle porte sur ce qui est servi au navigateur, commentaires compris —
+ * un terme proscrit n'a rien à y faire, même hors du texte visible.
+ */
+var PROSCRITS = /groupement|achat group|centrale d'|centrale de saisie|mutualis|\bGIE\b|du groupe\b|Massar Group\b|Xpert Pharmacie/i;
+
+servis.forEach(function (nom) {
+  var contenu = fs.readFileSync(path.join(RACINE, 'src', nom), 'utf8');
+  contenu.split('\n').forEach(function (ligne, rang) {
+    if (PROSCRITS.test(ligne)) {
+      manques.push('VOCABULAIRE : terme proscrit dans src/' + nom +
+        ', ligne ' + (rang + 1) + '.');
     }
   });
 });
@@ -67,7 +124,8 @@ servis.forEach(function (nom) {
 /* Verdict */
 if (manques.length === 0) {
   console.log('\n  ✓ Rien ne s’oppose à la mise en service.');
-  console.log('    ' + servis.length + ' fichiers servis vérifiés, aucun taux n’y figure.\n');
+  console.log('    ' + servis.length + ' fichiers servis vérifiés : aucun taux,');
+  console.log('    aucun terme proscrit par les règles de vocabulaire.\n');
   process.exit(0);
 }
 

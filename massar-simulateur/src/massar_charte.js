@@ -8,6 +8,12 @@
  * La charte Massar réelle n'a pas été fournie. Les valeurs ci-dessous sont
  * neutres et destinées à être remplacées ; `provisoire` passera à false.
  */
+/*
+ * Signature arrêtée le 31 août 2026. Ne jamais la réécrire en dur ailleurs :
+ * elle se reporte partout depuis ici.
+ */
+var SIGNATURE = 'Plus qu’un service, un écosystème';
+
 var MASSAR_CHARTE = {
   provisoire: true,
 
@@ -92,5 +98,9 @@ function kebab(texte) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { MASSAR_CHARTE: MASSAR_CHARTE, appliquerCharte: appliquerCharte };
+  module.exports = {
+    MASSAR_CHARTE: MASSAR_CHARTE,
+    SIGNATURE: SIGNATURE,
+    appliquerCharte: appliquerCharte
+  };
 }
