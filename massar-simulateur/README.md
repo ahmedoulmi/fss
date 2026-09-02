@@ -24,7 +24,8 @@ seconde simulation ne peut pas avoir lieu.
 | 3 | Écran résultat, document imprimé | fait |
 | 4 | Lien à usage unique, calcul serveur | fait |
 | 5 | Dépôt durable, émission des liens, garde-fou | fait |
-| 6 | Mise en ligne, barème réel | **en attente de l'hébergement et des 3 bloquants** |
+| 6 | Déploiement VPS Ubuntu | fait — voir `deploiement/LISEZMOI.md` |
+| 7 | Mise en service | **en attente du barème, de la charte et de l'adresse** |
 
 ## Essayer
 
@@ -88,6 +89,10 @@ serveur/
   lancer.js          lancement du serveur
 build/
   verifier.js        garde-fou avant mise en service
+deploiement/
+  installer.sh       installation sur VPS Ubuntu
+  *.service, *.conf  service système et façade nginx
+  LISEZMOI.md        marche à suivre
 bareme/
   bareme.exemple.js  valeurs fictives, versionné
   bareme.reel.js     JAMAIS versionné (.gitignore)
@@ -99,12 +104,11 @@ barème et ne tourne que sur le serveur.
 
 ## Ce qui manque pour livrer
 
-- **Hébergement** (question ouverte) : serveur Node, ou fonction serverless.
-  Seul `serveur/http.js` en dépend ; le noyau ne bouge pas. Le dépôt sur
-  fichier convient à **un seul processus** — Node traite les requêtes une par
-  une, donc la consommation d'un jeton y est atomique de fait. Si l'hébergement
-  retenu fait tourner plusieurs processus en parallèle, il faudra un stockage
-  offrant une écriture conditionnelle. Le contrat du dépôt, lui, ne change pas.
+- **Rien côté hébergement** : VPS Ubuntu retenu, déploiement écrit
+  (`deploiement/`). Le dépôt de jetons sur fichier convient à **un seul
+  processus**, ce qui est le cas ici — Node traite les requêtes une par une,
+  donc la consommation d'un jeton y est atomique de fait. Ne pas lancer
+  plusieurs instances du service sans changer de dépôt.
 - **Barème réel** : laboratoires, taux, date de validité (SPEC §9).
   À déposer dans `bareme/bareme.reel.js`, sur le modèle de `bareme.exemple.js`.
   `lancer.js` le prend automatiquement s'il existe. **Ne jamais le commiter.**
@@ -119,6 +123,8 @@ barème et ne tourne que sur le serveur.
 ## Arbitrages rendus
 
 - Protection : **option C**, lien à usage unique et calcul serveur.
+- Hébergement : **VPS Ubuntu chez Hostinger**, nginx en façade, HTTPS par
+  certbot.
 - Après le calcul, **le lien meurt**. Le récapitulatif n'existe plus que sur
   papier — d'où la mention « pensez à imprimer », affichée à l'écran et absente
   du document imprimé.

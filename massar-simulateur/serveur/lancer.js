@@ -11,10 +11,13 @@ var { assembler, echeance, cheminDepot } = require('./configuration.js');
 var { nouveauJeton } = require('./jetons.js');
 
 var PORT = Number(process.env.PORT) || 8787;
+// N'écoute que sur la boucle locale : en production, seul nginx parle au
+// simulateur, et le port Node n'est joignable depuis aucune autre machine.
+var HOTE = process.env.HOST || '127.0.0.1';
 var contexte = assembler();
 
 creerServeur({ noyau: contexte.noyau, racine: contexte.racineSrc })
-  .listen(PORT, function () {
+  .listen(PORT, HOTE, function () {
     if (contexte.bareme.exemple) {
       console.log('\n  ⚠  BARÈME D’EXEMPLE — valeurs fictives, ne pas diffuser');
     }

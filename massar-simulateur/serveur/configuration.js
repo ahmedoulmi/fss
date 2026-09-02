@@ -20,8 +20,19 @@ function cheminDepot() {
 /*
  * Le barème réel prime s'il est présent. Il n'est jamais versionné : sur une
  * machine de développement, seul l'exemple existe.
+ *
+ * MASSAR_BAREME permet de le tenir hors du dossier de l'application — en
+ * production il vit dans /etc, lisible par le seul compte de service, et une
+ * mise à jour du code ne peut ni l'écraser ni l'exposer.
  */
 function chargerBareme() {
+  var designe = process.env.MASSAR_BAREME;
+  if (designe) {
+    if (!fs.existsSync(designe)) {
+      throw new Error('Barème introuvable : ' + designe);
+    }
+    return require(path.resolve(designe));
+  }
   var reel = path.join(RACINE, 'bareme', 'bareme.reel.js');
   return fs.existsSync(reel)
     ? require(reel)
