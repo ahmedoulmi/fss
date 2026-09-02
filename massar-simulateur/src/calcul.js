@@ -76,8 +76,16 @@ var MassarCalcul = (function () {
 
   /*
    * Avec les taux — serveur uniquement.
-   * Aucun arrondi intermédiaire : la remise est sommée en valeur exacte et
-   * n'est arrondie qu'à l'affichage.
+   *
+   * La remise est sommée en valeur exacte, sans aucun arrondi intermédiaire,
+   * et n'est arrondie qu'une fois, à la fin.
+   *
+   * Le taux moyen est ensuite calculé sur ce montant ARRONDI, et non sur la
+   * valeur exacte : c'est la division que le pharmacien peut refaire avec les
+   * deux nombres qu'il a sous les yeux. Sur la valeur exacte, quatre
+   * simulations sur deux cent mille affichaient un dernier chiffre différent
+   * de cette division — l'écart tenait à moins d'un demi-dinar tombant sur la
+   * limite d'arrondi, mais la page se serait contredite elle-même.
    */
   function calculerRemise(totaux, bareme) {
     var tauxParId = {};
@@ -88,11 +96,13 @@ var MassarCalcul = (function () {
       remiseExacte += ligne.montant * (tauxParId[ligne.id] || 0);
     });
 
+    var remiseAffichee = Math.round(remiseExacte);
+
     return {
       remiseExacte: remiseExacte,
-      remiseAffichee: Math.round(remiseExacte),
+      remiseAffichee: remiseAffichee,
       tauxMoyen: totaux.totalCommandes > 0
-        ? (remiseExacte / totaux.totalCommandes) * 100
+        ? (remiseAffichee / totaux.totalCommandes) * 100
         : 0
     };
   }

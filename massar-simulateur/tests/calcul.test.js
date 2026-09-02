@@ -135,3 +135,19 @@ test('les décimales sont coupées, pas recollées', () => {
   assert.equal(calcul.normaliserSaisie('1500.75'), '1500');
   assert.equal(calcul.normaliserSaisie(',99'), '');
 });
+
+test('le taux affiché est la division des deux montants affichés', () => {
+  // Un pharmacien qui refait « remise ÷ total » doit retrouver le taux
+  // exactement, sinon la page se contredit sous ses yeux.
+  const bareme = require('../bareme/bareme.exemple.js');
+  const cas = [
+    { 'ex-01': 1000000, 'ex-02': 800000, 'ex-03': 600000, 'ex-04': 400000, 'ex-05': 200000 },
+    { 'ex-01': 3333333, 'ex-03': 1777777, 'ex-06': 999999, 'ex-08': 123457, 'ex-10': 7654321 },
+    { 'ex-02': 1, 'ex-04': 2, 'ex-05': 3, 'ex-07': 5, 'ex-09': 8 }
+  ];
+  cas.forEach((montants) => {
+    const r = calcul.calculer(montants, bareme);
+    const refait = (r.remiseAffichee / r.totalCommandes) * 100;
+    assert.equal(calcul.formaterTaux(r.tauxMoyen), calcul.formaterTaux(refait));
+  });
+});

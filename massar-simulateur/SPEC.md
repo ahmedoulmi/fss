@@ -36,7 +36,7 @@ montant. Il n'existe aucun palier, aucun seuil, aucune progressivité.
 Remise d'un laboratoire = Montant saisi × Taux du laboratoire
 Remise totale           = Somme des remises par laboratoire
 Total des commandes     = Somme des montants saisis
-Taux moyen              = Remise totale / Total des commandes
+Taux moyen              = Remise affichée / Total des commandes
 ```
 
 **Règles de restitution**
@@ -46,6 +46,11 @@ Taux moyen              = Remise totale / Total des commandes
 - Une ligne laissée vide n'est pas comptée ; une ligne à zéro non plus
 
 **Précisions apportées à l'implémentation :**
+- Le taux moyen se calcule sur la remise **arrondie**, celle qui est affichée,
+  et non sur la valeur exacte : c'est la division que le pharmacien peut refaire
+  avec les deux nombres qu'il a sous les yeux. Sur la valeur exacte, quatre
+  simulations sur deux cent mille affichaient un dernier chiffre différent de
+  cette division.
 - Une ligne est « renseignée » si son montant est **strictement supérieur à 0**
 - Les décimales saisies sont coupées, jamais recollées : « 800000,99 » vaut
   800 000 DA
