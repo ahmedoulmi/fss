@@ -13,10 +13,11 @@ body {
 .page { max-width: none; padding: 0; }
 
 /* Rien de l'outil ne s'imprime : ni bandeau, ni bouton, ni saisie. */
-.banniere-exemple,
 .bouton,
+.avant-fermeture,
 #ecran-accueil,
-#ecran-saisie {
+#ecran-saisie,
+#ecran-message {
   display: none !important;
 }
 

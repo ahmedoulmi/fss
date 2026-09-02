@@ -265,3 +265,19 @@ Les lots 1 à 3 sont réalisables immédiatement avec le barème d'exemple.
 
 **Question issue de la présente demande :**
 - Quelle option de protection retenez-vous — A, B ou C ?
+
+---
+
+## 7. Arbitrages rendus
+
+| Question | Décision |
+|---|---|
+| Niveau de protection | **Option C** — lien à usage unique, calcul serveur |
+| Hébergement | **ouvert** — serveur Node si Massar en dispose déjà, sinon serverless. N'affecte que `serveur/http.js` et le dépôt de jetons |
+| Après consommation du jeton | **Le lien meurt.** Le récapitulatif ne survit que sur papier |
+| Coordonnée sur le message de blocage | **Une adresse e-mail**, et retrait de l'invitation « prenons rendez-vous » |
+| Registre des textes | **Accueillant** |
+
+Conséquences retenues : une mention « pensez à imprimer » apparaît sur l'écran
+résultat, absente du document imprimé ; l'adresse e-mail figure sur le message
+de blocage et sur les écrans de fin, jamais sur le résultat ni à l'impression.

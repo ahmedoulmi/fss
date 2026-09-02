@@ -23,18 +23,6 @@ body {
   padding: var(--m-espacement-lg) var(--m-espacement-md) var(--m-espacement-xxl);
 }
 
-/* Bandeau de développement, absent du livrable réel. */
-.banniere-exemple {
-  margin: 0;
-  padding: var(--m-espacement-sm) var(--m-espacement-md);
-  background: var(--m-couleurs-signal-fond);
-  color: var(--m-couleurs-signal);
-  font-size: var(--m-echelle-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-}
-
 /* ---------- Entête ---------- */
 
 .entete {
@@ -297,6 +285,16 @@ body {
 }
 
 .mentions p { margin: 0 0 var(--m-espacement-xs); }
+
+.avant-fermeture {
+  margin: 0 0 var(--m-espacement-lg);
+  padding: var(--m-espacement-sm) var(--m-espacement-md);
+  background: var(--m-couleurs-signal-fond);
+  color: var(--m-couleurs-signal);
+  border-radius: var(--m-formes-rayon);
+  font-size: var(--m-echelle-xs);
+  max-width: 52ch;
+}
 
 /* ---------- Téléphone (SPEC §7) ---------- */
 

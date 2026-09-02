@@ -14,7 +14,7 @@ const espaces = (t) => t.replace(/[  ]/g, ' ');
 test('la saisie n’accepte que des entiers positifs', () => {
   assert.equal(calcul.normaliserSaisie('12 345'), '12345');
   assert.equal(calcul.normaliserSaisie('-500'), '500');
-  assert.equal(calcul.normaliserSaisie('1500,75'), '150075');
+  assert.equal(calcul.normaliserSaisie('1500,75'), '1500');
   assert.equal(calcul.normaliserSaisie('abc'), '');
   assert.equal(calcul.normaliserSaisie('007'), '7');
   assert.equal(calcul.normaliserSaisie(''), '');
@@ -128,4 +128,10 @@ test('le formateur d’entier ne porte pas d’unité', () => {
 test('une saisie déjà formatée se relit sans dérive', () => {
   const affiche = calcul.formaterEntier(1234567);
   assert.equal(calcul.normaliserSaisie(affiche), '1234567');
+});
+
+test('les décimales sont coupées, pas recollées', () => {
+  assert.equal(calcul.normaliserSaisie('800000,99'), '800000');
+  assert.equal(calcul.normaliserSaisie('1500.75'), '1500');
+  assert.equal(calcul.normaliserSaisie(',99'), '');
 });

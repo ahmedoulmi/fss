@@ -4,6 +4,6 @@
   "private": true,
   "description": "Simulateur de remise Massar — lots 1 à 3 (charte, saisie, calcul, résultat, impression)",
   "scripts": {
-    "test": "node --test tests/calcul.test.js"
+    "test": "node --test tests/calcul.test.js tests/noyau.test.js"
   }
 }

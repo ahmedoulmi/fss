@@ -1,0 +1,91 @@
+/*
+ * MASSAR — Tous les textes affichés, en un seul endroit.
+ * Registre : accueillant. Aucune formule n'est écrite ailleurs dans le code.
+ */
+var MASSAR_TEXTES = {
+
+  /* À REMPLACER AVANT TOUTE DIFFUSION — la génération du livrable refuse
+     de produire un fichier tant que cette valeur n'a pas changé. */
+  courriel: '[adresse à fournir]',
+
+  accueil: {
+    titre: 'Simulateur de remise',
+    presentation: [
+      'Massar est un groupement d’achat et de services pour pharmacies d’officine.',
+      'Estimez le montant de remise que vous pourriez percevoir sur vos achats annuels.'
+    ],
+    bouton: 'Commencer la simulation',
+    officine: 'Nom de l’officine',
+    officineFacultatif: '(facultatif)'
+  },
+
+  saisie: {
+    titre: 'Vos achats annuels',
+    consigne: [
+      'Indiquez vos achats annuels par laboratoire, en dinars, hors taxes.',
+      'Laissez vide les laboratoires qui ne vous concernent pas.'
+    ],
+    total: 'Total des commandes saisies',
+    bouton: 'Voir ma remise estimée'
+  },
+
+  /*
+   * Message de blocage (SPEC §4).
+   * L'invitation « prenons rendez-vous » est retirée : on n'invite pas à une
+   * action sans en donner le moyen. Une adresse est affichée ici, et ici
+   * seulement — jamais sur l'écran résultat ni sur le document imprimé.
+   */
+  blocage: function (manque, courriel) {
+    return [
+      manque,
+      'En deçà de 5 laboratoires et de 1 000 000 DA d’achats annuels, ' +
+        'l’estimation ne serait pas représentative de ce que Massar peut vous apporter.',
+      'Écrivez-nous à ' + courriel + ', nous regarderons votre situation.'
+    ].join(' ');
+  },
+
+  resultat: {
+    libelle: 'Remise annuelle estimée',
+    total: 'Total des commandes',
+    recapitulatif: 'Détail par laboratoire',
+    colonneLaboratoire: 'Laboratoire',
+    colonneMontant: 'Montant saisi',
+    tauxMoyen: 'Taux moyen de remise',
+    bouton: 'Imprimer le récapitulatif',
+    /* Le lien meurt après le calcul : le prospect doit le savoir avant de fermer. */
+    avantFermeture: 'Pensez à imprimer ce récapitulatif : il ne sera plus ' +
+      'accessible après fermeture de cette page.'
+  },
+
+  mentions: [
+    'Simulation fondée sur les montants que vous saisissez.',
+    'Conditions au {date}.'
+  ],
+
+  invalide: {
+    titre: 'Lien non valide',
+    corps: [
+      'Ce lien de simulation n’est pas reconnu. Il a peut-être été tronqué en '
+        + 'chemin, ou recopié incomplètement.',
+      'Écrivez-nous à {courriel} pour en recevoir un nouveau.'
+    ]
+  },
+
+  expire: {
+    titre: 'Simulation déjà effectuée',
+    corps: [
+      'Ce lien ne peut servir qu’une seule fois, et il a déjà été utilisé.',
+      'Écrivez-nous à {courriel} pour en recevoir un nouveau.'
+    ]
+  },
+
+  erreur: {
+    titre: 'Simulation indisponible',
+    corps: 'Le calcul n’a pas abouti. Réessayez dans un instant, ou ' +
+      'écrivez-nous à {courriel}.'
+  }
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = MASSAR_TEXTES;
+}

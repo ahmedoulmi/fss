@@ -1,65 +1,147 @@
 /*
  * MASSAR — Parcours en trois écrans (SPEC §4).
+ *
+ * Cette page ne connaît ni les taux ni la remise. Elle demande la liste des
+ * laboratoires au serveur, additionne les montants saisis pour afficher le
+ * total en continu, et lui envoie la saisie une seule fois pour obtenir trois
+ * chiffres : remise, total, taux moyen.
+ *
  * Aucune règle de calcul ici : tout passe par MassarCalcul.
  */
 (function () {
   'use strict';
 
   var calcul = MassarCalcul;
-  var bareme = MASSAR_BAREME;
+  var textes = MASSAR_TEXTES;
 
-  var etat = { montants: {}, officine: '' };
+  var etat = {
+    jeton: jetonDepuisAdresse(),
+    officine: '',
+    montants: {},
+    laboratoires: [],
+    dateValidite: ''
+  };
 
   var el = {};
 
   function initialiser() {
     appliquerCharte(MASSAR_CHARTE);
+    recenserElements();
+    poserTextes();
 
-    ['banniere-exemple', 'officine', 'btn-commencer', 'liste-laboratoires',
-     'total-saisie', 'message-blocage', 'btn-resultat', 'identification',
-     'remise-montant', 'total-resultat', 'recapitulatif-corps', 'taux-moyen',
-     'date-validite', 'btn-imprimer'].forEach(function (id) {
+    el['btn-commencer'].addEventListener('click', function () {
+      etat.officine = el.officine.value.trim();
+      afficherEcran('saisie');
+    });
+    el['btn-resultat'].addEventListener('click', envoyerSimulation);
+    el['btn-imprimer'].addEventListener('click', function () { window.print(); });
+
+    chargerLaboratoires();
+  }
+
+  /* Le jeton voyage dans l'adresse : .../?s=<jeton> */
+  function jetonDepuisAdresse() {
+    try {
+      return new URLSearchParams(window.location.search).get('s') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function recenserElements() {
+    ['officine', 'btn-commencer', 'liste-laboratoires', 'total-saisie',
+     'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
+     'total-resultat', 'recapitulatif-corps', 'taux-moyen', 'btn-imprimer',
+     'titre-accueil', 'accueil-presentation', 'accueil-consigne', 'titre-saisie',
+     'saisie-consigne', 'total-saisie-libelle', 'titre-resultat',
+     'total-resultat-libelle', 'recapitulatif-titre', 'colonne-laboratoire',
+     'colonne-montant', 'taux-moyen-libelle', 'mentions', 'avant-fermeture',
+     'titre-message', 'message-corps'].forEach(function (id) {
       el[id] = document.getElementById(id);
     });
 
     el.ecrans = {
       accueil: document.getElementById('ecran-accueil'),
       saisie: document.getElementById('ecran-saisie'),
-      resultat: document.getElementById('ecran-resultat')
+      resultat: document.getElementById('ecran-resultat'),
+      message: document.getElementById('ecran-message')
     };
+  }
 
-    // Garde-fou : un livrable réel ne doit jamais partir avec le barème d'exemple.
-    if (bareme.exemple) {
-      el['banniere-exemple'].hidden = false;
-    }
-
-    el['date-validite'].textContent = bareme.dateValidite;
-
-    construireLignes();
-    rafraichirSaisie();
-
-    el['btn-commencer'].addEventListener('click', function () {
-      etat.officine = el.officine.value.trim();
-      afficherEcran('saisie');
+  /* Tous les libellés viennent de textes.js, aucun n'est écrit dans le HTML. */
+  function poserTextes() {
+    el['titre-accueil'].textContent = textes.accueil.titre;
+    textes.accueil.presentation.forEach(function (phrase) {
+      el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));
     });
+    var labelOfficine = document.querySelector('label[for="officine"]');
+    var facultatif = document.createElement('span');
+    facultatif.className = 'facultatif';
+    facultatif.textContent = textes.accueil.officineFacultatif;
+    labelOfficine.appendChild(document.createTextNode(textes.accueil.officine + ' '));
+    labelOfficine.appendChild(facultatif);
 
-    el['btn-resultat'].addEventListener('click', function () {
-      var resultat = calcul.calculer(etat.montants, bareme);
-      if (!calcul.evaluerConditions(resultat).accessible) return;
-      afficherResultat(resultat);
-      afficherEcran('resultat');
+    el['accueil-consigne'].textContent = textes.saisie.consigne[0];
+    el['btn-commencer'].textContent = textes.accueil.bouton;
+
+    el['titre-saisie'].textContent = textes.saisie.titre;
+    textes.saisie.consigne.forEach(function (phrase) {
+      el['saisie-consigne'].appendChild(paragraphe(phrase));
     });
+    el['total-saisie-libelle'].textContent = textes.saisie.total;
+    el['btn-resultat'].textContent = textes.saisie.bouton;
 
-    el['btn-imprimer'].addEventListener('click', function () {
-      window.print();
+    el['titre-resultat'].textContent = textes.resultat.libelle;
+    el['total-resultat-libelle'].textContent = textes.resultat.total;
+    el['recapitulatif-titre'].textContent = textes.resultat.recapitulatif;
+    el['colonne-laboratoire'].textContent = textes.resultat.colonneLaboratoire;
+    el['colonne-montant'].textContent = textes.resultat.colonneMontant;
+    el['taux-moyen-libelle'].textContent = textes.resultat.tauxMoyen;
+    el['avant-fermeture'].textContent = textes.resultat.avantFermeture;
+    el['btn-imprimer'].textContent = textes.resultat.bouton;
+  }
+
+  function paragraphe(contenu, classe) {
+    var p = document.createElement('p');
+    if (classe) p.className = classe;
+    p.textContent = contenu;
+    return p;
+  }
+
+  /* Un lien absent ou inconnu n'a pas « déjà servi » : le dire correctement. */
+  function finPourStatut(statut) {
+    return statut === 'jeton-consomme' ? textes.expire : textes.invalide;
+  }
+
+  function chargerLaboratoires() {
+    if (!etat.jeton) return afficherFin(textes.invalide);
+
+    demander('laboratoires?s=' + encodeURIComponent(etat.jeton), null)
+      .then(function (reponse) {
+        if (!reponse) return afficherFin(textes.erreur);
+        if (reponse.statut !== 'ok') return afficherFin(finPourStatut(reponse.statut));
+        etat.laboratoires = reponse.laboratoires;
+        etat.dateValidite = reponse.dateValidite;
+        poserMentions();
+        construireLignes();
+        rafraichirSaisie();
+        afficherEcran('accueil');
+      })
+      .catch(function () { afficherFin(textes.erreur); });
+  }
+
+  function poserMentions() {
+    el.mentions.textContent = '';
+    textes.mentions.forEach(function (mention) {
+      el.mentions.appendChild(paragraphe(mention.replace('{date}', etat.dateValidite)));
     });
   }
 
-  /* Tous les laboratoires du barème, affichés d'emblée (SPEC §4). */
+  /* Tous les laboratoires affichés d'emblée (SPEC §4). */
   function construireLignes() {
     var fragment = document.createDocumentFragment();
 
-    bareme.laboratoires.forEach(function (labo) {
+    etat.laboratoires.forEach(function (labo) {
       var ligne = document.createElement('div');
       ligne.className = 'ligne-laboratoire';
 
@@ -115,33 +197,53 @@
 
   /*
    * Écran 2 : total actualisé en continu, et rien d'autre.
-   * Aucune remise, aucun taux à ce stade (SPEC §4).
+   * Additionner ne demande aucun taux ; aucune remise n'est calculable ici.
    */
   function rafraichirSaisie() {
-    var resultat = calcul.calculer(etat.montants, bareme);
-    var conditions = calcul.evaluerConditions(resultat);
+    var totaux = calcul.calculerTotaux(etat.montants, etat.laboratoires);
+    var conditions = calcul.evaluerConditions(totaux);
 
-    el['total-saisie'].textContent = calcul.formaterMontant(resultat.totalCommandes);
+    el['total-saisie'].textContent = calcul.formaterMontant(totaux.totalCommandes);
     el['btn-resultat'].disabled = !conditions.accessible;
 
-    if (conditions.accessible || resultat.totalCommandes === 0) {
+    if (conditions.accessible || totaux.totalCommandes === 0) {
       el['message-blocage'].hidden = true;
       el['message-blocage'].textContent = '';
       return;
     }
 
     el['message-blocage'].hidden = false;
-    el['message-blocage'].textContent =
-      calcul.decrireManque(conditions) + ' ' +
-      'La simulation nécessite au moins ' + calcul.CONSTANTES.MIN_LABORATOIRES +
-      ' laboratoires renseignés et un total d’achats d’au moins ' +
-      calcul.formaterMontant(calcul.CONSTANTES.MIN_TOTAL_COMMANDES) + '. ' +
-      'Pour une estimation adaptée à votre situation, prenons rendez-vous.';
+    el['message-blocage'].textContent = textes.blocage(
+      calcul.decrireManque(conditions), textes.courriel
+    );
   }
 
-  function afficherResultat(resultat) {
+  /* Le seul appel qui consomme le jeton. */
+  function envoyerSimulation() {
+    var totaux = calcul.calculerTotaux(etat.montants, etat.laboratoires);
+    if (!calcul.evaluerConditions(totaux).accessible) return;
+
+    el['btn-resultat'].disabled = true;
+
+    demander('simuler', { jeton: etat.jeton, montants: etat.montants })
+      .then(function (reponse) {
+        if (!reponse) return afficherFin(textes.erreur);
+        if (reponse.statut === 'ok') {
+          afficherResultat(reponse.resultat, totaux);
+          return afficherEcran('resultat');
+        }
+        if (reponse.statut === 'conditions-non-remplies') {
+          el['btn-resultat'].disabled = false;
+          return rafraichirSaisie();
+        }
+        afficherFin(finPourStatut(reponse.statut));
+      })
+      .catch(function () { afficherFin(textes.erreur); });
+  }
+
+  function afficherResultat(resultat, totaux) {
     el.identification.textContent = ligneIdentification();
-    el['remise-montant'].textContent = calcul.formaterMontant(resultat.remiseAffichee);
+    el['remise-montant'].textContent = calcul.formaterMontant(resultat.remise);
     el['total-resultat'].textContent = calcul.formaterMontant(resultat.totalCommandes);
     el['taux-moyen'].textContent = calcul.formaterTaux(resultat.tauxMoyen);
 
@@ -149,7 +251,7 @@
     corps.textContent = '';
 
     // Nom et montant saisi uniquement : ni remise ni taux par ligne (SPEC §8).
-    resultat.lignes.forEach(function (ligne) {
+    totaux.lignes.forEach(function (ligne) {
       var tr = document.createElement('tr');
       var nom = document.createElement('td');
       nom.textContent = ligne.nom;
@@ -176,6 +278,32 @@
     } catch (e) {
       return new Date().toLocaleDateString();
     }
+  }
+
+  function afficherFin(bloc) {
+    el['titre-message'].textContent = bloc.titre;
+    el['message-corps'].textContent = '';
+    var corps = Array.isArray(bloc.corps) ? bloc.corps : [bloc.corps];
+    corps.forEach(function (phrase) {
+      el['message-corps'].appendChild(
+        paragraphe(phrase.replace('{courriel}', textes.courriel), 'presentation')
+      );
+    });
+    afficherEcran('message');
+  }
+
+  function demander(route, charge) {
+    var options = charge === null
+      ? { method: 'GET' }
+      : {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(charge)
+        };
+    // Résolu depuis l'adresse de la page : fonctionne aussi si le simulateur
+    // est servi sous un sous-chemin.
+    var adresse = new URL('api/' + route, window.location.href).toString();
+    return fetch(adresse, options).then(function (r) { return r.json(); });
   }
 
   function compterChiffres(texte) {

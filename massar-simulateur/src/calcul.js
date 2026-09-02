@@ -1,8 +1,13 @@
 /*
- * MASSAR — Règles de calcul (SPEC §2).
+ * MASSAR — Règles de calcul (SPEC §2 et §4).
  *
- * Fonctions pures, sans DOM : ce fichier est chargé tel quel par le navigateur
- * et importé par les tests. Toute règle de calcul vit ici et nulle part ailleurs.
+ * Fonctions pures, sans DOM ni réseau : chargé tel quel par le navigateur,
+ * importé par le serveur et par les tests.
+ *
+ * La séparation est structurante depuis le choix du lien à usage unique :
+ *   - calculerTotaux  ne demande que la LISTE des laboratoires. Il tourne dans
+ *     la page, qui n'a jamais connaissance des taux.
+ *   - calculerRemise  demande le BARÈME. Il ne tourne que sur le serveur.
  */
 var MassarCalcul = (function () {
   'use strict';
@@ -19,11 +24,16 @@ var MassarCalcul = (function () {
    * appliqué silencieusement.
    */
   function normaliserSaisie(texte) {
-    var chiffres = String(texte == null ? '' : texte).replace(/\D/g, '');
+    // Tout ce qui suit un séparateur décimal est écarté : « 800000,99 » vaut
+    // 800 000 DA, et non 80 000 099 comme le donnerait un simple retrait des
+    // caractères non numériques.
+    var entier = String(texte == null ? '' : texte).split(/[.,]/)[0];
+    var chiffres = entier.replace(/\D/g, '');
     chiffres = chiffres.replace(/^0+(?=\d)/, '');
     if (chiffres === '') return '';
-    var valeur = Number(chiffres);
-    if (valeur > CONSTANTES.PLAFOND_LIGNE) return String(CONSTANTES.PLAFOND_LIGNE);
+    if (Number(chiffres) > CONSTANTES.PLAFOND_LIGNE) {
+      return String(CONSTANTES.PLAFOND_LIGNE);
+    }
     return chiffres;
   }
 
@@ -41,42 +51,78 @@ var MassarCalcul = (function () {
   }
 
   /*
-   * Aucun arrondi intermédiaire : la remise est sommée en valeur exacte et
-   * n'est arrondie qu'à l'affichage.
+   * Sans les taux : total des commandes et lignes retenues.
+   * C'est tout ce dont la page a besoin pour afficher le total en continu et
+   * pour savoir si les conditions d'accès sont réunies.
    */
-  function calculer(montantsParId, bareme) {
+  function calculerTotaux(montantsParId, laboratoires) {
     var lignes = [];
     var totalCommandes = 0;
-    var remiseExacte = 0;
 
-    bareme.laboratoires.forEach(function (labo) {
-      var montant = (montantsParId && montantsParId[labo.id]) || 0;
+    laboratoires.forEach(function (labo) {
+      var brut = montantsParId ? montantsParId[labo.id] : 0;
+      var montant = typeof brut === 'number' ? brut : montantDepuisSaisie(brut);
       if (!estRenseignee(montant)) return;
       totalCommandes += montant;
-      remiseExacte += montant * labo.taux;
       lignes.push({ id: labo.id, nom: labo.nom, montant: montant });
     });
 
     return {
       lignes: lignes,
       nbLaboratoires: lignes.length,
-      totalCommandes: totalCommandes,
+      totalCommandes: totalCommandes
+    };
+  }
+
+  /*
+   * Avec les taux — serveur uniquement.
+   * Aucun arrondi intermédiaire : la remise est sommée en valeur exacte et
+   * n'est arrondie qu'à l'affichage.
+   */
+  function calculerRemise(totaux, bareme) {
+    var tauxParId = {};
+    bareme.laboratoires.forEach(function (labo) { tauxParId[labo.id] = labo.taux; });
+
+    var remiseExacte = 0;
+    totaux.lignes.forEach(function (ligne) {
+      remiseExacte += ligne.montant * (tauxParId[ligne.id] || 0);
+    });
+
+    return {
       remiseExacte: remiseExacte,
       remiseAffichee: Math.round(remiseExacte),
-      tauxMoyen: totalCommandes > 0 ? (remiseExacte / totalCommandes) * 100 : 0
+      tauxMoyen: totaux.totalCommandes > 0
+        ? (remiseExacte / totaux.totalCommandes) * 100
+        : 0
+    };
+  }
+
+  /* Les deux d'un coup : serveur et tests. */
+  function calculer(montantsParId, bareme) {
+    var totaux = calculerTotaux(montantsParId, bareme.laboratoires);
+    var remise = calculerRemise(totaux, bareme);
+    return {
+      lignes: totaux.lignes,
+      nbLaboratoires: totaux.nbLaboratoires,
+      totalCommandes: totaux.totalCommandes,
+      remiseExacte: remise.remiseExacte,
+      remiseAffichee: remise.remiseAffichee,
+      tauxMoyen: remise.tauxMoyen
     };
   }
 
   /*
    * Conditions cumulatives d'accès au résultat (SPEC §4).
    * On renvoie ce qui manque, pas seulement un refus.
+   * Évaluées dans la page pour l'affichage, revalidées sur le serveur : une
+   * page modifiée ne les contourne pas.
    */
-  function evaluerConditions(resultat) {
+  function evaluerConditions(totaux) {
     var laboratoiresManquants = Math.max(
-      0, CONSTANTES.MIN_LABORATOIRES - resultat.nbLaboratoires
+      0, CONSTANTES.MIN_LABORATOIRES - totaux.nbLaboratoires
     );
     var montantManquant = Math.max(
-      0, CONSTANTES.MIN_TOTAL_COMMANDES - resultat.totalCommandes
+      0, CONSTANTES.MIN_TOTAL_COMMANDES - totaux.totalCommandes
     );
     return {
       accessible: laboratoiresManquants === 0 && montantManquant === 0,
@@ -133,6 +179,8 @@ var MassarCalcul = (function () {
     normaliserSaisie: normaliserSaisie,
     montantDepuisSaisie: montantDepuisSaisie,
     estRenseignee: estRenseignee,
+    calculerTotaux: calculerTotaux,
+    calculerRemise: calculerRemise,
     calculer: calculer,
     evaluerConditions: evaluerConditions,
     decrireManque: decrireManque,
