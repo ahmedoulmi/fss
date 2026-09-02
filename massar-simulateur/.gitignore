@@ -1,0 +1,5 @@
+# Données sensibles — ne doivent jamais entrer dans l'historique git
+bareme/bareme.reel.js
+bareme/*.reel.*
+dist/
+*.livrable.html
