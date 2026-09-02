@@ -79,6 +79,15 @@ var MASSAR_TEXTES = {
     ]
   },
 
+  perime: {
+    titre: 'Lien arrivé à échéance',
+    corps: [
+      'Ce lien de simulation a passé sa date de validité. Les conditions ont ' +
+        'pu changer depuis son envoi.',
+      'Écrivez-nous à {courriel} pour en recevoir un nouveau.'
+    ]
+  },
+
   erreur: {
     titre: 'Simulation indisponible',
     corps: 'Le calcul n’a pas abouti. Réessayez dans un instant, ou ' +

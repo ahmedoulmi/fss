@@ -281,3 +281,13 @@ Les lots 1 à 3 sont réalisables immédiatement avec le barème d'exemple.
 Conséquences retenues : une mention « pensez à imprimer » apparaît sur l'écran
 résultat, absente du document imprimé ; l'adresse e-mail figure sur le message
 de blocage et sur les écrans de fin, jamais sur le résultat ni à l'impression.
+
+Décisions prises faute d'instruction, à confirmer :
+
+- **Validité d'un lien jamais utilisé : 60 jours.** Un lien envoyé puis oublié
+  ne doit pas rester ouvrable indéfiniment, le barème vieillissant avec sa date
+  de validité (§10). Réglable par lien à l'émission.
+- **Dépôt des jetons sur fichier.** Suffisant pour un seul processus. Le
+  journal ne retient que le jeton, sa création, son échéance et sa
+  consommation — ni montants ni remise (§1 : l'outil n'est pas un dispositif
+  de collecte).

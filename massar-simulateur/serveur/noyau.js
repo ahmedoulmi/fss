@@ -16,6 +16,7 @@ var STATUTS = {
   OK: 'ok',
   JETON_INCONNU: 'jeton-inconnu',
   JETON_CONSOMME: 'jeton-consomme',
+  JETON_EXPIRE: 'jeton-expire',
   CONDITIONS: 'conditions-non-remplies',
   REQUETE_INVALIDE: 'requete-invalide'
 };
@@ -23,6 +24,8 @@ var STATUTS = {
 function creerNoyau(options) {
   var bareme = options.bareme;
   var depot = options.depot;
+  // Injectable pour les tests : sinon l'expiration ne se vérifie qu'en attendant.
+  var maintenant = options.maintenant || function () { return Date.now(); };
 
   /* Vérifie qu'un jeton est vivant, sans le consommer. */
   function etatJeton(jeton) {
@@ -30,6 +33,11 @@ function creerNoyau(options) {
     var entree = depot.lire(jeton);
     if (!entree) return STATUTS.JETON_INCONNU;
     if (entree.consommeLe !== null) return STATUTS.JETON_CONSOMME;
+    // Un lien envoyé puis oublié ne doit pas rester ouvrable indéfiniment :
+    // le barème vieillit, et sa date de validité avec lui (SPEC §10).
+    if (entree.expireLe && maintenant() > Date.parse(entree.expireLe)) {
+      return STATUTS.JETON_EXPIRE;
+    }
     return STATUTS.OK;
   }
 

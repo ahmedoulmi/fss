@@ -110,7 +110,9 @@
 
   /* Un lien absent ou inconnu n'a pas « déjà servi » : le dire correctement. */
   function finPourStatut(statut) {
-    return statut === 'jeton-consomme' ? textes.expire : textes.invalide;
+    if (statut === 'jeton-consomme') return textes.expire;
+    if (statut === 'jeton-expire') return textes.perime;
+    return textes.invalide;
   }
 
   function chargerLaboratoires() {

@@ -1,46 +1,34 @@
 /*
- * Lancement local : assemble le barème, le dépôt de jetons, le noyau et
- * l'adaptateur HTTP, puis émet un lien de simulation.
+ * Lancement du simulateur.
  *
- *   node serveur/lancer.js            un lien
- *   node serveur/lancer.js 5          cinq liens
+ *   node serveur/lancer.js          sert la page et l'API
+ *   node serveur/lancer.js 3        et émet 3 liens au passage, pour essayer
  *
- * Le dépôt est en mémoire : les jetons disparaissent à l'arrêt du processus.
- * L'hébergement retenu déterminera le dépôt réel (question 2 en suspens).
+ * Les liens de production s'émettent avec serveur/creer-lien.js.
  */
-var fs = require('node:fs');
-var path = require('node:path');
-
-var { creerNoyau } = require('./noyau.js');
 var { creerServeur } = require('./http.js');
+var { assembler, echeance, cheminDepot } = require('./configuration.js');
 var { nouveauJeton } = require('./jetons.js');
-var creerDepotMemoire = require('./depot-memoire.js');
 
-var RACINE = path.resolve(__dirname, '..');
 var PORT = Number(process.env.PORT) || 8787;
+var contexte = assembler();
 
-var cheminReel = path.join(RACINE, 'bareme', 'bareme.reel.js');
-var bareme = fs.existsSync(cheminReel)
-  ? require(cheminReel)
-  : require(path.join(RACINE, 'bareme', 'bareme.exemple.js'));
+creerServeur({ noyau: contexte.noyau, racine: contexte.racineSrc })
+  .listen(PORT, function () {
+    if (contexte.bareme.exemple) {
+      console.log('\n  ⚠  BARÈME D’EXEMPLE — valeurs fictives, ne pas diffuser');
+    }
+    console.log('\n  Simulateur sur http://localhost:' + PORT);
+    console.log('  Dépôt des jetons : ' + cheminDepot());
 
-var depot = creerDepotMemoire();
-var noyau = creerNoyau({ bareme: bareme, depot: depot });
-var serveur = creerServeur({ noyau: noyau, racine: path.join(RACINE, 'src') });
-
-serveur.listen(PORT, function () {
-  var combien = Math.max(1, Number(process.argv[2]) || 1);
-
-  if (bareme.exemple) {
-    console.log('\n  ⚠  BARÈME D’EXEMPLE — valeurs fictives, ne pas diffuser\n');
-  }
-  console.log('  Simulateur sur http://localhost:' + PORT);
-  console.log('  Lien' + (combien > 1 ? 's' : '') + ' de simulation, à usage unique :\n');
-
-  for (var i = 0; i < combien; i++) {
-    var jeton = nouveauJeton();
-    depot.creer(jeton, {});
-    console.log('    http://localhost:' + PORT + '/?s=' + jeton);
-  }
-  console.log('');
-});
+    var combien = Number(process.argv[2]) || 0;
+    if (combien > 0) {
+      console.log('\n  Liens d’essai, à usage unique :\n');
+      for (var i = 0; i < combien; i++) {
+        var jeton = nouveauJeton();
+        contexte.depot.creer(jeton, { expireLe: echeance() });
+        console.log('    http://localhost:' + PORT + '/?s=' + jeton);
+      }
+    }
+    console.log('');
+  });

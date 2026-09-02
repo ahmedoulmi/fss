@@ -3,3 +3,6 @@ bareme/bareme.reel.js
 bareme/*.reel.*
 dist/
 *.livrable.html
+
+# Jetons émis : ils portent des noms de prospects
+donnees/
