@@ -113,12 +113,10 @@ barème et ne tourne que sur le serveur.
 - **Rien côté hébergement** : Cloudflare Workers retenu, déploiement écrit.
   Le simulateur ne coûte rien à ce volume — 100 000 requêtes par jour
   gratuites, quand nous en ferons quelques dizaines par mois.
-- **Barème réel** : laboratoires, taux, date de validité (SPEC §9).
-  À déposer dans `bareme/bareme.reel.js`, sur le modèle de `bareme.exemple.js`.
-  `lancer.js` le prend automatiquement s'il existe. **Ne jamais le commiter.**
-- **Adresse de contact** : `courriel` dans `src/textes.js` vaut
-  `[adresse à fournir]`. Elle apparaît sur le message de blocage et sur les
-  écrans de fin.
+- **Barème réel** : fourni, 30 laboratoires, valable au 31/12/2026. Il vit
+  dans `bareme/bareme.reel.js`, **jamais versionné**, et en secret Cloudflare
+  pour la production.
+
 - **Charte Massar** : les valeurs de `src/massar_charte.js` sont provisoires
   (`provisoire: true`). Les remplacer suffit — aucune valeur n'est en dur
   ailleurs.
@@ -137,6 +135,24 @@ barème et ne tourne que sur le serveur.
   résultat ni sur le document imprimé.
 - Registre des textes : **accueillant**.
 
+## Écarts assumés par rapport à la spécification
+
+- **La phrase d'accueil est reformulée.** Celle du §4 employait un terme frappé
+  d'interdit absolu par les règles permanentes de vocabulaire. Le contrôle du
+  §8 de ces règles est intégré à `build/verifier.js` : le terme ne peut plus
+  revenir. **La spécification elle-même n'est pas corrigée à la source** — elle
+  le porte encore au §1 et au §4, et le prochain qui s'en servira le
+  réintroduira.
+- **L'écran résultat porte une ligne « officine — date de simulation »** avant
+  la remise, requise par le document imprimé (§5) mais absente de l'ordre
+  d'affichage du §4.
+- **Une mention « pensez à imprimer »** figure sur l'écran résultat, absente du
+  document imprimé. Conséquence du choix « le lien meurt après usage ».
+- **Deux colonnes à l'écran de saisie** au-delà de 15 laboratoires, comme le §4
+  le prévoyait.
+- **Une adresse e-mail sur le message de blocage** et sur les écrans de fin,
+  jamais sur le résultat ni à l'impression. Exception au §8, décidée.
+
 ## Points encore ouverts
 
 - Au-delà de 15 laboratoires, présentation de l'écran 2 (SPEC §4). Le barème
@@ -146,3 +162,8 @@ barème et ne tourne que sur le serveur.
   d'affichage du §4 : à confirmer.
 - Durée de vie d'un lien jamais utilisé : **60 jours par défaut**, choisi faute
   d'instruction. Modifiable par lien avec `--jours`. À confirmer.
+- **Cinq lignes du barème ne sont pas des laboratoires** — BANDELETTE VITAL,
+  DIAGNO, BIONIME, CHECK3, ON CALL sont des gammes de bandelettes, sous une
+  colonne intitulée « Laboratoire ».
+- **Ordre de grandeur à confirmer** : 12 000 000 DA d'achats affichent
+  3 123 000 DA de remise, taux moyen 26 %.

@@ -4,9 +4,9 @@
  */
 var MASSAR_TEXTES = {
 
-  /* À REMPLACER AVANT TOUTE DIFFUSION — la génération du livrable refuse
-     de produire un fichier tant que cette valeur n'a pas changé. */
-  courriel: '[adresse à fournir]',
+  /* Affichée sur le message de blocage et les écrans de fin, jamais sur
+     l'écran résultat ni sur le document imprimé (SPEC §8). */
+  courriel: 'contact@massardevelopment.com',
 
   accueil: {
     titre: 'Simulateur de remise',
