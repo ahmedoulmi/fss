@@ -201,8 +201,11 @@ Présentes à l'écran résultat et sur le document imprimé :
 - **Support** : conçu pour ordinateur, lisible et utilisable sur téléphone
 - **Charte** : couleurs, polices, échelle typographique et signature lues dans
   `massar_charte.js`, source unique. Aucune valeur en dur.
-  Les couleurs sont relevées sur le logo — vert profond de la calligraphie, or
-  du lettrage latin. Les polices ne sont pas connues.
+  Les valeurs reprennent celles de la charte Massar Development (révision du
+  28 août 2026), avec les mêmes noms de jetons. La marque est **vert et or**,
+  l'or au même rang que le vert. Le **rouge est d'usage fonctionnel
+  uniquement** — alerte, point d'attention : jamais décoratif, jamais un fond.
+  D'où le filet rouge, et non l'aplat, sur les messages d'attention.
 - **Logo** : déposer le fichier en `src/logo-massar.png` suffit ; il remplace
   alors la marque typographique, sans modification du code.
 - **Vocabulaire** : les règles permanentes de Massar Development s'appliquent à
@@ -235,8 +238,7 @@ l'impression.
 | Taux par laboratoire | fourni |
 | Date de validité du barème | fourni — 31/12/2026 |
 | Adresse de contact | fourni |
-| Couleurs de la charte | relevées sur le logo, à confirmer |
-| Polices de la charte | **manquant** |
+| Charte — couleurs et polices | fourni |
 | Fichier du logo | **manquant** — marque typographique en attendant |
 
 Le contrôle `npm run verifier` refuse la mise en ligne tant qu'un élément

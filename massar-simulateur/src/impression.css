@@ -6,7 +6,7 @@
 @page { margin: 18mm; }
 
 body {
-  background: var(--m-couleurs-surface);
+  background: var(--m-couleurs-blanc);
   font-size: 10.5pt;
 }
 

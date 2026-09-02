@@ -11,7 +11,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--m-couleurs-fond);
-  color: var(--m-couleurs-encre);
+  color: var(--m-couleurs-texte);
   font-family: var(--m-typographie-famille-texte);
   font-size: var(--m-echelle-base);
   line-height: var(--m-typographie-interligne);
@@ -45,7 +45,7 @@ body {
   font-size: var(--m-echelle-lg);
   font-weight: var(--m-typographie-graisse-appuyee);
   letter-spacing: 0.22em;
-  color: var(--m-couleurs-accent);
+  color: var(--m-couleurs-vert-fonce);
 }
 
 /* ---------- Commun ---------- */
@@ -61,7 +61,7 @@ body {
   margin: 0 0 var(--m-espacement-lg);
   font-family: var(--m-typographie-famille-titres);
   font-size: var(--m-echelle-xxl);
-  font-weight: var(--m-typographie-graisse-normale);
+  font-weight: var(--m-typographie-graisse-appuyee);
   line-height: var(--m-typographie-interligne-titre);
 }
 
@@ -75,7 +75,7 @@ body {
 
 .consigne {
   margin: var(--m-espacement-lg) 0;
-  color: var(--m-couleurs-encre-adoucie);
+  color: var(--m-couleurs-gris);
   max-width: 48ch;
 }
 
@@ -89,14 +89,14 @@ body {
 }
 
 .bouton-principal {
-  background: var(--m-couleurs-accent);
-  color: var(--m-couleurs-accent-contraste);
+  background: var(--m-couleurs-vert-fonce);
+  color: var(--m-couleurs-blanc);
   font-weight: var(--m-typographie-graisse-appuyee);
 }
 
 .bouton-principal:disabled {
   background: var(--m-couleurs-bordure);
-  color: var(--m-couleurs-encre-discrete);
+  color: var(--m-couleurs-gris);
   cursor: not-allowed;
 }
 
@@ -112,14 +112,14 @@ body {
 
 .champ-officine label { font-size: var(--m-echelle-sm); }
 
-.facultatif { color: var(--m-couleurs-encre-discrete); }
+.facultatif { color: var(--m-couleurs-gris); }
 
 .champ-officine input {
   font: inherit;
   padding: var(--m-espacement-sm);
   min-height: 3rem;
-  background: var(--m-couleurs-surface);
-  color: var(--m-couleurs-encre);
+  background: var(--m-couleurs-blanc);
+  color: var(--m-couleurs-texte);
   border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
   border-radius: var(--m-formes-rayon);
 }
@@ -175,15 +175,15 @@ body {
   width: 9rem;
   min-height: 2.75rem;
   padding: var(--m-espacement-xs) var(--m-espacement-sm);
-  background: var(--m-couleurs-surface);
-  color: var(--m-couleurs-encre);
+  background: var(--m-couleurs-blanc);
+  color: var(--m-couleurs-texte);
   border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
   border-radius: var(--m-formes-rayon);
 }
 
 .ligne-unite {
   font-size: var(--m-echelle-sm);
-  color: var(--m-couleurs-encre-discrete);
+  color: var(--m-couleurs-gris);
   width: 2rem;
 }
 
@@ -199,7 +199,7 @@ body {
   gap: var(--m-espacement-md);
   margin-top: var(--m-espacement-lg);
   padding: var(--m-espacement-md) 0;
-  border-top: 2px solid var(--m-couleurs-bordure-appuyee);
+  border-top: 2px solid var(--m-couleurs-vert-fonce);
   position: sticky;
   bottom: 0;
   background: var(--m-couleurs-fond);
@@ -214,12 +214,13 @@ body {
   font-weight: var(--m-typographie-graisse-appuyee);
 }
 
+/* Point d'attention. Le rouge de la charte est d'usage fonctionnel : il
+   marque, il ne décore pas, et ne sert jamais d'aplat. D'où le filet. */
 .message-blocage {
   margin: var(--m-espacement-lg) 0;
-  padding: var(--m-espacement-md);
-  background: var(--m-couleurs-signal-fond);
-  color: var(--m-couleurs-signal);
-  border-radius: var(--m-formes-rayon);
+  padding: var(--m-espacement-sm) 0 var(--m-espacement-sm) var(--m-espacement-md);
+  border-left: 3px solid var(--m-couleurs-rouge);
+  color: var(--m-couleurs-texte);
   font-size: var(--m-echelle-sm);
   max-width: 52ch;
 }
@@ -231,7 +232,7 @@ body {
 .identification {
   margin: 0 0 var(--m-espacement-xl);
   font-size: var(--m-echelle-sm);
-  color: var(--m-couleurs-encre-adoucie);
+  color: var(--m-couleurs-gris);
 }
 
 .remise {
@@ -247,7 +248,7 @@ body {
   font-weight: var(--m-typographie-graisse-normale);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--m-couleurs-encre-adoucie);
+  color: var(--m-couleurs-gris);
 }
 
 .remise-ligne {
@@ -265,7 +266,8 @@ body {
   font-size: var(--m-echelle-lg);
   font-weight: var(--m-typographie-graisse-appuyee);
   color: var(--m-couleurs-or);
-  background: var(--m-couleurs-or-adouci);
+  background: var(--m-couleurs-fond);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-or);
   border-radius: var(--m-formes-rayon);
   padding: var(--m-espacement-xs) var(--m-espacement-sm);
   white-space: nowrap;
@@ -274,9 +276,10 @@ body {
 .remise-montant {
   flex: 0 1 auto;
   font-family: var(--m-typographie-famille-titres);
+  font-weight: var(--m-typographie-graisse-appuyee);
   font-size: var(--m-echelle-resultat);
   line-height: var(--m-typographie-interligne-titre);
-  color: var(--m-couleurs-accent);
+  color: var(--m-couleurs-vert-fonce);
 }
 
 .total-resultat {
@@ -305,7 +308,7 @@ body {
   font-weight: var(--m-typographie-graisse-normale);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--m-couleurs-encre-adoucie);
+  color: var(--m-couleurs-gris);
 }
 
 .recapitulatif-table {
@@ -317,7 +320,7 @@ body {
 .recapitulatif-table th {
   text-align: left;
   font-weight: var(--m-typographie-graisse-normale);
-  color: var(--m-couleurs-encre-discrete);
+  color: var(--m-couleurs-gris);
   padding-bottom: var(--m-espacement-xs);
 }
 
@@ -340,17 +343,16 @@ body {
   padding-top: var(--m-espacement-md);
   border-top: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
   font-size: var(--m-echelle-xs);
-  color: var(--m-couleurs-encre-adoucie);
+  color: var(--m-couleurs-gris);
 }
 
 .mentions p { margin: 0 0 var(--m-espacement-xs); }
 
 .avant-fermeture {
   margin: 0 0 var(--m-espacement-lg);
-  padding: var(--m-espacement-sm) var(--m-espacement-md);
-  background: var(--m-couleurs-signal-fond);
-  color: var(--m-couleurs-signal);
-  border-radius: var(--m-formes-rayon);
+  padding: var(--m-espacement-sm) 0 var(--m-espacement-sm) var(--m-espacement-md);
+  border-left: 3px solid var(--m-couleurs-rouge);
+  color: var(--m-couleurs-texte);
   font-size: var(--m-echelle-xs);
   max-width: 52ch;
 }

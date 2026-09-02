@@ -4,12 +4,11 @@
  * Aucune de ces valeurs ne doit être écrite en dur ailleurs : la feuille de
  * style ne consomme que les variables CSS produites par ce fichier.
  *
- * Les COULEURS sont relevées sur le logo Massar Development : le vert profond
- * de la calligraphie et l'or du lettrage latin. Elles restent une lecture à
- * l'œil, à confirmer sur les valeurs officielles.
+ * Les valeurs viennent de la charte Massar Development, révision du 28 août
+ * 2026 : la marque est VERT ET OR, l'or au même rang que le vert.
  *
- * Les POLICES, elles, ne sont pas connues. Tant qu'elles ne le sont pas,
- * `provisoire` reste à true et la mise en service est refusée.
+ * Le rouge est d'usage fonctionnel uniquement — alerte, point d'attention.
+ * Jamais décoratif, jamais un fond.
  */
 /*
  * Signature arrêtée le 31 août 2026. Ne jamais la réécrire en dur ailleurs :
@@ -18,37 +17,39 @@
 var SIGNATURE = 'Plus qu’un service, un écosystème';
 
 var MASSAR_CHARTE = {
-  provisoire: true,
+  /*
+   * Valeurs reprises de massar_charte.js, le module de charte de Massar
+   * Development (révision du 28 août 2026). Mêmes noms de jetons, pour que
+   * les deux fichiers se lisent l'un l'autre.
+   */
+  provisoire: false,
 
   couleurs: {
-    encre: '#12281e',
-    encreAdoucie: '#4f6459',
-    encreDiscrete: '#8a9a91',
-    fond: '#f7f6f2',
-    surface: '#ffffff',
-    bordure: '#e0ddd2',
-    bordureAppuyee: '#14543a',
+    vertFonce: '#0B5227',   // couleur de marque — fonds sombres, surfaces d'identité
+    vert: '#1E8F3C',        // couleur d'interaction — accents actifs
+    vertClair: '#8FD6A6',   // aplats secondaires, texte sur fond sombre
+    or: '#B8912F',          // couleur de marque, au même rang que le vert
+    orClair: '#D9BC72',     // or sur fond sombre, où le B8912F manque de contraste
+    fond: '#F4F6F5',
+    texte: '#1E2A24',
+    gris: '#6B7671',        // texte secondaire, légendes
+    blanc: '#FFFFFF',
+    bordure: '#E3E8E5',
 
-    /* Le vert de la calligraphie. Couleur principale. */
-    accent: '#14543a',
-    accentAdouci: '#eaf1ec',
-    accentContraste: '#ffffff',
-
-    /* L'or du lettrage. Second registre, employé avec parcimonie : filets,
-       signature, taux. Trop peu contrasté sur fond clair pour du texte courant. */
-    or: '#a8823c',
-    orAdouci: '#f5efe1',
-
-    signal: '#8a5a20',
-    signalFond: '#fbf3e7'
+    /* USAGE FONCTIONNEL UNIQUEMENT — alerte, point d'attention.
+       Jamais décoratif, jamais un fond. */
+    rouge: '#D81E28'
   },
 
   typographie: {
-    familleTitres: "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif",
-    familleTexte: "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    familleChiffres: "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    /* Arial pour les titres, toujours en gras ; Calibri pour le corps.
+       Les replis couvrent les postes qui n'ont ni l'une ni l'autre :
+       Carlito a les mêmes métriques que Calibri. */
+    familleTitres: "Arial, Helvetica, 'Liberation Sans', sans-serif",
+    familleTexte: "Calibri, Carlito, 'Segoe UI', system-ui, Arial, sans-serif",
+    familleChiffres: "Calibri, Carlito, 'Segoe UI', system-ui, Arial, sans-serif",
     graisseNormale: '400',
-    graisseAppuyee: '600',
+    graisseAppuyee: '700',
     interligne: '1.55',
     interligneTitre: '1.15'
   },

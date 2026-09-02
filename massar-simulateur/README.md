@@ -25,7 +25,7 @@ seconde simulation ne peut pas avoir lieu.
 | 4 | Lien à usage unique, calcul serveur | fait |
 | 5 | Dépôt durable, émission des liens, garde-fou | fait |
 | 6 | Déploiement Cloudflare Workers | fait — voir `serveur/adaptateurs/cloudflare/LISEZMOI.md` |
-| 7 | Mise en service | **en attente du barème, de la charte et de l'adresse** |
+| 7 | Mise en service | prêt — `npm run verifier` passe |
 
 Un déploiement sur VPS Ubuntu existe aussi (`deploiement/`), écrit avant
 l'arbitrage sur l'hébergement. Il reste valable si vous changez d'avis.
@@ -117,17 +117,18 @@ barème et ne tourne que sur le serveur.
   dans `bareme/bareme.reel.js`, **jamais versionné**, et en secret Cloudflare
   pour la production.
 
-- **Les polices de la charte.** Les couleurs de `src/massar_charte.js` sont
-  désormais relevées sur le logo — vert profond et or. Les polices restent les
-  miennes, et `provisoire: true` avec elles.
 - **Le fichier du logo.** Déposer `src/logo-massar.png` suffit : il remplace
-  automatiquement la marque typographique, sans toucher au code.
+  automatiquement la marque typographique, sans toucher au code. C'est le seul
+  élément encore absent, et il ne bloque pas la mise en service.
 
 ## Arbitrages rendus
 
 - Protection : **option C**, lien à usage unique et calcul serveur.
 - Hébergement : **Cloudflare Workers**, base D1 pour les jetons, barème en
   secret. L'achat d'un VPS a été écarté : ce seul outil ne le justifiait pas.
+- Charte : reprise de `massar_charte.js` (révision du 28 août 2026), mêmes noms
+  de jetons. Vert et or ; le rouge marque sans décorer, et ne sert jamais
+  d'aplat.
 - Après le calcul, **le lien meurt**. Le récapitulatif n'existe plus que sur
   papier — d'où la mention « pensez à imprimer », affichée à l'écran et absente
   du document imprimé.
