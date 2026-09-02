@@ -21,31 +21,31 @@ function fichierTemporaire() {
   return path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'massar-')), 'jetons.json');
 }
 
-test('un jeton consommé le reste après redémarrage', () => {
+test('un jeton consommé le reste après redémarrage', async () => {
   const chemin = fichierTemporaire();
   const jeton = nouveauJeton();
 
   const avant = creerDepotFichier(chemin);
   avant.creer(jeton, {});
   const noyauAvant = creerNoyau({ bareme, depot: avant });
-  assert.equal(noyauAvant.simuler(jeton, saisieValide).statut, STATUTS.OK);
+  assert.equal((await noyauAvant.simuler(jeton, saisieValide)).statut, STATUTS.OK);
 
   // Nouveau processus : le dépôt est relu depuis le fichier.
   const apres = creerDepotFichier(chemin);
   const noyauApres = creerNoyau({ bareme, depot: apres });
-  assert.equal(noyauApres.simuler(jeton, saisieValide).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyauApres.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
 });
 
-test('un jeton non consommé survit au redémarrage', () => {
+test('un jeton non consommé survit au redémarrage', async () => {
   const chemin = fichierTemporaire();
   const jeton = nouveauJeton();
   creerDepotFichier(chemin).creer(jeton, {});
 
   const noyau = creerNoyau({ bareme, depot: creerDepotFichier(chemin) });
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
 });
 
-test('un lien jamais utilisé finit par expirer', () => {
+test('un lien jamais utilisé finit par expirer', async () => {
   const chemin = fichierTemporaire();
   const depot = creerDepotFichier(chemin);
   const jeton = nouveauJeton();
@@ -55,46 +55,46 @@ test('un lien jamais utilisé finit par expirer', () => {
   const avant = creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2026-02-28T00:00:00Z')
   });
-  assert.equal(avant.laboratoiresPour(jeton).statut, STATUTS.OK);
+  assert.equal((await avant.laboratoiresPour(jeton)).statut, STATUTS.OK);
 
   const apres = creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2026-03-02T00:00:00Z')
   });
-  assert.equal(apres.laboratoiresPour(jeton).statut, STATUTS.JETON_EXPIRE);
-  assert.equal(apres.simuler(jeton, saisieValide).statut, STATUTS.JETON_EXPIRE);
+  assert.equal((await apres.laboratoiresPour(jeton)).statut, STATUTS.JETON_EXPIRE);
+  assert.equal((await apres.simuler(jeton, saisieValide)).statut, STATUTS.JETON_EXPIRE);
 });
 
-test('un jeton sans échéance ne périme pas', () => {
+test('un jeton sans échéance ne périme pas', async () => {
   const depot = creerDepotFichier(fichierTemporaire());
   const jeton = nouveauJeton();
   depot.creer(jeton, {});
   const noyau = creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2099-01-01T00:00:00Z')
   });
-  assert.equal(noyau.laboratoiresPour(jeton).statut, STATUTS.OK);
+  assert.equal((await noyau.laboratoiresPour(jeton)).statut, STATUTS.OK);
 });
 
-test('un jeton consommé prime sur son expiration', () => {
+test('un jeton consommé prime sur son expiration', async () => {
   const depot = creerDepotFichier(fichierTemporaire());
   const jeton = nouveauJeton();
   depot.creer(jeton, { expireLe: new Date('2026-03-01T00:00:00Z').toISOString() });
   // Consommé pendant qu'il était encore valable.
-  creerNoyau({
+  await creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2026-02-01T00:00:00Z')
   }).simuler(jeton, saisieValide);
 
   const tardif = creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2099-01-01T00:00:00Z')
   });
-  assert.equal(tardif.laboratoiresPour(jeton).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await tardif.laboratoiresPour(jeton)).statut, STATUTS.JETON_CONSOMME);
 });
 
-test('le fichier de dépôt ne retient ni montants ni remise', () => {
+test('le fichier de dépôt ne retient ni montants ni remise', async () => {
   const chemin = fichierTemporaire();
   const depot = creerDepotFichier(chemin);
   const jeton = nouveauJeton();
   depot.creer(jeton, { officine: 'Pharmacie du Centre' });
-  creerNoyau({ bareme, depot }).simuler(jeton, saisieValide);
+  await creerNoyau({ bareme, depot }).simuler(jeton, saisieValide);
 
   const contenu = fs.readFileSync(chemin, 'utf8');
   assert.ok(!contenu.includes('1000000'), 'un montant a été conservé');

@@ -22,9 +22,9 @@ const saisieValide = {
   'ex-04': 400000, 'ex-05': 200000
 };
 
-test('la page ne reçoit aucun taux', () => {
+test('la page ne reçoit aucun taux', async () => {
   const { noyau, jeton } = contexte();
-  const charge = noyau.laboratoiresPour(jeton);
+  const charge = await noyau.laboratoiresPour(jeton);
   const serialise = JSON.stringify(charge);
   assert.equal(charge.laboratoires.length, bareme.laboratoires.length);
   charge.laboratoires.forEach((labo) => {
@@ -35,9 +35,9 @@ test('la page ne reçoit aucun taux', () => {
   });
 });
 
-test('le résultat ne porte que des agrégats', () => {
+test('le résultat ne porte que des agrégats', async () => {
   const { noyau, jeton } = contexte();
-  const reponse = noyau.simuler(jeton, saisieValide);
+  const reponse = await noyau.simuler(jeton, saisieValide);
   assert.equal(reponse.statut, STATUTS.OK);
   assert.deepEqual(
     Object.keys(reponse.resultat).sort(),
@@ -47,69 +47,69 @@ test('le résultat ne porte que des agrégats', () => {
   assert.equal(reponse.resultat.totalCommandes, 3000000);
 });
 
-test('le jeton ne sert qu’une fois', () => {
+test('le jeton ne sert qu’une fois', async () => {
   const { noyau, jeton } = contexte();
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.OK);
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.JETON_CONSOMME);
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
 });
 
-test('la déduction par différence est impossible', () => {
+test('la déduction par différence est impossible', async () => {
   // Deux simulations ne variant que d'une ligne : la seconde n'aboutit pas.
   const { noyau, jeton } = contexte();
-  const premiere = noyau.simuler(jeton, saisieValide);
+  const premiere = await noyau.simuler(jeton, saisieValide);
   const variante = Object.assign({}, saisieValide, { 'ex-01': 1000001 });
-  const seconde = noyau.simuler(jeton, variante);
+  const seconde = await noyau.simuler(jeton, variante);
   assert.equal(premiere.statut, STATUTS.OK);
   assert.equal(seconde.statut, STATUTS.JETON_CONSOMME);
   assert.equal(seconde.resultat, undefined);
 });
 
-test('la liste des laboratoires est fermée aux jetons morts', () => {
+test('la liste des laboratoires est fermée aux jetons morts', async () => {
   const { noyau, jeton } = contexte();
   const saisie = { 'ex-01': 1000000, 'ex-02': 800000, 'ex-03': 600000,
                    'ex-04': 400000, 'ex-05': 200000 };
-  assert.equal(noyau.laboratoiresPour(jeton).statut, STATUTS.OK);
-  noyau.simuler(jeton, saisie);
-  const apres = noyau.laboratoiresPour(jeton);
+  assert.equal((await noyau.laboratoiresPour(jeton)).statut, STATUTS.OK);
+  await noyau.simuler(jeton, saisie);
+  const apres = await noyau.laboratoiresPour(jeton);
   assert.equal(apres.statut, STATUTS.JETON_CONSOMME);
   assert.equal(apres.laboratoires, undefined);
-  assert.equal(noyau.laboratoiresPour('inexistant').statut, STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.laboratoiresPour('inexistant')).statut, STATUTS.JETON_INCONNU);
 });
 
-test('lire la liste ne consomme pas le jeton', () => {
+test('lire la liste ne consomme pas le jeton', async () => {
   const { noyau, jeton } = contexte();
-  noyau.laboratoiresPour(jeton);
-  noyau.laboratoiresPour(jeton);
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.OK);
+  await noyau.laboratoiresPour(jeton);
+  await noyau.laboratoiresPour(jeton);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
 });
 
-test('un jeton inconnu n’apprend rien', () => {
+test('un jeton inconnu n’apprend rien', async () => {
   const { noyau } = contexte();
-  const reponse = noyau.simuler(nouveauJeton(), saisieValide);
+  const reponse = await noyau.simuler(nouveauJeton(), saisieValide);
   assert.equal(reponse.statut, STATUTS.JETON_INCONNU);
   assert.equal(reponse.resultat, undefined);
 });
 
-test('les conditions sont revalidées côté serveur', () => {
+test('les conditions sont revalidées côté serveur', async () => {
   // Une page modifiée qui force l'envoi ne contourne pas le seuil.
   const { noyau, jeton } = contexte();
-  const reponse = noyau.simuler(jeton, { 'ex-01': 1000000 });
+  const reponse = await noyau.simuler(jeton, { 'ex-01': 1000000 });
   assert.equal(reponse.statut, STATUTS.CONDITIONS);
   assert.equal(reponse.conditions.laboratoiresManquants, 4);
   assert.equal(reponse.resultat, undefined);
 });
 
-test('une requête refusée ne consomme pas le jeton', () => {
+test('une requête refusée ne consomme pas le jeton', async () => {
   const { noyau, jeton } = contexte();
-  assert.equal(noyau.simuler(jeton, { 'ex-01': 1000 }).statut, STATUTS.CONDITIONS);
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, { 'ex-01': 1000 })).statut, STATUTS.CONDITIONS);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
 });
 
-test('les montants envoyés sont réassainis', () => {
+test('les montants envoyés sont réassainis', async () => {
   const { noyau, jeton } = contexte();
   // Montant formaté, décimales, et un laboratoire hors barème.
-  const reponse = noyau.simuler(jeton, {
+  const reponse = await noyau.simuler(jeton, {
     'ex-01': '1 000 000', 'ex-02': '800000,99', 'ex-03': '600000',
     'ex-04': 400000, 'ex-05': '200000', 'inconnu': 9999999
   });
@@ -117,9 +117,9 @@ test('les montants envoyés sont réassainis', () => {
   assert.equal(reponse.resultat.totalCommandes, 3000000);
 });
 
-test('un montant négatif ou décimal est écarté, jamais réinterprété', () => {
+test('un montant négatif ou décimal est écarté, jamais réinterprété', async () => {
   const { noyau, jeton } = contexte();
-  const reponse = noyau.simuler(jeton, {
+  const reponse = await noyau.simuler(jeton, {
     'ex-01': 1000000, 'ex-02': 800000, 'ex-03': 600000,
     'ex-04': 400000, 'ex-05': 200000,
     'ex-06': -500000,   // écarté, et non transformé en +500 000
@@ -130,9 +130,9 @@ test('un montant négatif ou décimal est écarté, jamais réinterprété', () 
   assert.equal(reponse.resultat.totalCommandes, 3000000);
 });
 
-test('le plafond de ligne s’applique aussi à un envoi direct', () => {
+test('le plafond de ligne s’applique aussi à un envoi direct', async () => {
   const { noyau, jeton } = contexte();
-  const reponse = noyau.simuler(jeton, {
+  const reponse = await noyau.simuler(jeton, {
     'ex-01': 999999999999, 'ex-02': 800000, 'ex-03': 600000,
     'ex-04': 400000, 'ex-05': 200000
   });
@@ -140,25 +140,25 @@ test('le plafond de ligne s’applique aussi à un envoi direct', () => {
   assert.equal(reponse.resultat.totalCommandes, 1000000000 + 2000000);
 });
 
-test('une requête sans jeton est rejetée', () => {
+test('une requête sans jeton est rejetée', async () => {
   const { noyau } = contexte();
-  assert.equal(noyau.simuler('', saisieValide).statut, STATUTS.REQUETE_INVALIDE);
-  assert.equal(noyau.simuler(null, saisieValide).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await noyau.simuler('', saisieValide)).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await noyau.simuler(null, saisieValide)).statut, STATUTS.REQUETE_INVALIDE);
 });
 
-test('le journal ne retient ni montants ni remise', () => {
+test('le journal ne retient ni montants ni remise', async () => {
   const { noyau, depot, jeton } = contexte();
-  noyau.simuler(jeton, saisieValide);
+  await noyau.simuler(jeton, saisieValide);
   const lignes = depot.journal();
   assert.equal(lignes.length, 1);
   assert.deepEqual(Object.keys(lignes[0]).sort(), ['consommeLe', 'creeLe', 'jeton']);
   assert.notEqual(lignes[0].consommeLe, null);
 });
 
-test('deux jetons sont indépendants', () => {
+test('deux jetons sont indépendants', async () => {
   const { noyau, depot, jeton } = contexte();
   const second = nouveauJeton();
   depot.creer(second, {});
-  assert.equal(noyau.simuler(jeton, saisieValide).statut, STATUTS.OK);
-  assert.equal(noyau.simuler(second, saisieValide).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(second, saisieValide)).statut, STATUTS.OK);
 });

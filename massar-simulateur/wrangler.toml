@@ -1,0 +1,23 @@
+# Déploiement du simulateur sur Cloudflare Workers.
+#
+#   npx wrangler d1 create massar-jetons     -> reporter database_id ci-dessous
+#   npx wrangler d1 execute massar-jetons --remote \
+#       --file serveur/adaptateurs/cloudflare/schema.sql
+#   npx wrangler secret put BAREME           -> coller le barème en JSON
+#   npx wrangler deploy
+
+name = "massar-simulateur"
+main = "serveur/adaptateurs/cloudflare/worker.js"
+compatibility_date = "2026-09-01"
+
+# La page et ses fichiers. Aucun taux ne s'y trouve : le contrôle
+# `npm run verifier` s'en assure avant chaque mise en ligne.
+[assets]
+directory = "src"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "JETONS"
+database_name = "massar-jetons"
+# Remplacer par l'identifiant rendu par : npx wrangler d1 create massar-jetons
+database_id = "00000000-0000-0000-0000-000000000000"

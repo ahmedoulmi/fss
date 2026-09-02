@@ -27,10 +27,16 @@ function creerNoyau(options) {
   // Injectable pour les tests : sinon l'expiration ne se vérifie qu'en attendant.
   var maintenant = options.maintenant || function () { return Date.now(); };
 
-  /* Vérifie qu'un jeton est vivant, sans le consommer. */
-  function etatJeton(jeton) {
+  /*
+   * Vérifie qu'un jeton est vivant, sans le consommer.
+   *
+   * Asynchrone parce qu'un dépôt distant l'est : une base D1 ou un stockage
+   * clé-valeur répond par une promesse. Les dépôts locaux renvoient une valeur
+   * directe, qu'un await traverse sans dommage.
+   */
+  async function etatJeton(jeton) {
     if (typeof jeton !== 'string' || jeton === '') return STATUTS.REQUETE_INVALIDE;
-    var entree = depot.lire(jeton);
+    var entree = await depot.lire(jeton);
     if (!entree) return STATUTS.JETON_INCONNU;
     if (entree.consommeLe !== null) return STATUTS.JETON_CONSOMME;
     // Un lien envoyé puis oublié ne doit pas rester ouvrable indéfiniment :
@@ -49,8 +55,8 @@ function creerNoyau(options) {
    * Réservé aux porteurs d'un jeton vivant : la liste des laboratoires
    * démarchés par Massar n'a pas à être publique.
    */
-  function laboratoiresPour(jeton) {
-    var statut = etatJeton(jeton);
+  async function laboratoiresPour(jeton) {
+    var statut = await etatJeton(jeton);
     if (statut !== STATUTS.OK) return { statut: statut };
     return {
       statut: STATUTS.OK,
@@ -91,8 +97,8 @@ function creerNoyau(options) {
     return 0;
   }
 
-  function simuler(jeton, montantsBruts) {
-    var statut = etatJeton(jeton);
+  async function simuler(jeton, montantsBruts) {
+    var statut = await etatJeton(jeton);
     if (statut !== STATUTS.OK) return { statut: statut };
 
     var montants = assainirMontants(montantsBruts);
@@ -106,7 +112,9 @@ function creerNoyau(options) {
     }
 
     // Le jeton meurt ici. Un second appel repartira sur JETON_CONSOMME.
-    if (!depot.consommer(jeton)) {
+    // Le dépôt doit garantir qu'un seul appelant obtient true, même si deux
+    // requêtes arrivent en même temps.
+    if (!(await depot.consommer(jeton))) {
       return { statut: STATUTS.JETON_CONSOMME };
     }
 

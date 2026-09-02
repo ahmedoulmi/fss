@@ -43,7 +43,9 @@ function creerServeur(options) {
  */
 function routeLaboratoires(noyau, adresse, reponse) {
   var jeton = adresse.searchParams.get('s') || '';
-  return envoyerJson(reponse, 200, noyau.laboratoiresPour(jeton));
+  noyau.laboratoiresPour(jeton)
+    .then(function (charge) { envoyerJson(reponse, 200, charge); })
+    .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
 }
 
 function routeSimuler(noyau, requete, reponse) {
@@ -70,8 +72,9 @@ function routeSimuler(noyau, requete, reponse) {
     } catch (e) {
       return envoyerJson(reponse, 400, { statut: STATUTS.REQUETE_INVALIDE });
     }
-    var verdict = noyau.simuler(charge && charge.jeton, charge && charge.montants);
-    envoyerJson(reponse, 200, verdict);
+    noyau.simuler(charge && charge.jeton, charge && charge.montants)
+      .then(function (verdict) { envoyerJson(reponse, 200, verdict); })
+      .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
   });
 }
 

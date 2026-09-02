@@ -291,3 +291,22 @@ Décisions prises faute d'instruction, à confirmer :
   journal ne retient que le jeton, sa création, son échéance et sa
   consommation — ni montants ni remise (§1 : l'outil n'est pas un dispositif
   de collecte).
+
+## 8. Hébergement — arbitrage rendu
+
+**Cloudflare Workers**, base D1 pour les jetons, barème en secret.
+
+L'achat d'un VPS a été écarté après examen du prix réel : la remise affichée
+masquait un renouvellement à plus du double et un engagement de plusieurs
+années. Ce seul simulateur ne le justifiait pas — il tient très largement dans
+les seuils gratuits de Workers.
+
+Le noyau n'a pas bougé d'une ligne. Seule une contrainte est apparue : une base
+distante étant asynchrone, `simuler` et `laboratoiresPour` le sont devenus.
+
+La garantie d'usage unique repose désormais sur une écriture SQL
+conditionnelle, atomique par construction. Vérifiée sous concurrence : huit
+requêtes simultanées sur le même jeton, un seul résultat.
+
+Le déploiement VPS écrit auparavant est conservé dans `deploiement/`, au cas où
+Massar prendrait un serveur pour d'autres besoins.

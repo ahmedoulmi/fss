@@ -24,8 +24,11 @@ seconde simulation ne peut pas avoir lieu.
 | 3 | Écran résultat, document imprimé | fait |
 | 4 | Lien à usage unique, calcul serveur | fait |
 | 5 | Dépôt durable, émission des liens, garde-fou | fait |
-| 6 | Déploiement VPS Ubuntu | fait — voir `deploiement/LISEZMOI.md` |
+| 6 | Déploiement Cloudflare Workers | fait — voir `serveur/adaptateurs/cloudflare/LISEZMOI.md` |
 | 7 | Mise en service | **en attente du barème, de la charte et de l'adresse** |
+
+Un déploiement sur VPS Ubuntu existe aussi (`deploiement/`), écrit avant
+l'arbitrage sur l'hébergement. Il reste valable si vous changez d'avis.
 
 ## Essayer
 
@@ -89,10 +92,13 @@ serveur/
   lancer.js          lancement du serveur
 build/
   verifier.js        garde-fou avant mise en service
-deploiement/
-  installer.sh       installation sur VPS Ubuntu
-  *.service, *.conf  service système et façade nginx
+serveur/adaptateurs/cloudflare/
+  worker.js          point d'entrée Cloudflare
+  depot-d1.js        jetons dans D1, consommation atomique
+  schema.sql         table des jetons
+  creer-lien.js      émission des liens
   LISEZMOI.md        marche à suivre
+deploiement/         variante VPS Ubuntu, conservée
 bareme/
   bareme.exemple.js  valeurs fictives, versionné
   bareme.reel.js     JAMAIS versionné (.gitignore)
@@ -104,11 +110,9 @@ barème et ne tourne que sur le serveur.
 
 ## Ce qui manque pour livrer
 
-- **Rien côté hébergement** : VPS Ubuntu retenu, déploiement écrit
-  (`deploiement/`). Le dépôt de jetons sur fichier convient à **un seul
-  processus**, ce qui est le cas ici — Node traite les requêtes une par une,
-  donc la consommation d'un jeton y est atomique de fait. Ne pas lancer
-  plusieurs instances du service sans changer de dépôt.
+- **Rien côté hébergement** : Cloudflare Workers retenu, déploiement écrit.
+  Le simulateur ne coûte rien à ce volume — 100 000 requêtes par jour
+  gratuites, quand nous en ferons quelques dizaines par mois.
 - **Barème réel** : laboratoires, taux, date de validité (SPEC §9).
   À déposer dans `bareme/bareme.reel.js`, sur le modèle de `bareme.exemple.js`.
   `lancer.js` le prend automatiquement s'il existe. **Ne jamais le commiter.**
@@ -123,8 +127,8 @@ barème et ne tourne que sur le serveur.
 ## Arbitrages rendus
 
 - Protection : **option C**, lien à usage unique et calcul serveur.
-- Hébergement : **VPS Ubuntu chez Hostinger**, nginx en façade, HTTPS par
-  certbot.
+- Hébergement : **Cloudflare Workers**, base D1 pour les jetons, barème en
+  secret. L'achat d'un VPS a été écarté : ce seul outil ne le justifiait pas.
 - Après le calcul, **le lien meurt**. Le récapitulatif n'existe plus que sur
   papier — d'où la mention « pensez à imprimer », affichée à l'écran et absente
   du document imprimé.

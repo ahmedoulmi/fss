@@ -6,3 +6,8 @@ dist/
 
 # Jetons émis : ils portent des noms de prospects
 donnees/
+
+# Secrets de développement wrangler : contiennent le barème
+.dev.vars
+.wrangler/
+node_modules/
