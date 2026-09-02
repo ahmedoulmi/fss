@@ -1,0 +1,34 @@
+/*
+ * MASSAR — Document imprimé (SPEC §5).
+ * Reprend l'écran résultat dans le même ordre. Ni remise ni taux par ligne.
+ */
+
+@page { margin: 18mm; }
+
+body {
+  background: var(--m-couleurs-surface);
+  font-size: 10.5pt;
+}
+
+.page { max-width: none; padding: 0; }
+
+/* Rien de l'outil ne s'imprime : ni bandeau, ni bouton, ni saisie. */
+.banniere-exemple,
+.bouton,
+#ecran-accueil,
+#ecran-saisie {
+  display: none !important;
+}
+
+.entete { padding: 0 0 8mm; }
+
+.remise { padding: 6mm 0; }
+
+.remise-montant { font-size: 28pt; }
+
+.recapitulatif { margin-top: 8mm; }
+
+/* Le tableau ne doit pas se scinder au milieu d'une ligne. */
+.recapitulatif-table tr { break-inside: avoid; }
+
+.mentions { margin-bottom: 0; }

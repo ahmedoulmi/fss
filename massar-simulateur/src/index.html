@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Massar — Simulateur de remise</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="impression.css" media="print">
+</head>
+<body>
+
+<!-- Retiré à la génération du livrable réel (lot 5). -->
+<p class="banniere-exemple" id="banniere-exemple" hidden>
+  Barème d'exemple — valeurs fictives, ne pas diffuser
+</p>
+
+<div class="page">
+
+  <header class="entete">
+    <!-- Identité visuelle Massar : marque typographique provisoire,
+         à remplacer par le logo fourni. -->
+    <p class="marque">MASSAR</p>
+  </header>
+
+  <main>
+
+    <!-- ÉCRAN 1 — ACCUEIL (SPEC §4) -->
+    <section id="ecran-accueil" class="ecran" aria-labelledby="titre-accueil">
+      <h1 id="titre-accueil" class="titre">Simulateur de remise</h1>
+
+      <p class="presentation">
+        Massar est un groupement d'achat et de services pour pharmacies d'officine.
+      </p>
+      <p class="presentation">
+        Estimez le montant de remise que vous pourriez percevoir sur vos achats annuels.
+      </p>
+
+      <div class="champ-officine">
+        <label for="officine">Nom de l'officine <span class="facultatif">(facultatif)</span></label>
+        <input type="text" id="officine" name="officine" autocomplete="organization" maxlength="80">
+      </div>
+
+      <p class="consigne">
+        Indiquez vos achats annuels par laboratoire, en dinars, hors taxes.
+      </p>
+
+      <button type="button" class="bouton bouton-principal" id="btn-commencer">
+        Commencer la simulation
+      </button>
+    </section>
+
+    <!-- ÉCRAN 2 — SAISIE (SPEC §4) -->
+    <section id="ecran-saisie" class="ecran" aria-labelledby="titre-saisie" hidden>
+      <h1 id="titre-saisie" class="titre">Vos achats annuels</h1>
+      <p class="consigne">
+        Indiquez vos achats annuels par laboratoire, en dinars, hors taxes.
+        Laissez vide les laboratoires qui ne vous concernent pas.
+      </p>
+
+      <!-- Une ligne par laboratoire du barème. Aucun taux, aucune remise ici. -->
+      <div class="liste-laboratoires" id="liste-laboratoires"></div>
+
+      <div class="total-saisie">
+        <span class="total-saisie-libelle">Total des commandes saisies</span>
+        <output class="total-saisie-valeur" id="total-saisie" for="liste-laboratoires"
+                aria-live="polite">0 DA</output>
+      </div>
+
+      <p class="message-blocage" id="message-blocage" role="status" aria-live="polite" hidden></p>
+
+      <button type="button" class="bouton bouton-principal" id="btn-resultat" disabled>
+        Voir ma remise estimée
+      </button>
+    </section>
+
+    <!-- ÉCRAN 3 — RÉSULTAT (SPEC §4, ordre strict) -->
+    <section id="ecran-resultat" class="ecran" aria-labelledby="titre-resultat" hidden>
+
+      <p class="identification" id="identification"></p>
+
+      <!-- 1. Remise estimée : en tête, dominante, seule -->
+      <div class="remise">
+        <h1 id="titre-resultat" class="remise-libelle">Remise annuelle estimée</h1>
+        <p class="remise-montant" id="remise-montant">0 DA</p>
+      </div>
+
+      <!-- 2. Total des commandes -->
+      <div class="total-resultat">
+        <span class="total-resultat-libelle">Total des commandes</span>
+        <span class="total-resultat-valeur" id="total-resultat">0 DA</span>
+      </div>
+
+      <!-- 3. Récapitulatif : nom et montant saisi uniquement -->
+      <div class="recapitulatif">
+        <h2 class="recapitulatif-titre">Détail par laboratoire</h2>
+        <table class="recapitulatif-table">
+          <thead>
+            <tr><th scope="col">Laboratoire</th><th scope="col">Montant saisi</th></tr>
+          </thead>
+          <tbody id="recapitulatif-corps"></tbody>
+        </table>
+      </div>
+
+      <!-- 4. Taux moyen : discret, en bas -->
+      <p class="taux-moyen">
+        Taux moyen de remise <span id="taux-moyen">0,0 %</span>
+      </p>
+
+      <!-- 5. Mentions (SPEC §6) -->
+      <div class="mentions">
+        <p>Simulation fondée sur les montants que vous saisissez.</p>
+        <p>Conditions au <span id="date-validite"></span>.</p>
+      </div>
+
+      <!-- 6. Action unique : impression -->
+      <button type="button" class="bouton bouton-principal" id="btn-imprimer">
+        Imprimer le récapitulatif
+      </button>
+    </section>
+
+  </main>
+</div>
+
+<script src="massar_charte.js"></script>
+<script src="../bareme/bareme.exemple.js"></script>
+<script src="calcul.js"></script>
+<script src="ecrans.js"></script>
+</body>
+</html>

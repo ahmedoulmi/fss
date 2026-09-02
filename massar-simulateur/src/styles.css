@@ -1,0 +1,313 @@
+/*
+ * MASSAR — Feuille de style.
+ * Aucune couleur, police ou taille en dur (SPEC §7) : toutes les valeurs
+ * proviennent de massar_charte.js, injectées en variables CSS sur :root.
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--m-couleurs-fond);
+  color: var(--m-couleurs-encre);
+  font-family: var(--m-typographie-famille-texte);
+  font-size: var(--m-echelle-base);
+  line-height: var(--m-typographie-interligne);
+}
+
+.page {
+  max-width: var(--m-formes-largeur-page);
+  margin: 0 auto;
+  padding: var(--m-espacement-lg) var(--m-espacement-md) var(--m-espacement-xxl);
+}
+
+/* Bandeau de développement, absent du livrable réel. */
+.banniere-exemple {
+  margin: 0;
+  padding: var(--m-espacement-sm) var(--m-espacement-md);
+  background: var(--m-couleurs-signal-fond);
+  color: var(--m-couleurs-signal);
+  font-size: var(--m-echelle-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ---------- Entête ---------- */
+
+.entete {
+  padding: var(--m-espacement-md) 0 var(--m-espacement-xl);
+}
+
+.marque {
+  margin: 0;
+  font-family: var(--m-typographie-famille-titres);
+  font-size: var(--m-echelle-lg);
+  font-weight: var(--m-typographie-graisse-appuyee);
+  letter-spacing: 0.22em;
+  color: var(--m-couleurs-accent);
+}
+
+/* ---------- Commun ---------- */
+
+.titre {
+  margin: 0 0 var(--m-espacement-lg);
+  font-family: var(--m-typographie-famille-titres);
+  font-size: var(--m-echelle-xxl);
+  font-weight: var(--m-typographie-graisse-normale);
+  line-height: var(--m-typographie-interligne-titre);
+}
+
+.titre:focus { outline: none; }
+
+.presentation {
+  margin: 0 0 var(--m-espacement-md);
+  font-size: var(--m-echelle-md);
+  max-width: 42ch;
+}
+
+.consigne {
+  margin: var(--m-espacement-lg) 0;
+  color: var(--m-couleurs-encre-adoucie);
+  max-width: 48ch;
+}
+
+.bouton {
+  font: inherit;
+  cursor: pointer;
+  border: var(--m-formes-epaisseur-trait) solid transparent;
+  border-radius: var(--m-formes-rayon);
+  padding: var(--m-espacement-sm) var(--m-espacement-lg);
+  min-height: 3rem;
+}
+
+.bouton-principal {
+  background: var(--m-couleurs-accent);
+  color: var(--m-couleurs-accent-contraste);
+  font-weight: var(--m-typographie-graisse-appuyee);
+}
+
+.bouton-principal:disabled {
+  background: var(--m-couleurs-bordure);
+  color: var(--m-couleurs-encre-discrete);
+  cursor: not-allowed;
+}
+
+/* ---------- Écran 1 ---------- */
+
+.champ-officine {
+  margin: var(--m-espacement-xl) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-espacement-xs);
+  max-width: 26rem;
+}
+
+.champ-officine label { font-size: var(--m-echelle-sm); }
+
+.facultatif { color: var(--m-couleurs-encre-discrete); }
+
+.champ-officine input {
+  font: inherit;
+  padding: var(--m-espacement-sm);
+  min-height: 3rem;
+  background: var(--m-couleurs-surface);
+  color: var(--m-couleurs-encre);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  border-radius: var(--m-formes-rayon);
+}
+
+/* ---------- Écran 2 ---------- */
+
+.liste-laboratoires {
+  border-top: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.ligne-laboratoire {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-espacement-md);
+  padding: var(--m-espacement-sm) 0;
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.ligne-nom { flex: 1 1 auto; }
+
+.ligne-champ {
+  display: flex;
+  align-items: center;
+  gap: var(--m-espacement-xs);
+  flex: 0 0 auto;
+}
+
+.montant {
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--m-echelle-base);
+  text-align: right;
+  width: 9rem;
+  min-height: 2.75rem;
+  padding: var(--m-espacement-xs) var(--m-espacement-sm);
+  background: var(--m-couleurs-surface);
+  color: var(--m-couleurs-encre);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  border-radius: var(--m-formes-rayon);
+}
+
+.ligne-unite {
+  font-size: var(--m-echelle-sm);
+  color: var(--m-couleurs-encre-discrete);
+  width: 2rem;
+}
+
+.total-saisie {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--m-espacement-md);
+  margin-top: var(--m-espacement-lg);
+  padding-top: var(--m-espacement-md);
+  border-top: 2px solid var(--m-couleurs-bordure-appuyee);
+}
+
+.total-saisie-libelle { font-size: var(--m-echelle-sm); }
+
+.total-saisie-valeur {
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--m-echelle-lg);
+  font-weight: var(--m-typographie-graisse-appuyee);
+}
+
+.message-blocage {
+  margin: var(--m-espacement-lg) 0;
+  padding: var(--m-espacement-md);
+  background: var(--m-couleurs-signal-fond);
+  color: var(--m-couleurs-signal);
+  border-radius: var(--m-formes-rayon);
+  font-size: var(--m-echelle-sm);
+  max-width: 52ch;
+}
+
+#btn-resultat { margin-top: var(--m-espacement-md); }
+
+/* ---------- Écran 3 ---------- */
+
+.identification {
+  margin: 0 0 var(--m-espacement-xl);
+  font-size: var(--m-echelle-sm);
+  color: var(--m-couleurs-encre-adoucie);
+}
+
+.remise {
+  padding: var(--m-espacement-xl) 0;
+  border-top: 2px solid var(--m-couleurs-bordure-appuyee);
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.remise-libelle {
+  margin: 0 0 var(--m-espacement-sm);
+  font-family: var(--m-typographie-famille-texte);
+  font-size: var(--m-echelle-sm);
+  font-weight: var(--m-typographie-graisse-normale);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-couleurs-encre-adoucie);
+}
+
+.remise-montant {
+  margin: 0;
+  font-family: var(--m-typographie-famille-titres);
+  font-size: var(--m-echelle-resultat);
+  line-height: var(--m-typographie-interligne-titre);
+  color: var(--m-couleurs-accent);
+}
+
+.total-resultat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--m-espacement-md);
+  padding: var(--m-espacement-md) 0;
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.total-resultat-libelle { font-size: var(--m-echelle-sm); }
+
+.total-resultat-valeur {
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--m-echelle-md);
+}
+
+.recapitulatif { margin-top: var(--m-espacement-xl); }
+
+.recapitulatif-titre {
+  margin: 0 0 var(--m-espacement-sm);
+  font-family: var(--m-typographie-famille-texte);
+  font-size: var(--m-echelle-sm);
+  font-weight: var(--m-typographie-graisse-normale);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-couleurs-encre-adoucie);
+}
+
+.recapitulatif-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--m-echelle-sm);
+}
+
+.recapitulatif-table th {
+  text-align: left;
+  font-weight: var(--m-typographie-graisse-normale);
+  color: var(--m-couleurs-encre-discrete);
+  padding-bottom: var(--m-espacement-xs);
+}
+
+.recapitulatif-table th:last-child { text-align: right; }
+
+.recapitulatif-table td {
+  padding: var(--m-espacement-xs) 0;
+  border-top: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.montant-cellule {
+  text-align: right;
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.taux-moyen {
+  margin: var(--m-espacement-lg) 0 0;
+  font-size: var(--m-echelle-xs);
+  color: var(--m-couleurs-encre-discrete);
+}
+
+.mentions {
+  margin: var(--m-espacement-xl) 0 var(--m-espacement-lg);
+  padding-top: var(--m-espacement-md);
+  border-top: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  font-size: var(--m-echelle-xs);
+  color: var(--m-couleurs-encre-adoucie);
+}
+
+.mentions p { margin: 0 0 var(--m-espacement-xs); }
+
+/* ---------- Téléphone (SPEC §7) ---------- */
+
+@media (max-width: 34rem) {
+  .ligne-laboratoire {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--m-espacement-xs);
+    padding: var(--m-espacement-md) 0;
+  }
+  .montant { width: 100%; }
+  .ligne-champ { justify-content: space-between; }
+  .bouton { width: 100%; }
+}
