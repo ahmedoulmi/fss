@@ -117,10 +117,11 @@ barème et ne tourne que sur le serveur.
   dans `bareme/bareme.reel.js`, **jamais versionné**, et en secret Cloudflare
   pour la production.
 
-- **Charte Massar** : les valeurs de `src/massar_charte.js` sont provisoires
-  (`provisoire: true`). Les remplacer suffit — aucune valeur n'est en dur
-  ailleurs.
-- **Identité visuelle** : le logo remplace la marque typographique de l'entête.
+- **Les polices de la charte.** Les couleurs de `src/massar_charte.js` sont
+  désormais relevées sur le logo — vert profond et or. Les polices restent les
+  miennes, et `provisoire: true` avec elles.
+- **Le fichier du logo.** Déposer `src/logo-massar.png` suffit : il remplace
+  automatiquement la marque typographique, sans toucher au code.
 
 ## Arbitrages rendus
 
@@ -150,6 +151,8 @@ barème et ne tourne que sur le serveur.
   document imprimé. Conséquence du choix « le lien meurt après usage ».
 - **Deux colonnes à l'écran de saisie** au-delà de 15 laboratoires, comme le §4
   le prévoyait.
+- **Le taux moyen précède le montant** au lieu d'occuper une ligne discrète en
+  bas. Demandé. Il n'est pas dupliqué.
 - **Une adresse e-mail sur le message de blocage** et sur les écrans de fin,
   jamais sur le résultat ni à l'impression. Exception au §8, décidée.
 

@@ -13,9 +13,11 @@
 <div class="page">
 
   <header class="entete">
-    <!-- Identité visuelle Massar : marque typographique provisoire,
-         à remplacer par le logo fourni. -->
-    <p class="marque">MASSAR</p>
+    <!-- Le logo s'affiche dès que src/logo-massar.png existe ; à défaut,
+         la marque typographique tient sa place. Rien à modifier dans le
+         code : déposer le fichier suffit. -->
+    <img class="logo" id="logo" src="logo-massar.png" alt="Massar Development" hidden>
+    <p class="marque" id="marque">MASSAR</p>
     <p class="signature" id="signature"></p>
   </header>
 
@@ -66,10 +68,14 @@
 
       <p class="identification" id="identification"></p>
 
-      <!-- 1. Remise estimée : en tête, dominante, seule -->
+      <!-- 1. Remise estimée : en tête, dominante. Le taux moyen la précède,
+           à la demande — il occupait auparavant une ligne discrète en bas. -->
       <div class="remise">
         <h1 id="titre-resultat" class="remise-libelle"></h1>
-        <p class="remise-montant" id="remise-montant"></p>
+        <p class="remise-ligne">
+          <span class="remise-taux" id="remise-taux"></span>
+          <span class="remise-montant" id="remise-montant"></span>
+        </p>
       </div>
 
       <!-- 2. Total des commandes -->
@@ -91,11 +97,6 @@
           <tbody id="recapitulatif-corps"></tbody>
         </table>
       </div>
-
-      <!-- 4. Taux moyen : discret, en bas -->
-      <p class="taux-moyen">
-        <span id="taux-moyen-libelle"></span> <span id="taux-moyen"></span>
-      </p>
 
       <!-- 5. Mentions (SPEC §6) -->
       <div class="mentions" id="mentions"></div>

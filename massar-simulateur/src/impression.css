@@ -26,6 +26,8 @@ body {
 .remise { padding: 6mm 0; }
 
 .remise-montant { font-size: 28pt; }
+.remise-taux { font-size: 12pt; }
+.logo { height: 22mm; }
 
 .recapitulatif { margin-top: 8mm; }
 

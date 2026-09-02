@@ -4,9 +4,12 @@
  * Aucune de ces valeurs ne doit être écrite en dur ailleurs : la feuille de
  * style ne consomme que les variables CSS produites par ce fichier.
  *
- * ATTENTION — VALEURS PROVISOIRES.
- * La charte Massar réelle n'a pas été fournie. Les valeurs ci-dessous sont
- * neutres et destinées à être remplacées ; `provisoire` passera à false.
+ * Les COULEURS sont relevées sur le logo Massar Development : le vert profond
+ * de la calligraphie et l'or du lettrage latin. Elles restent une lecture à
+ * l'œil, à confirmer sur les valeurs officielles.
+ *
+ * Les POLICES, elles, ne sont pas connues. Tant qu'elles ne le sont pas,
+ * `provisoire` reste à true et la mise en service est refusée.
  */
 /*
  * Signature arrêtée le 31 août 2026. Ne jamais la réécrire en dur ailleurs :
@@ -18,16 +21,24 @@ var MASSAR_CHARTE = {
   provisoire: true,
 
   couleurs: {
-    encre: '#16211c',
-    encreAdoucie: '#5c6b64',
-    encreDiscrete: '#8b978f',
-    fond: '#f6f5f1',
+    encre: '#12281e',
+    encreAdoucie: '#4f6459',
+    encreDiscrete: '#8a9a91',
+    fond: '#f7f6f2',
     surface: '#ffffff',
-    bordure: '#dcdcd4',
-    bordureAppuyee: '#16211c',
-    accent: '#1f5c46',
-    accentAdouci: '#eef3f0',
+    bordure: '#e0ddd2',
+    bordureAppuyee: '#14543a',
+
+    /* Le vert de la calligraphie. Couleur principale. */
+    accent: '#14543a',
+    accentAdouci: '#eaf1ec',
     accentContraste: '#ffffff',
+
+    /* L'or du lettrage. Second registre, employé avec parcimonie : filets,
+       signature, taux. Trop peu contrasté sur fond clair pour du texte courant. */
+    or: '#a8823c',
+    orAdouci: '#f5efe1',
+
     signal: '#8a5a20',
     signalFond: '#fbf3e7'
   },

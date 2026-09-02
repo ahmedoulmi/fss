@@ -29,6 +29,16 @@ body {
   padding: var(--m-espacement-md) 0 var(--m-espacement-xl);
 }
 
+.logo {
+  display: block;
+  height: 4.5rem;
+  width: auto;
+}
+
+/* Sans cette règle, `display: block` l'emporte sur l'attribut hidden et
+   l'image absente s'affiche cassée. */
+.logo[hidden] { display: none; }
+
 .marque {
   margin: 0;
   font-family: var(--m-typographie-famille-titres);
@@ -43,7 +53,7 @@ body {
 .signature {
   margin: var(--m-espacement-xs) 0 0;
   font-size: var(--m-echelle-xs);
-  color: var(--m-couleurs-encre-discrete);
+  color: var(--m-couleurs-or);
   letter-spacing: 0.04em;
 }
 
@@ -226,7 +236,7 @@ body {
 
 .remise {
   padding: var(--m-espacement-xl) 0;
-  border-top: 2px solid var(--m-couleurs-bordure-appuyee);
+  border-top: 2px solid var(--m-couleurs-or);
   border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
 }
 
@@ -240,8 +250,29 @@ body {
   color: var(--m-couleurs-encre-adoucie);
 }
 
-.remise-montant {
+.remise-ligne {
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--m-espacement-md);
+}
+
+/* Le taux précède le montant sans lui disputer la vedette : plus petit,
+   dans l'or de la charte, sur son propre fond. */
+.remise-taux {
+  flex: 0 0 auto;
+  font-size: var(--m-echelle-lg);
+  font-weight: var(--m-typographie-graisse-appuyee);
+  color: var(--m-couleurs-or);
+  background: var(--m-couleurs-or-adouci);
+  border-radius: var(--m-formes-rayon);
+  padding: var(--m-espacement-xs) var(--m-espacement-sm);
+  white-space: nowrap;
+}
+
+.remise-montant {
+  flex: 0 1 auto;
   font-family: var(--m-typographie-famille-titres);
   font-size: var(--m-echelle-resultat);
   line-height: var(--m-typographie-interligne-titre);
@@ -302,12 +333,6 @@ body {
   font-family: var(--m-typographie-famille-chiffres);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-.taux-moyen {
-  margin: var(--m-espacement-lg) 0 0;
-  font-size: var(--m-echelle-xs);
-  color: var(--m-couleurs-encre-discrete);
 }
 
 .mentions {

@@ -138,14 +138,17 @@ C'est l'exception au § 8, décidée.*
 
 ### Écran 3 — Résultat
 
-Ordre d'affichage strict :
+Ordre d'affichage :
 
-1. **Montant total de la remise estimée** — en tête, dominant, seul
+1. **Taux moyen puis montant total de la remise estimée**, sur la même ligne —
+   en tête, le montant dominant
 2. **Total des commandes**
 3. **Récapitulatif par laboratoire** — nom et montant saisi uniquement, **sans remise ni taux par ligne**
-4. **Taux moyen** — discret, en bas
-5. **Mentions** (§ 6)
-6. **Action unique : impression du récapitulatif**
+4. **Mentions** (§ 6)
+5. **Action unique : impression du récapitulatif**
+
+*Écart assumé avec la version 1, demandé : le taux moyen y occupait une ligne
+discrète en bas. Il précède désormais le montant. Il n'est pas dupliqué.*
 
 Une ligne **« officine — date de simulation »** précède l'ensemble : elle est
 requise par le document imprimé (§ 5) et assure que l'écran et le papier ont la
@@ -170,10 +173,10 @@ Reprend l'écran résultat, dans le même ordre :
 - Montant total de la remise estimée
 - Total des commandes
 - Détail par laboratoire — **montants saisis seuls, sans remise ni taux par ligne**
-- Taux moyen
 - Mentions
 
-Tient sur une page A4, barème complet renseigné.
+Le taux moyen figure en tête, avec le montant. Tient sur une page A4, barème
+complet renseigné.
 
 ---
 
@@ -193,6 +196,10 @@ Présentes à l'écran résultat et sur le document imprimé :
 - **Support** : conçu pour ordinateur, lisible et utilisable sur téléphone
 - **Charte** : couleurs, polices, échelle typographique et signature lues dans
   `massar_charte.js`, source unique. Aucune valeur en dur.
+  Les couleurs sont relevées sur le logo — vert profond de la calligraphie, or
+  du lettrage latin. Les polices ne sont pas connues.
+- **Logo** : déposer le fichier en `src/logo-massar.png` suffit ; il remplace
+  alors la marque typographique, sans modification du code.
 - **Vocabulaire** : les règles permanentes de Massar Development s'appliquent à
   tout libellé. Le contrôle est automatisé (§ 9).
 
@@ -223,8 +230,9 @@ l'impression.
 | Taux par laboratoire | fourni |
 | Date de validité du barème | fourni — 31/12/2026 |
 | Adresse de contact | fourni |
-| Charte Massar | **manquant** — valeurs provisoires et neutres |
-| Identité visuelle | **manquant** — marque typographique provisoire |
+| Couleurs de la charte | relevées sur le logo, à confirmer |
+| Polices de la charte | **manquant** |
+| Fichier du logo | **manquant** — marque typographique en attendant |
 
 Le contrôle `npm run verifier` refuse la mise en ligne tant qu'un élément
 provisoire subsiste. Il vérifie aussi, et c'est l'essentiel, qu'aucun nom de

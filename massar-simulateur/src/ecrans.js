@@ -51,11 +51,12 @@
   function recenserElements() {
     ['officine', 'btn-commencer', 'liste-laboratoires', 'total-saisie',
      'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
-     'total-resultat', 'recapitulatif-corps', 'taux-moyen', 'btn-imprimer',
+     'total-resultat', 'recapitulatif-corps', 'remise-taux', 'btn-imprimer',
+     'logo', 'marque',
      'titre-accueil', 'accueil-presentation', 'accueil-consigne', 'titre-saisie',
      'saisie-consigne', 'total-saisie-libelle', 'titre-resultat',
      'total-resultat-libelle', 'recapitulatif-titre', 'colonne-laboratoire',
-     'colonne-montant', 'taux-moyen-libelle', 'mentions', 'avant-fermeture',
+     'colonne-montant', 'mentions', 'avant-fermeture',
      'titre-message', 'message-corps', 'signature'].forEach(function (id) {
       el[id] = document.getElementById(id);
     });
@@ -71,6 +72,7 @@
   /* Tous les libellés viennent de textes.js, aucun n'est écrit dans le HTML. */
   function poserTextes() {
     el.signature.textContent = SIGNATURE;
+    poserLogo();
     el['titre-accueil'].textContent = textes.accueil.titre;
     textes.accueil.presentation.forEach(function (phrase) {
       el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));
@@ -97,9 +99,29 @@
     el['recapitulatif-titre'].textContent = textes.resultat.recapitulatif;
     el['colonne-laboratoire'].textContent = textes.resultat.colonneLaboratoire;
     el['colonne-montant'].textContent = textes.resultat.colonneMontant;
-    el['taux-moyen-libelle'].textContent = textes.resultat.tauxMoyen;
     el['avant-fermeture'].textContent = textes.resultat.avantFermeture;
     el['btn-imprimer'].textContent = textes.resultat.bouton;
+  }
+
+  /*
+   * Le logo prend la place de la marque typographique s'il est présent.
+   * Le chargement de l'image commence dès l'analyse du HTML, donc bien avant
+   * ce code : on regarde d'abord si l'affaire est déjà jouée, sinon on écoute.
+   */
+  function poserLogo() {
+    function present() {
+      el.logo.hidden = false;
+      el.marque.hidden = true;
+    }
+    function absent() {
+      if (el.logo.parentNode) el.logo.remove();
+    }
+
+    if (el.logo.complete) {
+      return el.logo.naturalWidth > 0 ? present() : absent();
+    }
+    el.logo.addEventListener('load', present);
+    el.logo.addEventListener('error', absent);
   }
 
   function paragraphe(contenu, classe) {
@@ -248,7 +270,8 @@
     el.identification.textContent = ligneIdentification();
     el['remise-montant'].textContent = calcul.formaterMontant(resultat.remise);
     el['total-resultat'].textContent = calcul.formaterMontant(resultat.totalCommandes);
-    el['taux-moyen'].textContent = calcul.formaterTaux(resultat.tauxMoyen);
+    el['remise-taux'].textContent = calcul.formaterTaux(resultat.tauxMoyen);
+    el['remise-taux'].setAttribute('title', textes.resultat.tauxMoyen);
 
     var corps = el['recapitulatif-corps'];
     corps.textContent = '';
