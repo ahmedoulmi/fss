@@ -120,6 +120,25 @@ body {
   border-top: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
 }
 
+/*
+ * Au-delà d'une quinzaine de laboratoires, une colonne unique impose un
+ * défilement de plusieurs écrans (SPEC §4). Deux colonnes divisent la hauteur
+ * par deux sans rien cacher : les laboratoires restent tous affichés d'emblée.
+ */
+@media (min-width: 56rem) {
+  .liste-laboratoires {
+    /* Colonnes typographiques et non grille : la liste se lit de haut en bas
+       dans la colonne de gauche, puis de haut en bas dans celle de droite.
+       Une grille remplirait ligne par ligne et briserait l'ordre du barème. */
+    columns: 2;
+    column-gap: var(--m-espacement-xl);
+  }
+
+  .ligne-laboratoire {
+    break-inside: avoid;
+  }
+}
+
 .ligne-laboratoire {
   display: flex;
   align-items: center;
@@ -158,14 +177,22 @@ body {
   width: 2rem;
 }
 
+/*
+ * Le total reste visible pendant toute la saisie : c'est lui qui dit au
+ * pharmacien s'il approche du seuil. Collé au bas de la fenêtre plutôt que
+ * perdu sous la liste.
+ */
 .total-saisie {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--m-espacement-md);
   margin-top: var(--m-espacement-lg);
-  padding-top: var(--m-espacement-md);
+  padding: var(--m-espacement-md) 0;
   border-top: 2px solid var(--m-couleurs-bordure-appuyee);
+  position: sticky;
+  bottom: 0;
+  background: var(--m-couleurs-fond);
 }
 
 .total-saisie-libelle { font-size: var(--m-echelle-sm); }
