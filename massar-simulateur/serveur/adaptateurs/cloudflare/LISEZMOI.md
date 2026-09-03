@@ -9,63 +9,50 @@ par mois.
 **Le barème ne va ni dans le dépôt, ni dans la page : il est déposé comme
 secret Cloudflare.**
 
-## 1. Compte et outillage
+## En une commande
 
 ```
-npm install --save-dev wrangler
+bash deployer.sh /chemin/vers/bareme-secret.json
+```
+
+Le script enchaîne les six étapes et s'arrête à la première qui échoue :
+
+1. **Contrôle avant mise en service** — refuse de continuer si un taux, un nom
+   de laboratoire ou un terme proscrit s'est glissé dans une page servie.
+2. **Outillage** — vérifie wrangler.
+3. **Compte Cloudflare** — ouvre la connexion dans le navigateur si besoin.
+4. **Base des jetons** — la crée et reporte son identifiant dans
+   `wrangler.toml`. C'est l'étape la plus facile à rater à la main.
+5. **Table et barème** — applique le schéma, dépose le barème en secret.
+6. **Publication.**
+
+Il est rejouable : relancé, il ne recrée pas ce qui existe déjà. Le barème
+n'est jamais écrit dans le dépôt — son chemin est passé en argument, et il
+n'atterrit que dans le secret Cloudflare.
+
+Cloudflare rend une adresse en `.workers.dev`, immédiatement utilisable.
+
+## Plus tard, un domaine Massar
+
+Un domaine personnalisé exige que la zone DNS soit **chez Cloudflare**. Celle
+de `massardevelopment.com` est aujourd'hui chez Hostinger, avec le site et la
+messagerie : la bascule fera passer le courrier avec elle. À faire une fois
+l'outil éprouvé, en relevant la zone au préalable.
+
+Le jour venu : passer `workers_dev` à false dans `wrangler.toml`, ajouter le
+domaine dans Cloudflare (Workers → Custom Domains), redéployer. Rien d'autre
+ne change dans le code.
+
+## À la main, si le script échoue
+
+```
 npx wrangler login
-```
-
-## 2. Base des jetons
-
-```
-npx wrangler d1 create massar-jetons
-```
-
-Reportez l'identifiant rendu dans `wrangler.toml`, à la place du
-`database_id` provisoire. Puis créez la table :
-
-```
+npx wrangler d1 create massar-jetons          # reporter l'id dans wrangler.toml
 npx wrangler d1 execute massar-jetons --remote \
   --file serveur/adaptateurs/cloudflare/schema.sql
-```
-
-## 3. Barème
-
-En JSON, sur le modèle de `bareme/bareme.exemple.js` :
-
-```json
-{"dateValidite":"01/03/2026","laboratoires":[{"id":"lab-01","nom":"…","taux":0.025}]}
-```
-
-Taux en fraction — `0.025` vaut 2,5 %, jamais `2.5`.
-
-```
-npx wrangler secret put BAREME
-```
-
-Collez le JSON à l'invite. Il reste chez Cloudflare, chiffré, et ne
-redescend jamais dans le navigateur.
-
-## 4. Vérifier avant de publier
-
-```
-MASSAR_BAREME=/chemin/vers/votre/bareme.reel.js npm run verifier
-```
-
-Le contrôle refuse tant qu'un élément provisoire subsiste — adresse de
-contact, charte — et surtout il vérifie qu'aucun taux n'apparaît dans un
-fichier servi au navigateur.
-
-## 5. Publier
-
-```
+npx wrangler secret put BAREME < bareme-secret.json
 npx wrangler deploy
 ```
-
-Cloudflare rend une adresse en `.workers.dev`. Pour un domaine à vous,
-ajoutez-le dans le tableau de bord Cloudflare (Workers → Custom Domains) ;
-le certificat HTTPS est délivré automatiquement.
 
 ## Émettre des liens
 

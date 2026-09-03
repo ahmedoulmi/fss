@@ -48,6 +48,15 @@ npm run liens -- 1 --officine "Pharmacie du Centre"
 Les jetons sont écrits dans `donnees/jetons.json` et survivent au redémarrage.
 Sans `--jours`, un lien vaut **3 jours**.
 
+## Mettre en ligne
+
+```
+bash deployer.sh /chemin/vers/bareme-secret.json
+```
+
+Six étapes enchaînées, rejouables. Détail dans
+`serveur/adaptateurs/cloudflare/LISEZMOI.md`.
+
 ## Avant toute mise en service
 
 ```

@@ -1,14 +1,17 @@
 # Déploiement du simulateur sur Cloudflare Workers.
 #
-#   npx wrangler d1 create massar-jetons     -> reporter database_id ci-dessous
-#   npx wrangler d1 execute massar-jetons --remote \
-#       --file serveur/adaptateurs/cloudflare/schema.sql
-#   npx wrangler secret put BAREME           -> coller le barème en JSON
-#   npx wrangler deploy
+#   bash deployer.sh /chemin/vers/bareme-secret.json
+#
+# Le script enchaîne tout : contrôle avant mise en service, création de la
+# base, report de son identifiant ici, dépôt du barème en secret, publication.
 
 name = "massar-simulateur"
 main = "serveur/adaptateurs/cloudflare/worker.js"
 compatibility_date = "2026-09-01"
+
+# Publie sur <nom>.<compte>.workers.dev. À passer à false le jour où un
+# domaine Massar prendra le relais.
+workers_dev = true
 
 # La page et ses fichiers. Aucun taux ne s'y trouve : le contrôle
 # `npm run verifier` s'en assure avant chaque mise en ligne.
