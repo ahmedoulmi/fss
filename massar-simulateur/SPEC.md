@@ -72,10 +72,8 @@ Le barème constitue la liste fermée des laboratoires proposés à la saisie. L
 pharmacien ne peut pas ajouter de laboratoire hors liste. Il n'existe pas de
 ligne « Autres laboratoires ».
 
-*Point ouvert : cinq entrées du barème sont des gammes de bandelettes et non
-des laboratoires, alors que la colonne s'intitule « Laboratoire ». Les entrées
-concernées sont identifiables dans le barème lui-même ; elles ne sont pas
-nommées ici, ce document étant versionné.*
+*Arbitré : cinq entrées du barème sont des gammes de bandelettes et non des
+laboratoires. Elles restent telles quelles, sous la colonne « Laboratoire ».*
 
 ---
 
@@ -206,8 +204,8 @@ Présentes à l'écran résultat et sur le document imprimé :
   l'or au même rang que le vert. Le **rouge est d'usage fonctionnel
   uniquement** — alerte, point d'attention : jamais décoratif, jamais un fond.
   D'où le filet rouge, et non l'aplat, sur les messages d'attention.
-- **Logo** : déposer le fichier en `src/logo-massar.png` suffit ; il remplace
-  alors la marque typographique, sans modification du code.
+- **Logo** : `src/logo-massar.png`, détouré du fond blanc et réduit à 32 Ko.
+  Il remplace la marque typographique dès qu'il est présent.
 - **Vocabulaire** : les règles permanentes de Massar Development s'appliquent à
   tout libellé. Le contrôle est automatisé (§ 9).
 
@@ -239,7 +237,7 @@ l'impression.
 | Date de validité du barème | fourni — 31/12/2026 |
 | Adresse de contact | fourni |
 | Charte — couleurs et polices | fourni |
-| Fichier du logo | **manquant** — marque typographique en attendant |
+| Fichier du logo | fourni |
 
 Le contrôle `npm run verifier` refuse la mise en ligne tant qu'un élément
 provisoire subsiste. Il vérifie aussi, et c'est l'essentiel, qu'aucun nom de

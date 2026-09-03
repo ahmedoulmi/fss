@@ -117,9 +117,7 @@ barème et ne tourne que sur le serveur.
   dans `bareme/bareme.reel.js`, **jamais versionné**, et en secret Cloudflare
   pour la production.
 
-- **Le fichier du logo.** Déposer `src/logo-massar.png` suffit : il remplace
-  automatiquement la marque typographique, sans toucher au code. C'est le seul
-  élément encore absent, et il ne bloque pas la mise en service.
+Rien. `npm run verifier` passe.
 
 ## Arbitrages rendus
 
@@ -136,6 +134,8 @@ barème et ne tourne que sur le serveur.
   adresse e-mail**, là et sur les écrans de fin uniquement. Jamais sur l'écran
   résultat ni sur le document imprimé.
 - Registre des textes : **accueillant**.
+- Les cinq gammes de bandelettes restent dans le barème, sous la colonne
+  « Laboratoire ».
 
 ## Écarts assumés par rapport à la spécification
 
@@ -166,8 +166,7 @@ barème et ne tourne que sur le serveur.
   d'affichage du §4 : à confirmer.
 - Durée de vie d'un lien jamais utilisé : **60 jours par défaut**, choisi faute
   d'instruction. Modifiable par lien avec `--jours`. À confirmer.
-- **Cinq lignes du barème ne sont pas des laboratoires** — BANDELETTE VITAL,
-  DIAGNO, BIONIME, CHECK3, ON CALL sont des gammes de bandelettes, sous une
-  colonne intitulée « Laboratoire ».
 - **Ordre de grandeur à confirmer** : 12 000 000 DA d'achats affichent
-  3 123 000 DA de remise, taux moyen 26 %.
+  3 123 000 DA de remise, taux moyen 26 %. La question porte sur ce que le
+  barème représente — un gain net par rapport aux conditions actuelles du
+  pharmacien, ou le taux total dont une partie lui est déjà acquise.

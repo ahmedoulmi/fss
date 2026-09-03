@@ -29,9 +29,11 @@ body {
   padding: var(--m-espacement-md) 0 var(--m-espacement-xl);
 }
 
+/* Bloc vertical : la calligraphie surmonte le lettrage. Il lui faut de la
+   hauteur pour que « MassarDevelopment » reste lisible. */
 .logo {
   display: block;
-  height: 4.5rem;
+  height: 7rem;
   width: auto;
 }
 
@@ -360,6 +362,8 @@ body {
 /* ---------- Téléphone (SPEC §7) ---------- */
 
 @media (max-width: 34rem) {
+  .logo { height: 5.5rem; }
+
   .ligne-laboratoire {
     flex-direction: column;
     align-items: stretch;
