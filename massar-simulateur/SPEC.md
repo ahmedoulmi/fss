@@ -266,9 +266,13 @@ pharmacien qui ferme sans imprimer doit demander un nouveau lien.
 rendez-vous : « j'ai déjà des remises sur ces produits », et l'absence de
 relance après simulation.
 
-**Ordre de grandeur à confirmer.** Un profil d'officine à 12 000 000 DA
-d'achats annuels affiche 3 123 000 DA de remise estimée, pour un taux moyen de
-26 %. C'est le chiffre que verra le prospect.
+**Ordre de grandeur confirmé.** Un profil d'officine à 12 000 000 DA d'achats
+annuels affiche 3 123 000 DA de remise estimée, taux moyen 26 %. Le barème
+exprime un **gain net** : ce montant s'ajoute à ce que le pharmacien obtient
+déjà, il ne le recouvre pas.
+
+Cela ne retire rien à l'objection consignée plus haut — « j'ai déjà des remises
+sur ces produits » — mais elle se joue en rendez-vous, pas dans l'outil.
 
 ---
 

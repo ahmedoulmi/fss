@@ -136,6 +136,8 @@ Rien. `npm run verifier` passe.
 - Registre des textes : **accueillant**.
 - Les cinq gammes de bandelettes restent dans le barème, sous la colonne
   « Laboratoire ».
+- Le barème exprime un **gain net** : le montant affiché s'ajoute à ce que le
+  pharmacien obtient déjà. L'ordre de grandeur est confirmé.
 
 ## Écarts assumés par rapport à la spécification
 
