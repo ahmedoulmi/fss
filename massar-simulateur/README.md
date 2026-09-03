@@ -38,7 +38,19 @@ npm run servir -- 3           # sert la page et émet 3 liens d'essai
 
 Puis ouvrir l'un des liens affichés. Chacun ne fonctionne qu'une fois.
 
-## Émettre des liens
+## Gérer les liens
+
+Une page pensée pour le téléphone, à l'adresse `/admin.html?k=<CLE_ADMIN>` :
+créer un lien, le copier ou l'envoyer par WhatsApp, suivre son état — en
+attente, utilisé, expiré. La clé vit dans le secret `CLE_ADMIN` ; sans elle,
+la page ne montre rien et le serveur ne répond pas.
+
+Cette page ne voit jamais un taux. Mais la clé permet de fabriquer des liens,
+et donc, à la longue, de déduire le barème par différence : un plafond de
+30 émissions par jour borne les dégâts sans les empêcher. Une clé douteuse se
+change, elle ne se surveille pas.
+
+## Émettre des liens en ligne de commande
 
 ```
 npm run liens -- 10 --base https://simulateur.massar.dz --jours 3

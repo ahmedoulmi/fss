@@ -12,6 +12,8 @@ var fs = require('node:fs');
 var path = require('node:path');
 
 var { STATUTS } = require('./noyau.js');
+var { creerAdministration } = require('./administration.js');
+var { nouveauJeton } = require('./jetons.js');
 
 var TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -22,6 +24,11 @@ var TYPES = {
 function creerServeur(options) {
   var noyau = options.noyau;
   var racine = options.racine;
+  var administration = creerAdministration({
+    noyau: noyau,
+    cleAttendue: options.cleAdmin || process.env.MASSAR_CLE_ADMIN || '',
+    nouveauJeton: nouveauJeton
+  });
 
   return http.createServer(function (requete, reponse) {
     var adresse = new URL(requete.url, 'http://' + (requete.headers.host || 'localhost'));
@@ -31,6 +38,9 @@ function creerServeur(options) {
     }
     if (adresse.pathname === '/api/simuler') {
       return routeSimuler(noyau, requete, reponse);
+    }
+    if (adresse.pathname === '/api/admin/liens') {
+      return routeAdmin(administration, adresse, requete, reponse);
     }
     return servirFichier(racine, adresse.pathname, reponse);
   });
@@ -75,6 +85,47 @@ function routeSimuler(noyau, requete, reponse) {
     noyau.simuler(charge && charge.jeton, charge && charge.montants)
       .then(function (verdict) { envoyerJson(reponse, 200, verdict); })
       .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
+  });
+}
+
+function routeAdmin(administration, adresse, requete, reponse) {
+  if (requete.method === 'GET') {
+    return administration.lister(adresse.searchParams.get('k'))
+      .then(function (r) { envoyerJson(reponse, 200, r); })
+      .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
+  }
+
+  if (requete.method !== 'POST') {
+    return envoyerJson(reponse, 405, { statut: STATUTS.REQUETE_INVALIDE });
+  }
+
+  lireCorps(requete, function (charge) {
+    if (charge === null) {
+      return envoyerJson(reponse, 400, { statut: STATUTS.REQUETE_INVALIDE });
+    }
+    administration.emettre(charge.k, {
+      officine: charge.officine,
+      base: 'http://' + (requete.headers.host || 'localhost')
+    })
+      .then(function (r) { envoyerJson(reponse, 200, r); })
+      .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
+  });
+}
+
+function lireCorps(requete, suite) {
+  var morceaux = [];
+  var taille = 0;
+  requete.on('data', function (morceau) {
+    taille += morceau.length;
+    if (taille > 64 * 1024) return requete.destroy();
+    morceaux.push(morceau);
+  });
+  requete.on('end', function () {
+    try {
+      suite(JSON.parse(Buffer.concat(morceaux).toString('utf8')));
+    } catch (e) {
+      suite(null);
+    }
   });
 }
 

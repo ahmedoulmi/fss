@@ -93,35 +93,63 @@ Pour obtenir un lien d'essai, voir la section suivante.
 
 ---
 
-## Émettre des liens
+## 7. La clé de gestion des liens
 
-**C'est le point qui demande une décision.** Émettre un lien veut dire écrire
-un jeton tiré au sort dans la base. Depuis un téléphone, deux voies :
+Votre Worker → **Settings** → **Variables and Secrets** → **Add**.
 
-**Par la console D1**, à la main. Dans la console de la base, exécutez :
+- Type : **Secret**
+- Nom : **`CLE_ADMIN`**
+- Valeur : une longue suite de caractères au hasard, **au moins 30**. Le plus
+  simple : ouvrez un générateur de mot de passe et demandez-en un de 40
+  caractères. Ne l'inventez pas de tête.
 
-```sql
-INSERT INTO jetons (jeton, officine, cree_le, expire_le, consomme_le)
-VALUES (
-  hex(randomblob(16)),
-  '',
-  datetime('now'),
-  datetime('now', '+3 days'),
-  NULL
-);
-SELECT jeton FROM jetons WHERE consomme_le IS NULL ORDER BY cree_le DESC LIMIT 1;
+**Copiez cette valeur avant d'enregistrer** : Cloudflare ne la réaffichera
+jamais.
+
+Puis **Deployments** → **Retry deployment**.
+
+---
+
+## Gérer les liens, depuis le téléphone
+
+Ouvrez, en remplaçant les deux parties :
+
+```
+https://massar-simulateur.votrecompte.workers.dev/admin.html?k=VOTRE_CLE
 ```
 
-La seconde requête affiche le jeton. Le lien est alors :
-`https://votre-adresse/?s=LE_JETON`
+**Mettez cette adresse en favori.** C'est votre page de gestion, et la clé y
+est déjà : vous n'aurez plus rien à taper.
 
-C'est laborieux, mais cela n'ajoute aucune faiblesse : rien de nouveau n'est
-exposé sur internet.
+Elle permet de :
 
-**Par une page d'administration**, à construire. Plus commode, mais elle
-introduit un mot de passe qui, s'il est volé, permet de fabriquer autant de
-liens qu'on veut — et donc de déduire le barème en une trentaine de
-simulations. C'est précisément ce que toute l'architecture empêche
-aujourd'hui.
+- **créer un lien**, avec le nom de l'officine si vous le souhaitez ;
+- le **copier**, ou l'**envoyer** directement par WhatsApp ou SMS — le bouton
+  d'envoi apparaît sur téléphone ;
+- **suivre l'état** de chaque lien émis : en attente, utilisé, ou expiré.
 
-À trancher avant de la construire. Voir le README.
+Cette page ne voit jamais un taux. Elle ne manipule que des jetons.
+
+### Ce que la clé engage
+
+Elle permet de fabriquer des liens. Quelqu'un qui la volerait pourrait en
+fabriquer beaucoup, et **finirait par déduire votre barème** en comparant des
+simulations. Un plafond de 30 liens par jour borne les dégâts et rend l'abus
+visible, mais il ne l'empêche pas.
+
+Deux règles simples :
+
+- **Ne partagez cette adresse avec personne** en dehors de Massar.
+- **Si vous avez un doute, changez la clé.** Reposez-en une nouvelle au même
+  endroit dans Cloudflare ; l'ancienne cesse aussitôt de fonctionner. Les liens
+  déjà émis, eux, continuent de marcher.
+
+---
+
+## Émettre des liens en ligne de commande
+
+Si vous êtes devant un ordinateur, la voie reste ouverte :
+
+```
+node serveur/adaptateurs/cloudflare/creer-lien.js 10 --base https://votre-adresse
+```

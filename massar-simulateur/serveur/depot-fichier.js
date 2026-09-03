@@ -60,6 +60,23 @@ function creerDepotFichier(chemin) {
       return true;
     },
 
+    compterDepuis: function (iso) {
+      return Object.keys(jetons).filter(function (j) {
+        return jetons[j].creeLe >= iso;
+      }).length;
+    },
+
+    lister: function (limite) {
+      return Object.keys(jetons)
+        .map(function (jeton) {
+          var e = jetons[jeton];
+          return { jeton: jeton, officine: e.officine, creeLe: e.creeLe,
+                   expireLe: e.expireLe, consommeLe: e.consommeLe };
+        })
+        .sort(function (a, b) { return a.creeLe < b.creeLe ? 1 : -1; })
+        .slice(0, limite);
+    },
+
     /* Journal minimal : ni montants, ni remise (SPEC §1 — pas de collecte). */
     journal: function () {
       return Object.keys(jetons).map(function (jeton) {

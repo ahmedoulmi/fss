@@ -8,9 +8,20 @@
  * jamais dans ce qui est servi au navigateur.
  */
 import noyauModule from '../../noyau.js';
+import administrationModule from '../../administration.js';
 import { creerDepotD1 } from './depot-d1.js';
 
 const { creerNoyau } = noyauModule;
+const { creerAdministration } = administrationModule;
+
+/* 16 octets tirés au sort : un lien ne se devine pas et ne s'énumère pas. */
+function nouveauJeton() {
+  const octets = new Uint8Array(16);
+  crypto.getRandomValues(octets);
+  let binaire = '';
+  octets.forEach((o) => { binaire += String.fromCharCode(o); });
+  return btoa(binaire).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
 
 let bareme = null;
 
@@ -53,6 +64,32 @@ export default {
     try {
       if (adresse.pathname === '/api/laboratoires') {
         return json(await noyau.laboratoiresPour(adresse.searchParams.get('s') || ''));
+      }
+
+      if (adresse.pathname === '/api/admin/liens') {
+        const administration = creerAdministration({
+          noyau,
+          cleAttendue: env.CLE_ADMIN || '',
+          nouveauJeton
+        });
+
+        if (requete.method === 'GET') {
+          return json(await administration.lister(adresse.searchParams.get('k')));
+        }
+        if (requete.method !== 'POST') return json({ statut: 'requete-invalide' }, 405);
+
+        const brutAdmin = await requete.text();
+        if (brutAdmin.length > 64 * 1024) return json({ statut: 'requete-invalide' }, 413);
+        let chargeAdmin;
+        try {
+          chargeAdmin = JSON.parse(brutAdmin);
+        } catch (e) {
+          return json({ statut: 'requete-invalide' }, 400);
+        }
+        return json(await administration.emettre(chargeAdmin && chargeAdmin.k, {
+          officine: chargeAdmin && chargeAdmin.officine,
+          base: adresse.origin
+        }));
       }
 
       if (adresse.pathname === '/api/simuler') {

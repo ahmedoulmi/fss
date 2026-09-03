@@ -14,6 +14,7 @@ function creerDepotMemoire() {
       jetons.set(jeton, {
         officine: (donnees && donnees.officine) || '',
         creeLe: new Date().toISOString(),
+        expireLe: (donnees && donnees.expireLe) || null,
         consommeLe: null
       });
       return jeton;
@@ -29,6 +30,22 @@ function creerDepotMemoire() {
       if (!entree || entree.consommeLe !== null) return false;
       entree.consommeLe = new Date().toISOString();
       return true;
+    },
+
+    compterDepuis: function (iso) {
+      var n = 0;
+      jetons.forEach(function (e) { if (e.creeLe >= iso) n += 1; });
+      return n;
+    },
+
+    lister: function (limite) {
+      var lignes = [];
+      jetons.forEach(function (e, jeton) {
+        lignes.push({ jeton: jeton, officine: e.officine, creeLe: e.creeLe,
+                      expireLe: e.expireLe || null, consommeLe: e.consommeLe });
+      });
+      return lignes.sort(function (a, b) { return a.creeLe < b.creeLe ? 1 : -1; })
+                   .slice(0, limite);
     },
 
     /* Journal minimal : ni montants, ni remise (SPEC §1 — pas de collecte). */

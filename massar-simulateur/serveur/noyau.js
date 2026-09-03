@@ -18,8 +18,13 @@ var STATUTS = {
   JETON_CONSOMME: 'jeton-consomme',
   JETON_EXPIRE: 'jeton-expire',
   CONDITIONS: 'conditions-non-remplies',
-  REQUETE_INVALIDE: 'requete-invalide'
+  REQUETE_INVALIDE: 'requete-invalide',
+  PLAFOND_ATTEINT: 'plafond-atteint'
 };
+
+/* Validité d'un lien, et nombre maximum d'émissions sur 24 heures. */
+var JOURS_DE_VALIDITE = 3;
+var PLAFOND_QUOTIDIEN = 30;
 
 function creerNoyau(options) {
   var bareme = options.bareme;
@@ -131,11 +136,60 @@ function creerNoyau(options) {
     };
   }
 
+  /*
+   * Émission d'un lien.
+   *
+   * Le plafond quotidien ne protège pas le barème — quelqu'un qui tiendrait la
+   * clé d'administration finirait par le déduire en émettant sur plusieurs
+   * jours. Il borne les dégâts et rend l'abus visible dans le journal. La vraie
+   * réponse à une clé volée est de la changer.
+   */
+  async function emettreLien(options) {
+    var plafond = (options && options.plafondQuotidien) || PLAFOND_QUOTIDIEN;
+    var depuis = new Date(maintenant() - 24 * 3600 * 1000).toISOString();
+
+    if (await depot.compterDepuis(depuis) >= plafond) {
+      return { statut: STATUTS.PLAFOND_ATTEINT, plafond: plafond };
+    }
+
+    var jours = (options && options.jours) || JOURS_DE_VALIDITE;
+    var echeance = new Date(maintenant() + jours * 24 * 3600 * 1000).toISOString();
+    var jeton = options.jeton;
+
+    await depot.creer(jeton, {
+      officine: (options && options.officine) || '',
+      expireLe: echeance
+    });
+    return { statut: STATUTS.OK, jeton: jeton, expireLe: echeance };
+  }
+
+  /* État de chaque lien émis. Ni montants ni remise : le dépôt n'en a pas. */
+  async function listerLiens(limite) {
+    var lignes = await depot.lister(limite || 50);
+    var instant = maintenant();
+    return lignes.map(function (l) {
+      var etat = 'en-attente';
+      if (l.consommeLe) etat = 'utilise';
+      else if (l.expireLe && instant > Date.parse(l.expireLe)) etat = 'expire';
+      return {
+        jeton: l.jeton, officine: l.officine, creeLe: l.creeLe,
+        expireLe: l.expireLe, consommeLe: l.consommeLe, etat: etat
+      };
+    });
+  }
+
   return {
     etatJeton: etatJeton,
+    emettreLien: emettreLien,
+    listerLiens: listerLiens,
     laboratoiresPour: laboratoiresPour,
     simuler: simuler
   };
 }
 
-module.exports = { creerNoyau: creerNoyau, STATUTS: STATUTS };
+module.exports = {
+  creerNoyau: creerNoyau,
+  STATUTS: STATUTS,
+  JOURS_DE_VALIDITE: JOURS_DE_VALIDITE,
+  PLAFOND_QUOTIDIEN: PLAFOND_QUOTIDIEN
+};

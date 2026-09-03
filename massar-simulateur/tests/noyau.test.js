@@ -162,3 +162,43 @@ test('deux jetons sont indépendants', async () => {
   assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
   assert.equal((await noyau.simuler(second, saisieValide)).statut, STATUTS.OK);
 });
+
+test('un lien émis est en attente, puis utilisé', async () => {
+  const { noyau, depot } = contexte();
+  const emis = await noyau.emettreLien({ jeton: nouveauJeton(), officine: 'Pharmacie A' });
+  assert.equal(emis.statut, STATUTS.OK);
+
+  let liens = await noyau.listerLiens();
+  const ligne = liens.find((l) => l.jeton === emis.jeton);
+  assert.equal(ligne.etat, 'en-attente');
+  assert.equal(ligne.officine, 'Pharmacie A');
+
+  await noyau.simuler(emis.jeton, saisieValide);
+  liens = await noyau.listerLiens();
+  assert.equal(liens.find((l) => l.jeton === emis.jeton).etat, 'utilise');
+});
+
+test('le plafond quotidien borne l’émission', async () => {
+  // Le décor crée déjà un jeton : le plafond compte tout ce qui existe.
+  const { noyau } = contexte();
+  for (let i = 0; i < 4; i++) {
+    assert.equal(
+      (await noyau.emettreLien({ jeton: nouveauJeton(), plafondQuotidien: 5 })).statut,
+      STATUTS.OK, 'émission ' + (i + 1)
+    );
+  }
+  const refuse = await noyau.emettreLien({ jeton: nouveauJeton(), plafondQuotidien: 5 });
+  assert.equal(refuse.statut, STATUTS.PLAFOND_ATTEINT);
+  assert.equal(refuse.jeton, undefined);
+  // Et le refus n'a rien écrit.
+  assert.equal((await noyau.listerLiens()).length, 5);
+});
+
+test('la liste des liens ne porte ni montant ni remise', async () => {
+  const { noyau } = contexte();
+  const emis = await noyau.emettreLien({ jeton: nouveauJeton() });
+  await noyau.simuler(emis.jeton, saisieValide);
+  const ligne = (await noyau.listerLiens())[0];
+  assert.deepEqual(Object.keys(ligne).sort(),
+    ['consommeLe', 'creeLe', 'etat', 'expireLe', 'jeton', 'officine']);
+});

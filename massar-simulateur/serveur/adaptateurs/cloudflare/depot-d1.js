@@ -39,6 +39,26 @@ export function creerDepotD1(base) {
       };
     },
 
+    async compterDepuis(iso) {
+      const ligne = await base
+        .prepare('SELECT COUNT(*) AS n FROM jetons WHERE cree_le >= ?1')
+        .bind(iso)
+        .first();
+      return ligne ? ligne.n : 0;
+    },
+
+    async lister(limite) {
+      const r = await base
+        .prepare('SELECT jeton, officine, cree_le, expire_le, consomme_le ' +
+                 'FROM jetons ORDER BY cree_le DESC LIMIT ?1')
+        .bind(limite)
+        .all();
+      return (r.results || []).map((l) => ({
+        jeton: l.jeton, officine: l.officine, creeLe: l.cree_le,
+        expireLe: l.expire_le, consommeLe: l.consomme_le
+      }));
+    },
+
     /* true une seule fois par jeton, même sous requêtes concurrentes. */
     async consommer(jeton) {
       const resultat = await base

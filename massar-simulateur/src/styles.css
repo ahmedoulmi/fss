@@ -374,3 +374,82 @@ body {
   .ligne-champ { justify-content: space-between; }
   .bouton { width: 100%; }
 }
+
+/* ---------- Gestion des liens ---------- */
+
+.page-admin { max-width: 34rem; }
+
+.bouton-second {
+  background: var(--m-couleurs-blanc);
+  color: var(--m-couleurs-vert-fonce);
+  border-color: var(--m-couleurs-vert-fonce);
+  font-weight: var(--m-typographie-graisse-appuyee);
+}
+
+#btn-creer { margin-top: var(--m-espacement-md); width: 100%; }
+
+/* Le lien qui vient d'être créé : lisible d'un coup d'œil, et prêt à partir. */
+.lien-neuf {
+  margin: var(--m-espacement-lg) 0;
+  padding: var(--m-espacement-md);
+  background: var(--m-couleurs-blanc);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-or);
+  border-radius: var(--m-formes-rayon-large);
+}
+
+.lien-neuf-libelle {
+  margin: 0 0 var(--m-espacement-xs);
+  font-size: var(--m-echelle-sm);
+  font-weight: var(--m-typographie-graisse-appuyee);
+}
+
+.lien-neuf-adresse {
+  margin: 0 0 var(--m-espacement-md);
+  font-size: var(--m-echelle-sm);
+  color: var(--m-couleurs-vert-fonce);
+  word-break: break-all;
+}
+
+.lien-neuf-actions {
+  display: flex;
+  gap: var(--m-espacement-sm);
+}
+
+.lien-neuf-actions .bouton { flex: 1 1 0; }
+
+.lien-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-espacement-md);
+  padding: var(--m-espacement-sm) 0;
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.lien-officine { margin: 0; font-size: var(--m-echelle-sm); }
+
+.lien-date {
+  margin: 0;
+  font-size: var(--m-echelle-xs);
+  color: var(--m-couleurs-gris);
+}
+
+.lien-etat {
+  flex: 0 0 auto;
+  font-size: var(--m-echelle-xs);
+  padding: var(--m-espacement-xs) var(--m-espacement-sm);
+  border-radius: var(--m-formes-rayon);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  color: var(--m-couleurs-gris);
+  white-space: nowrap;
+}
+
+.lien-etat-en-attente {
+  color: var(--m-couleurs-or);
+  border-color: var(--m-couleurs-or);
+}
+
+.lien-etat-utilise {
+  color: var(--m-couleurs-vert-fonce);
+  border-color: var(--m-couleurs-vert-fonce);
+}

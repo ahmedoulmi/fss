@@ -16,6 +16,7 @@
 
 var fs = require('node:fs');
 var path = require('node:path');
+var crypto = require('node:crypto');
 var { spawnSync } = require('node:child_process');
 
 var BASE = __dirname;
@@ -122,19 +123,54 @@ var secret = lancer('npx wrangler secret put BAREME', {
 });
 if (secret.status !== 0) echec('Dépôt du barème échoué.');
 
-// ── 6. La publication ──────────────────────────────────────────────────
-etape('6/6  Publication');
+// ── 6. La clé d'administration ─────────────────────────────────────────
+etape('6/7  Clé d’administration');
+var listeSecrets = capturer('npx wrangler secret list');
+var CLE = null;
+if ((listeSecrets.stdout || '').indexOf('CLE_ADMIN') !== -1) {
+  console.log('  Une clé existe déjà — conservée.');
+  console.log('  Pour la changer : npx wrangler secret put CLE_ADMIN');
+} else {
+  CLE = crypto.randomBytes(24).toString('base64url');
+  var poseCle = lancer('npx wrangler secret put CLE_ADMIN', {
+    input: CLE, stdio: ['pipe', 'inherit', 'inherit']
+  });
+  if (poseCle.status !== 0) echec('Dépôt de la clé d’administration échoué.');
+  console.log('  Clé engendrée et déposée.');
+}
+
+// ── 7. La publication ──────────────────────────────────────────────────
+etape('7/7  Publication');
 if (lancer('npx wrangler deploy').status !== 0) echec('Publication échouée.');
 
+console.log('\n  ✓ En ligne.\n');
+
+if (CLE) {
+  console.log([
+    '  Votre page de gestion des liens — mettez-la en FAVORI, elle contient',
+    '  la clé et ne sera plus jamais affichée :',
+    '',
+    '    https://massar-simulateur.VOTRECOMPTE.workers.dev/admin.html?k=' + CLE,
+    '',
+    '  Remplacez VOTRECOMPTE par ce que wrangler a affiché ci-dessus.',
+    '',
+    '  Cette clé permet de fabriquer des liens. Si elle vous échappe,',
+    '  changez-la : npx wrangler secret put CLE_ADMIN',
+    ''
+  ].join('\n'));
+} else {
+  console.log([
+    '  Ouvrez votre page de gestion des liens, celle mise en favori.',
+    '  Clé perdue ? Posez-en une nouvelle :',
+    '',
+    '    npx wrangler secret put CLE_ADMIN',
+    ''
+  ].join('\n'));
+}
+
 console.log([
-  '',
-  '  ✓ En ligne.',
-  '',
-  '  Émettez trois liens d’essai, avec l’adresse affichée ci-dessus :',
-  '',
-  '    node serveur/adaptateurs/cloudflare/creer-lien.js 3 \\',
-  '      --base https://massar-simulateur.VOTRECOMPTE.workers.dev',
-  '',
-  '  Chaque lien vaut 3 jours et ne produit qu’un seul résultat.',
+  '  Depuis cette page : créez un lien, faites le parcours vous-même, puis',
+  '  rouvrez le lien — il doit annoncer « Simulation déjà effectuée ».',
+  '  Tant que ce test ne passe pas, ne diffusez rien.',
   ''
 ].join('\n'));
