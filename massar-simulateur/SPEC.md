@@ -22,7 +22,8 @@ suivi, ni un dispositif de collecte.
 
 **Destinataire** : pharmacien prospect.
 **Usage** : lien nominatif à usage unique, transmis individuellement,
-utilisable sans installation.
+utilisable sans installation. Les liens s'émettent et se suivent depuis une
+page réservée à Massar (§ 12).
 **Version unique** — pas de mode interne distinct.
 
 ---
@@ -302,3 +303,38 @@ montants négatifs, plafond.
 **Durée de vie d'un lien jamais utilisé : 3 jours**, réglable à l'émission.
 Le lien s'adresse à un prospect qu'on vient d'appeler ; passé ce délai, il
 faut en émettre un nouveau.
+
+
+---
+
+## 12. Administration des liens
+
+Page réservée à Massar, à l'adresse `/admin.html?k=<clé>`. Conçue pour un
+téléphone : c'est là que les liens s'émettent au quotidien.
+
+**Ce qu'elle permet**
+- Créer un lien, avec le nom de l'officine si on le souhaite
+- Le copier, ou l'envoyer par le partage natif du téléphone
+- Copier ou renvoyer un lien émis plus tôt et encore en attente
+- Suivre l'état de chaque lien : en attente, utilisé, expiré
+
+**Ce qu'elle ne voit jamais** : un taux. Elle ne manipule que des jetons. Ni
+montants ni remise ne sont conservés (§ 1 — l'outil n'est pas un dispositif de
+collecte).
+
+**La clé** vit dans le secret `CLE_ADMIN`. Elle voyage dans l'adresse, mise en
+favori une fois. Sans elle, la page ne montre rien et le serveur ne répond pas.
+La comparaison est à durée constante : une comparaison ordinaire s'arrête au
+premier écart, et son temps de réponse trahirait le préfixe correct.
+
+**Ce que la clé engage — consigné en connaissance de cause.** Elle permet de
+fabriquer des liens, donc, à force d'en fabriquer et de comparer les résultats,
+de déduire le barème par différence. C'est précisément ce que le lien à usage
+unique empêche partout ailleurs. Un plafond de 30 émissions par 24 heures borne
+les dégâts et rend l'abus visible dans la liste ; il ne l'empêche pas.
+
+La réponse à une clé douteuse est de la changer — un geste, effet immédiat, les
+liens déjà émis continuent de fonctionner. Ce n'est pas de la surveiller.
+
+Le compromis est assumé : sans cette page, l'émission d'un lien passait par une
+requête SQL, ce qui ne tient pas dans un usage quotidien depuis un téléphone.

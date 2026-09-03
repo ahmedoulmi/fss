@@ -426,6 +426,22 @@ body {
   border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
 }
 
+.lien-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--m-espacement-xs);
+}
+
+.bouton-menu {
+  min-height: 2.25rem;
+  padding: var(--m-espacement-xs) var(--m-espacement-sm);
+  font-size: var(--m-echelle-xs);
+  background: var(--m-couleurs-blanc);
+  color: var(--m-couleurs-vert-fonce);
+  border-color: var(--m-couleurs-bordure);
+}
+
 .lien-officine { margin: 0; font-size: var(--m-echelle-sm); }
 
 .lien-date {

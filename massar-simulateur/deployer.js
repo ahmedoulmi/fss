@@ -141,19 +141,33 @@ if ((listeSecrets.stdout || '').indexOf('CLE_ADMIN') !== -1) {
 
 // ── 7. La publication ──────────────────────────────────────────────────
 etape('7/7  Publication');
-if (lancer('npx wrangler deploy').status !== 0) echec('Publication échouée.');
+var publication = spawnSync('npx wrangler deploy', {
+  cwd: BASE, shell: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']
+});
+var journalPublication = (publication.stdout || '') + (publication.stderr || '');
+console.log(journalPublication.trim());
+if (publication.status !== 0) echec('Publication échouée.');
+
+/* L'adresse rendue par wrangler, pour n'avoir rien à recopier à la main. */
+var trouveeAdresse = journalPublication.match(/https:\/\/[a-z0-9.-]+\.workers\.dev/i);
+var ADRESSE = trouveeAdresse ? trouveeAdresse[0] : null;
 
 console.log('\n  ✓ En ligne.\n');
 
 if (CLE) {
+  var lienAdmin = (ADRESSE || 'https://massar-simulateur.VOTRECOMPTE.workers.dev')
+    + '/admin.html?k=' + CLE;
   console.log([
-    '  Votre page de gestion des liens — mettez-la en FAVORI, elle contient',
-    '  la clé et ne sera plus jamais affichée :',
+    '  Votre page de gestion des liens — mettez-la en FAVORI tout de suite,',
+    '  elle contient la clé et ne sera plus jamais affichée :',
     '',
-    '    https://massar-simulateur.VOTRECOMPTE.workers.dev/admin.html?k=' + CLE,
-    '',
-    '  Remplacez VOTRECOMPTE par ce que wrangler a affiché ci-dessus.',
-    '',
+    '    ' + lienAdmin,
+    ''
+  ].join('\n'));
+  if (!ADRESSE) {
+    console.log('  (adresse non détectée — reprenez celle affichée ci-dessus)\n');
+  }
+  console.log([
     '  Cette clé permet de fabriquer des liens. Si elle vous échappe,',
     '  changez-la : npx wrangler secret put CLE_ADMIN',
     ''

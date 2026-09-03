@@ -326,9 +326,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(charge)
         };
-    // Résolu depuis l'adresse de la page : fonctionne aussi si le simulateur
-    // est servi sous un sous-chemin.
-    var adresse = new URL('api/' + route, window.location.href).toString();
+    // Chemin absolu : c'est ce que routent les deux serveurs, quel que soit
+    // le chemin auquel la page elle-même a été servie.
+    var adresse = new URL('/api/' + route, window.location.href).toString();
     return fetch(adresse, options).then(function (r) { return r.json(); });
   }
 

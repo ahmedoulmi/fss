@@ -25,7 +25,8 @@ seconde simulation ne peut pas avoir lieu.
 | 4 | Lien à usage unique, calcul serveur | fait |
 | 5 | Dépôt durable, émission des liens, garde-fou | fait |
 | 6 | Déploiement Cloudflare Workers | fait — voir `serveur/adaptateurs/cloudflare/LISEZMOI.md` |
-| 7 | Mise en service | prêt — `npm run verifier` passe |
+| 7 | Gestion des liens depuis un téléphone | fait |
+| 8 | Mise en service | prêt — `npm run verifier` passe |
 
 Un déploiement sur VPS Ubuntu existe aussi (`deploiement/`), écrit avant
 l'arbitrage sur l'hébergement. Il reste valable si vous changez d'avis.
@@ -99,13 +100,15 @@ utilisés, absence de montants et de remise dans le fichier de jetons.
 ## Structure
 
 ```
-src/          la page — ne contient aucun taux
+src/          les pages — ne contiennent aucun taux
+  admin.html, admin.js   gestion des liens, réservée à Massar
   massar_charte.js   source unique des couleurs et polices (SPEC §7)
   textes.js          tous les libellés affichés
   calcul.js          règles de calcul, partagées page et serveur
   ecrans.js          parcours, saisie, appels au serveur
 serveur/
   noyau.js           barème, jetons, calcul — ne sort jamais d'ici
+  administration.js  contrôle de la clé et émission, partagés
   depot-fichier.js   dépôt de jetons durable
   depot-memoire.js   dépôt de jetons pour les tests
   http.js            adaptateur HTTP — la seule couche liée à l'hébergement

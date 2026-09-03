@@ -21,7 +21,8 @@
     etats: { 'en-attente': 'en attente', utilise: 'utilisé', expire: 'expiré' },
     aucun: 'Aucun lien émis pour l’instant.',
     copie: 'Copié',
-    copier: 'Copier'
+    copier: 'Copier',
+    envoyer: 'Envoyer'
   };
 
   var cle = '';
@@ -64,8 +65,13 @@
     el.logo.addEventListener('error', absent);
   }
 
+  /*
+   * Chemin absolu, et non relatif : Cloudflare sert cette page à /admin après
+   * une redirection depuis /admin.html, et un chemin relatif se résoudrait
+   * alors différemment. Les deux serveurs ne routent que sur /api/ absolu.
+   */
   function adresse(route) {
-    return new URL('api/admin/' + route, window.location.href).toString();
+    return new URL('/api/admin/' + route, window.location.href).toString();
   }
 
   function erreur(message) {
@@ -103,8 +109,16 @@
   }
 
   function copier() {
-    var texte = el['lien-neuf-adresse'].textContent;
-    var fait = function () { el['btn-copier'].textContent = TEXTES.copie; };
+    copierTexte(el['lien-neuf-adresse'].textContent, el['btn-copier'],
+      el['lien-neuf-adresse']);
+  }
+
+  function copierTexte(texte, bouton, element) {
+    var fait = function () {
+      var avant = bouton.textContent;
+      bouton.textContent = TEXTES.copie;
+      setTimeout(function () { bouton.textContent = avant; }, 2000);
+    };
     if (navigator.clipboard) {
       navigator.clipboard.writeText(texte).then(fait, secours);
     } else {
@@ -112,8 +126,9 @@
     }
     // Sans presse-papiers, on sélectionne le texte : la copie reste possible.
     function secours() {
+      if (!element) return;
       var plage = document.createRange();
-      plage.selectNodeContents(el['lien-neuf-adresse']);
+      plage.selectNodeContents(element);
       var selection = window.getSelection();
       selection.removeAllRanges();
       selection.addRange(plage);
@@ -121,8 +136,16 @@
   }
 
   function envoyer() {
-    var texte = el['lien-neuf-adresse'].textContent;
+    partager(el['lien-neuf-adresse'].textContent);
+  }
+
+  function partager(texte) {
     if (navigator.share) navigator.share({ url: texte }).catch(function () {});
+  }
+
+  /* L'adresse d'un lien se reconstitue depuis son jeton : rien à mémoriser. */
+  function adresseDuLien(jeton) {
+    return new URL('/?s=' + jeton, window.location.href).toString();
   }
 
   function rafraichir() {
@@ -153,12 +176,37 @@
       gauche.appendChild(paragraphe(TEXTES.creeLe + ' ' + dateCourte(lien.creeLe),
         'lien-date'));
 
+      var droite = document.createElement('div');
+      droite.className = 'lien-actions';
+
       var etat = document.createElement('span');
       etat.className = 'lien-etat lien-etat-' + lien.etat;
       etat.textContent = TEXTES.etats[lien.etat];
+      droite.appendChild(etat);
+
+      // Un lien encore en attente doit pouvoir être renvoyé sans le recréer.
+      if (lien.etat === 'en-attente') {
+        var url = adresseDuLien(lien.jeton);
+
+        var copie = document.createElement('button');
+        copie.type = 'button';
+        copie.className = 'bouton bouton-menu';
+        copie.textContent = TEXTES.copier;
+        copie.addEventListener('click', function () { copierTexte(url, copie, null); });
+        droite.appendChild(copie);
+
+        if (navigator.share) {
+          var envoi = document.createElement('button');
+          envoi.type = 'button';
+          envoi.className = 'bouton bouton-menu';
+          envoi.textContent = TEXTES.envoyer;
+          envoi.addEventListener('click', function () { partager(url); });
+          droite.appendChild(envoi);
+        }
+      }
 
       ligne.appendChild(gauche);
-      ligne.appendChild(etat);
+      ligne.appendChild(droite);
       zone.appendChild(ligne);
     });
   }
