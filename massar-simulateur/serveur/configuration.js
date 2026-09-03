@@ -10,8 +10,9 @@ var creerDepotFichier = require('./depot-fichier.js');
 
 var RACINE = path.resolve(__dirname, '..');
 
-/* Validité par défaut d'un lien jamais utilisé. Décision à confirmer. */
-var JOURS_DE_VALIDITE = 60;
+/* Validité par défaut d'un lien jamais utilisé. Trois jours : le lien
+   s'adresse à un prospect qu'on vient d'appeler, pas à une liste d'envoi. */
+var JOURS_DE_VALIDITE = 3;
 
 function cheminDepot() {
   return process.env.MASSAR_JETONS || path.join(RACINE, 'donnees', 'jetons.json');

@@ -71,8 +71,10 @@ le certificat HTTPS est délivré automatiquement.
 
 ```
 node serveur/adaptateurs/cloudflare/creer-lien.js 10 \
-  --base https://simulateur.massar.dz --jours 30
+  --base https://simulateur.massar.dz --jours 3
 ```
+
+Sans `--jours`, un lien vaut **3 jours**.
 
 Ajoutez `--local` pour travailler sur la base locale pendant les essais.
 

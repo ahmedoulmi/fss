@@ -41,12 +41,12 @@ Puis ouvrir l'un des liens affichés. Chacun ne fonctionne qu'une fois.
 ## Émettre des liens
 
 ```
-npm run liens -- 10 --base https://simulateur.massar.dz --jours 30
+npm run liens -- 10 --base https://simulateur.massar.dz --jours 3
 npm run liens -- 1 --officine "Pharmacie du Centre"
 ```
 
 Les jetons sont écrits dans `donnees/jetons.json` et survivent au redémarrage.
-Sans `--jours`, un lien vaut 60 jours.
+Sans `--jours`, un lien vaut **3 jours**.
 
 ## Avant toute mise en service
 
@@ -138,6 +138,8 @@ Rien. `npm run verifier` passe.
   « Laboratoire ».
 - Le barème exprime un **gain net** : le montant affiché s'ajoute à ce que le
   pharmacien obtient déjà. L'ordre de grandeur est confirmé.
+- Un lien jamais utilisé expire au bout de **3 jours**. Modifiable à l'émission
+  avec `--jours`.
 
 ## Écarts assumés par rapport à la spécification
 
@@ -166,8 +168,7 @@ Rien. `npm run verifier` passe.
 - L'écran résultat porte une ligne « officine — date de simulation » avant la
   remise. Requise par le document imprimé (SPEC §5), absente de l'ordre
   d'affichage du §4 : à confirmer.
-- Durée de vie d'un lien jamais utilisé : **60 jours par défaut**, choisi faute
-  d'instruction. Modifiable par lien avec `--jours`. À confirmer.
+Aucun.
 - **Ordre de grandeur à confirmer** : 12 000 000 DA d'achats affichent
   3 123 000 DA de remise, taux moyen 26 %. La question porte sur ce que le
   barème représente — un gain net par rapport aux conditions actuelles du

@@ -16,7 +16,8 @@ var os = require('node:os');
 var path = require('node:path');
 var { execFileSync } = require('node:child_process');
 
-var JOURS_PAR_DEFAUT = 60;
+/* Trois jours : le lien s'adresse à un prospect qu'on vient d'appeler. */
+var JOURS_PAR_DEFAUT = 3;
 
 function lireOption(nom, defaut) {
   var index = process.argv.indexOf('--' + nom);

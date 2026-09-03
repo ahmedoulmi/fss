@@ -299,5 +299,6 @@ adresse e-mail la remplace.
 **Précisions de calcul** portées au § 2 : arrondi, ligne à zéro, décimales,
 montants négatifs, plafond.
 
-**Durée de vie d'un lien jamais utilisé : 60 jours**, valeur prise faute
-d'instruction, réglable à l'émission. À confirmer.
+**Durée de vie d'un lien jamais utilisé : 3 jours**, réglable à l'émission.
+Le lien s'adresse à un prospect qu'on vient d'appeler ; passé ce délai, il
+faut en émettre un nouveau.
