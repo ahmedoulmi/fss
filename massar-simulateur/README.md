@@ -51,10 +51,11 @@ Sans `--jours`, un lien vaut **3 jours**.
 ## Mettre en ligne
 
 ```
-bash deployer.sh /chemin/vers/bareme-secret.json
+node deployer.js /chemin/vers/bareme-secret.json
 ```
 
-Six étapes enchaînées, rejouables. Détail dans
+Six étapes enchaînées, rejouables. Pas à pas complet pour un non-développeur :
+`COMMENT_LANCER.md`. Détail technique :
 `serveur/adaptateurs/cloudflare/LISEZMOI.md`.
 
 ## Avant toute mise en service

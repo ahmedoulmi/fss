@@ -12,8 +12,11 @@ secret Cloudflare.**
 ## En une commande
 
 ```
-bash deployer.sh /chemin/vers/bareme-secret.json
+node deployer.js /chemin/vers/bareme-secret.json
 ```
+
+Écrit en Node plutôt qu'en shell : la même commande fonctionne sous Windows,
+macOS et Linux. Pas à pas pour un non-développeur : `COMMENT_LANCER.md`.
 
 Le script enchaîne les six étapes et s'arrête à la première qui échoue :
 
