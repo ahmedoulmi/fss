@@ -27,13 +27,18 @@ function memeCle(a, b) {
 
 function creerAdministration(options) {
   var noyau = options.noyau;
-  var cleAttendue = options.cleAttendue;
+  /*
+   * Les espaces et retours à la ligne autour d'une clé n'ont jamais de sens :
+   * ce sont des accidents de copie. Un secret déposé avec le saut de ligne
+   * final d'un fichier texte doit rester utilisable.
+   */
+  var cleAttendue = String(options.cleAttendue || '').trim();
   var nouveauJeton = options.nouveauJeton;
 
   function cleValide(cle) {
     // Sans clé configurée, l'administration reste fermée plutôt qu'ouverte.
     if (!cleAttendue) return false;
-    return memeCle(String(cle || ''), cleAttendue);
+    return memeCle(String(cle || '').trim(), cleAttendue);
   }
 
   async function lister(cle) {
