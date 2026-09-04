@@ -1,0 +1,12 @@
+{
+  "name": "massar-simulateur",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Simulateur de remise Massar — lots 1 à 3 (charte, saisie, calcul, résultat, impression)",
+  "scripts": {
+    "test": "node --test tests/calcul.test.js tests/noyau.test.js tests/depot.test.js tests/administration.test.js",
+    "servir": "node serveur/lancer.js",
+    "liens": "node serveur/creer-lien.js",
+    "verifier": "node build/verifier.js"
+  }
+}

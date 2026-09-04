@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Massar — Liens de simulation</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page page-admin">
+
+  <header class="entete">
+    <img class="logo" id="logo" src="logo-massar.png" alt="Massar Development" hidden>
+    <p class="marque" id="marque">MASSAR</p>
+  </header>
+
+  <main>
+    <h1 class="titre" id="titre-admin">Liens de simulation</h1>
+
+    <!-- Sans clé dans l'adresse, la page ne montre rien. -->
+    <p class="message-blocage" id="admin-sans-cle" hidden></p>
+
+    <section id="admin-creation" hidden>
+      <div class="champ-officine">
+        <label for="admin-officine">Nom de l'officine <span class="facultatif">(facultatif)</span></label>
+        <input type="text" id="admin-officine" autocomplete="off" maxlength="80">
+      </div>
+      <button type="button" class="bouton bouton-principal" id="btn-creer">Créer un lien</button>
+
+      <!-- Le lien qui vient d'être créé, en grand, avec de quoi l'envoyer. -->
+      <div class="lien-neuf" id="lien-neuf" hidden>
+        <p class="lien-neuf-libelle" id="lien-neuf-libelle"></p>
+        <p class="lien-neuf-adresse" id="lien-neuf-adresse"></p>
+        <div class="lien-neuf-actions">
+          <button type="button" class="bouton bouton-principal" id="btn-copier">Copier</button>
+          <button type="button" class="bouton bouton-second" id="btn-envoyer" hidden>Envoyer</button>
+        </div>
+      </div>
+
+      <p class="message-blocage" id="admin-erreur" role="status" aria-live="polite" hidden></p>
+    </section>
+
+    <section id="admin-liste" hidden>
+      <h2 class="recapitulatif-titre" id="titre-liste">Liens émis</h2>
+      <div id="liens"></div>
+    </section>
+  </main>
+</div>
+
+<script src="massar_charte.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

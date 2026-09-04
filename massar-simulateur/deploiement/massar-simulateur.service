@@ -1,0 +1,35 @@
+# Service du simulateur de remise Massar.
+# Copier dans /etc/systemd/system/massar-simulateur.service
+
+[Unit]
+Description=Simulateur de remise Massar
+After=network.target
+
+[Service]
+Type=simple
+User=massar
+Group=massar
+WorkingDirectory=/opt/massar-simulateur
+
+Environment=PORT=8787
+Environment=HOST=127.0.0.1
+Environment=MASSAR_JETONS=/var/lib/massar/jetons.json
+Environment=MASSAR_BAREME=/etc/massar/bareme.reel.js
+
+ExecStart=/usr/bin/node serveur/lancer.js
+Restart=always
+RestartSec=3
+
+# Le service n'a besoin d'écrire que le fichier de jetons. Tout le reste du
+# disque lui est fermé, y compris le dossier de l'application et le barème.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/massar
+
+[Install]
+WantedBy=multi-user.target

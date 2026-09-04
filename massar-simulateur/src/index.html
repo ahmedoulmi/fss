@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Massar — Simulateur de remise</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="impression.css" media="print">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="entete">
+    <!-- Le logo s'affiche dès que src/logo-massar.png existe ; à défaut,
+         la marque typographique tient sa place. Rien à modifier dans le
+         code : déposer le fichier suffit. -->
+    <img class="logo" id="logo" src="logo-massar.png" alt="Massar Development" hidden>
+    <p class="marque" id="marque">MASSAR</p>
+    <p class="signature" id="signature"></p>
+  </header>
+
+  <main>
+
+    <!-- Aucun barème n'est présent dans cette page : la liste des
+         laboratoires est demandée au serveur, et les taux n'en sortent
+         jamais. Le calcul se fait là-bas. -->
+
+    <!-- ÉCRAN 1 — ACCUEIL (SPEC §4) -->
+    <section id="ecran-accueil" class="ecran" aria-labelledby="titre-accueil" hidden>
+      <h1 id="titre-accueil" class="titre"></h1>
+      <div id="accueil-presentation"></div>
+
+      <div class="champ-officine">
+        <label for="officine"></label>
+        <input type="text" id="officine" name="officine"
+               autocomplete="organization" maxlength="80">
+      </div>
+
+      <p class="consigne" id="accueil-consigne"></p>
+
+      <button type="button" class="bouton bouton-principal" id="btn-commencer"></button>
+    </section>
+
+    <!-- ÉCRAN 2 — SAISIE (SPEC §4) -->
+    <section id="ecran-saisie" class="ecran" aria-labelledby="titre-saisie" hidden>
+      <h1 id="titre-saisie" class="titre"></h1>
+      <div class="consigne" id="saisie-consigne"></div>
+
+      <!-- Une ligne par laboratoire. Aucun taux, aucune remise ici. -->
+      <div class="liste-laboratoires" id="liste-laboratoires"></div>
+
+      <div class="total-saisie">
+        <span class="total-saisie-libelle" id="total-saisie-libelle"></span>
+        <output class="total-saisie-valeur" id="total-saisie" for="liste-laboratoires"
+                aria-live="polite">0 DA</output>
+      </div>
+
+      <p class="message-blocage" id="message-blocage" role="status"
+         aria-live="polite" hidden></p>
+
+      <button type="button" class="bouton bouton-principal" id="btn-resultat" disabled></button>
+    </section>
+
+    <!-- ÉCRAN 3 — RÉSULTAT (SPEC §4, ordre strict) -->
+    <section id="ecran-resultat" class="ecran" aria-labelledby="titre-resultat" hidden>
+
+      <p class="identification" id="identification"></p>
+
+      <!-- 1. Remise estimée : en tête, dominante. Le taux moyen la précède,
+           à la demande — il occupait auparavant une ligne discrète en bas. -->
+      <div class="remise">
+        <h1 id="titre-resultat" class="remise-libelle"></h1>
+        <p class="remise-ligne">
+          <span class="remise-taux" id="remise-taux"></span>
+          <span class="remise-montant" id="remise-montant"></span>
+        </p>
+      </div>
+
+      <!-- 2. Total des commandes -->
+      <div class="total-resultat">
+        <span class="total-resultat-libelle" id="total-resultat-libelle"></span>
+        <span class="total-resultat-valeur" id="total-resultat"></span>
+      </div>
+
+      <!-- 3. Récapitulatif : nom et montant saisi uniquement -->
+      <div class="recapitulatif">
+        <h2 class="recapitulatif-titre" id="recapitulatif-titre"></h2>
+        <table class="recapitulatif-table">
+          <thead>
+            <tr>
+              <th scope="col" id="colonne-laboratoire"></th>
+              <th scope="col" id="colonne-montant"></th>
+            </tr>
+          </thead>
+          <tbody id="recapitulatif-corps"></tbody>
+        </table>
+      </div>
+
+      <!-- 5. Mentions (SPEC §6) -->
+      <div class="mentions" id="mentions"></div>
+
+      <!-- Le lien meurt après ce calcul : le dire avant la fermeture. -->
+      <p class="avant-fermeture" id="avant-fermeture"></p>
+
+      <!-- 6. Action unique : impression -->
+      <button type="button" class="bouton bouton-principal" id="btn-imprimer"></button>
+    </section>
+
+    <!-- ÉCRAN DE FIN — jeton déjà consommé, inconnu, ou incident -->
+    <section id="ecran-message" class="ecran" aria-labelledby="titre-message" hidden>
+      <h1 id="titre-message" class="titre"></h1>
+      <div id="message-corps"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="massar_charte.js"></script>
+<script src="textes.js"></script>
+<script src="calcul.js"></script>
+<script src="ecrans.js"></script>
+</body>
+</html>
