@@ -21,6 +21,9 @@
     etats: { 'en-attente': 'en attente', utilise: 'utilisé', expire: 'expiré' },
     aucun: 'Aucun lien émis pour l’instant.',
     aucuneSimulation: 'Aucune simulation enregistrée pour l’instant.',
+    simulationsIllisibles: 'Les simulations n’ont pas pu être lues. Si c’est la '
+      + 'première fois, la table « simulations » n’existe probablement pas '
+      + 'encore dans la base — voir COMMENT_LANCER_TELEPHONE.md.',
     laboratoires: 'laboratoires',
     detail: 'Détail',
     masquer: 'Masquer',
@@ -195,13 +198,26 @@
       })
       .catch(function () { erreur(TEXTES.reseau); });
 
+    /*
+     * Un échec ici ne doit pas se traduire par une section vide : vide se lit
+     * « aucune simulation », ce qui est faux et fait chercher au mauvais
+     * endroit. La zone porte donc elle-même son message.
+     */
     fetch(adresse('simulations') + '?k=' + encodeURIComponent(cle))
       .then(function (r) { return r.json(); })
       .then(function (reponse) {
-        if (reponse.statut !== 'ok') return;
-        afficherSimulations(reponse.simulations || []);
+        if (reponse.statut === 'ok') {
+          return afficherSimulations(reponse.simulations || []);
+        }
+        annoncerDansSimulations(reponse.statut === 'requete-invalide'
+          ? TEXTES.cleRefusee : TEXTES.simulationsIllisibles);
       })
-      .catch(function () { /* la liste des liens porte déjà le message */ });
+      .catch(function () { annoncerDansSimulations(TEXTES.reseau); });
+  }
+
+  function annoncerDansSimulations(message) {
+    el.simulations.textContent = '';
+    el.simulations.appendChild(paragraphe(message, 'message-blocage'));
   }
 
   /*
