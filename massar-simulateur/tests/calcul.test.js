@@ -188,3 +188,40 @@ test('la moyenne mensuelle est le douzième du total', () => {
   assert.equal(calcul.moyenneMensuelle('12000000'), 0);
   assert.equal(calcul.moyenneMensuelle(Infinity), 0);
 });
+
+/* ── Identité déclarée par le pharmacien ──────────────────────────────── */
+
+test('un téléphone algérien est reconnu sous ses formes usuelles', () => {
+  // Mobile : dix chiffres, quelle que soit la façon de l'écrire.
+  ['0555123456', '0555 12 34 56', '05.55.12.34.56',
+   '+213555123456', '+213 555 12 34 56', '00213555123456']
+    .forEach((forme) => {
+      assert.equal(calcul.normaliserTelephone(forme), '0555123456', forme);
+    });
+
+  // Fixe : neuf chiffres.
+  assert.equal(calcul.normaliserTelephone('021 45 67 89'), '021456789');
+});
+
+test('un téléphone inexploitable est refusé, jamais rafistolé', () => {
+  ['', '   ', '12345', 'azerty', '555123456', '05551234567', '00000']
+    .forEach((forme) => {
+      assert.equal(calcul.normaliserTelephone(forme), '', JSON.stringify(forme));
+      assert.equal(calcul.telephoneValide(forme), false, JSON.stringify(forme));
+    });
+});
+
+test('le nom d’officine exige trois lettres', () => {
+  ['Pharmacie El Amel', 'صيدلية النور', 'Phie B', 'abc']
+    .forEach((n) => assert.equal(calcul.nomValide(n), true, n));
+
+  ['', '  ', 'Ph', '123', '...', '1 2 3', 'x'.repeat(81)]
+    .forEach((n) => assert.equal(calcul.nomValide(n), false, JSON.stringify(n)));
+});
+
+test('le téléphone s’affiche en groupes lisibles', () => {
+  assert.equal(calcul.formaterTelephone('0555123456'), '05 55 12 34 56');
+  assert.equal(calcul.formaterTelephone('021456789'), '021 45 67 89');
+  // Une valeur non normalisable est rendue telle quelle, jamais tronquée.
+  assert.equal(calcul.formaterTelephone('inconnu'), 'inconnu');
+});

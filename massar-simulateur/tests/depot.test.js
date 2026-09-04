@@ -12,6 +12,11 @@ const { creerNoyau, STATUTS } = require('../serveur/noyau.js');
 const { nouveauJeton } = require('../serveur/jetons.js');
 const bareme = require('../bareme/bareme.exemple.js');
 
+/* Identité déclarée par le pharmacien : exigée depuis que les simulations
+   sont enregistrées (SPEC § 1, révisé). */
+const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+
+
 const saisieValide = {
   'ex-01': 1000000, 'ex-02': 800000, 'ex-03': 600000,
   'ex-04': 400000, 'ex-05': 200000
@@ -28,12 +33,12 @@ test('un jeton consommé le reste après redémarrage', async () => {
   const avant = creerDepotFichier(chemin);
   avant.creer(jeton, {});
   const noyauAvant = creerNoyau({ bareme, depot: avant });
-  assert.equal((await noyauAvant.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyauAvant.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
 
   // Nouveau processus : le dépôt est relu depuis le fichier.
   const apres = creerDepotFichier(chemin);
   const noyauApres = creerNoyau({ bareme, depot: apres });
-  assert.equal((await noyauApres.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyauApres.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.JETON_CONSOMME);
 });
 
 test('un jeton non consommé survit au redémarrage', async () => {
@@ -42,7 +47,7 @@ test('un jeton non consommé survit au redémarrage', async () => {
   creerDepotFichier(chemin).creer(jeton, {});
 
   const noyau = creerNoyau({ bareme, depot: creerDepotFichier(chemin) });
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
 });
 
 test('un lien jamais utilisé finit par expirer', async () => {
@@ -61,7 +66,7 @@ test('un lien jamais utilisé finit par expirer', async () => {
     bareme, depot, maintenant: () => Date.parse('2026-03-02T00:00:00Z')
   });
   assert.equal((await apres.laboratoiresPour(jeton)).statut, STATUTS.JETON_EXPIRE);
-  assert.equal((await apres.simuler(jeton, saisieValide)).statut, STATUTS.JETON_EXPIRE);
+  assert.equal((await apres.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.JETON_EXPIRE);
 });
 
 test('un jeton sans échéance ne périme pas', async () => {
@@ -81,7 +86,7 @@ test('un jeton consommé prime sur son expiration', async () => {
   // Consommé pendant qu'il était encore valable.
   await creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2026-02-01T00:00:00Z')
-  }).simuler(jeton, saisieValide);
+  }).simuler(jeton, saisieValide, IDENTITE);
 
   const tardif = creerNoyau({
     bareme, depot, maintenant: () => Date.parse('2099-01-01T00:00:00Z')
@@ -89,22 +94,72 @@ test('un jeton consommé prime sur son expiration', async () => {
   assert.equal((await tardif.laboratoiresPour(jeton)).statut, STATUTS.JETON_CONSOMME);
 });
 
-test('le fichier de dépôt ne retient ni montants ni remise', async () => {
+/*
+ * Depuis la révision du § 1, les simulations sont enregistrées. La ligne de
+ * jeton, elle, n'a pas changé de nature : elle suit la vie du lien, et ne doit
+ * toujours porter ni montant ni remise. Les deux listes sont closes — tout
+ * champ nouveau doit être ajouté ici sciemment.
+ */
+test('la ligne de jeton ne porte toujours ni montant ni remise', async () => {
   const chemin = fichierTemporaire();
   const depot = creerDepotFichier(chemin);
   const jeton = nouveauJeton();
   depot.creer(jeton, { officine: 'Pharmacie du Centre' });
-  await creerNoyau({ bareme, depot }).simuler(jeton, saisieValide);
+  await creerNoyau({ bareme, depot }).simuler(jeton, saisieValide, IDENTITE);
 
-  const contenu = fs.readFileSync(chemin, 'utf8');
-  assert.ok(!contenu.includes('1000000'), 'un montant a été conservé');
-  assert.ok(!contenu.includes('80600'), 'la remise a été conservée');
-  // Liste close : tout champ nouveau doit être ajouté ici sciemment. Ce sont
-  // des dates et un nom d'officine — jamais un montant, jamais une remise.
   assert.deepEqual(
-    Object.keys(JSON.parse(contenu)[jeton]).sort(),
+    Object.keys(JSON.parse(fs.readFileSync(chemin, 'utf8')).jetons[jeton]).sort(),
     ['consommeLe', 'creeLe', 'expireLe', 'officine', 'supprimeLe']
   );
+});
+
+test('la simulation enregistrée porte exactement ce qui a été demandé', async () => {
+  const chemin = fichierTemporaire();
+  const depot = creerDepotFichier(chemin);
+  const jeton = nouveauJeton();
+  depot.creer(jeton, { officine: 'lien émis pour Ahmed' });
+  const reponse = await creerNoyau({ bareme, depot })
+    .simuler(jeton, saisieValide, IDENTITE);
+  assert.equal(reponse.statut, STATUTS.OK);
+
+  const enregistree = JSON.parse(fs.readFileSync(chemin, 'utf8')).simulations[jeton];
+  assert.deepEqual(Object.keys(enregistree).sort(), [
+    'detail', 'jeton', 'nbLaboratoires', 'officine', 'remise',
+    'simuleLe', 'tauxMoyen', 'telephone', 'total'
+  ]);
+
+  // Le nom retenu est celui que le pharmacien déclare, pas l'étiquette du lien.
+  assert.equal(enregistree.officine, 'Pharmacie du Centre');
+  assert.equal(enregistree.telephone, '0555123456');
+  assert.equal(enregistree.total, 3000000);
+  assert.equal(enregistree.nbLaboratoires, 5);
+  assert.equal(enregistree.remise, reponse.resultat.remise);
+
+  // Détail par laboratoire : identifiant, nom, montant saisi. Aucun taux, et
+  // aucune remise par ligne — les rapporter reviendrait à écrire le barème.
+  assert.equal(enregistree.detail.length, 5);
+  assert.deepEqual(Object.keys(enregistree.detail[0]).sort(),
+    ['id', 'montant', 'nom']);
+  assert.equal(
+    enregistree.detail.reduce((somme, l) => somme + l.montant, 0),
+    enregistree.total
+  );
+});
+
+test('une simulation refusée n’enregistre rien', async () => {
+  const chemin = fichierTemporaire();
+  const depot = creerDepotFichier(chemin);
+  const jeton = nouveauJeton();
+  depot.creer(jeton, { officine: 'Pharmacie du Centre' });
+
+  // Sans téléphone exploitable, le jeton doit rester vivant et rien être écrit.
+  const refus = await creerNoyau({ bareme, depot })
+    .simuler(jeton, saisieValide, { officine: 'Pharmacie du Centre', telephone: '12' });
+  assert.equal(refus.statut, STATUTS.IDENTITE_INVALIDE);
+
+  const contenu = JSON.parse(fs.readFileSync(chemin, 'utf8'));
+  assert.equal(Object.keys(contenu.simulations || {}).length, 0);
+  assert.equal(contenu.jetons[jeton].consommeLe, null);
 });
 
 test('une suppression survit au redémarrage', async () => {
@@ -121,7 +176,7 @@ test('une suppression survit au redémarrage', async () => {
 
   const noyau = creerNoyau({ bareme, depot });
   assert.equal(await noyau.etatJeton(jeton), STATUTS.JETON_INCONNU);
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.JETON_INCONNU);
 });
 
 test('un lien supprimé pèse encore sur le plafond après redémarrage', async () => {

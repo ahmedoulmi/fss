@@ -45,10 +45,18 @@
       <h2 class="recapitulatif-titre" id="titre-liste">Liens émis</h2>
       <div id="liens"></div>
     </section>
+
+    <section id="admin-simulations" hidden>
+      <h2 class="recapitulatif-titre">Simulations enregistrées</h2>
+      <div id="simulations"></div>
+    </section>
   </main>
 </div>
 
 <script src="massar_charte.js"></script>
+<!-- Pour l'écriture des montants seulement. calcul.js ne contient aucun taux :
+     le barème lui est passé en argument, et ne vit que sur le serveur. -->
+<script src="calcul.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

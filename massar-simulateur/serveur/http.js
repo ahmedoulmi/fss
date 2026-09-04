@@ -42,6 +42,14 @@ function creerServeur(options) {
     if (adresse.pathname === '/api/admin/liens') {
       return routeAdmin(administration, adresse, requete, reponse);
     }
+    if (adresse.pathname === '/api/admin/simulations') {
+      if (requete.method !== 'GET') {
+        return envoyerJson(reponse, 405, { statut: STATUTS.REQUETE_INVALIDE });
+      }
+      return administration.simulations(adresse.searchParams.get('k'))
+        .then(function (r) { envoyerJson(reponse, 200, r); })
+        .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
+    }
     return servirFichier(racine, adresse.pathname, reponse);
   });
 }
@@ -82,7 +90,8 @@ function routeSimuler(noyau, requete, reponse) {
     } catch (e) {
       return envoyerJson(reponse, 400, { statut: STATUTS.REQUETE_INVALIDE });
     }
-    noyau.simuler(charge && charge.jeton, charge && charge.montants)
+    noyau.simuler(charge && charge.jeton, charge && charge.montants,
+                  charge && charge.identite)
       .then(function (verdict) { envoyerJson(reponse, 200, verdict); })
       .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
   });

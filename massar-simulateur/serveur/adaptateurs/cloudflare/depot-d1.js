@@ -87,6 +87,66 @@ export function creerDepotD1(base) {
         .bind(new Date().toISOString(), jeton)
         .run();
       return resultat.meta.changes === 1;
+    },
+
+    /*
+     * Enregistrement d'une simulation.
+     *
+     * INSERT OR IGNORE : un jeton ne sert qu'une fois, donc une simulation
+     * par jeton. Si une écriture aboutissait deux fois — reprise après
+     * incident, requête rejouée — la seconde ne fait rien plutôt que de
+     * remplacer la première.
+     */
+    async enregistrerSimulation(jeton, donnees) {
+      await base
+        .prepare(
+          'INSERT OR IGNORE INTO simulations ' +
+          '(jeton, officine, telephone, simule_le, total, nb_laboratoires, ' +
+          ' remise, taux_moyen, detail) ' +
+          'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)'
+        )
+        .bind(
+          jeton,
+          donnees.officine,
+          donnees.telephone,
+          donnees.simuleLe,
+          donnees.total,
+          donnees.nbLaboratoires,
+          donnees.remise,
+          donnees.tauxMoyen,
+          JSON.stringify(donnees.detail)
+        )
+        .run();
+    },
+
+    async listerSimulations(limite) {
+      const r = await base
+        .prepare('SELECT jeton, officine, telephone, simule_le, total, ' +
+                 '       nb_laboratoires, remise, taux_moyen, detail ' +
+                 'FROM simulations ORDER BY simule_le DESC LIMIT ?1')
+        .bind(limite)
+        .all();
+      return (r.results || []).map((l) => ({
+        jeton: l.jeton,
+        officine: l.officine,
+        telephone: l.telephone,
+        simuleLe: l.simule_le,
+        total: l.total,
+        nbLaboratoires: l.nb_laboratoires,
+        remise: l.remise,
+        tauxMoyen: l.taux_moyen,
+        detail: lireDetail(l.detail)
+      }));
     }
   };
+}
+
+/* Un détail illisible ne doit pas faire échouer toute la liste. */
+function lireDetail(brut) {
+  try {
+    const lu = JSON.parse(brut);
+    return Array.isArray(lu) ? lu : [];
+  } catch (e) {
+    return [];
+  }
 }

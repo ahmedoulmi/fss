@@ -8,6 +8,7 @@
  */
 function creerDepotMemoire() {
   var jetons = new Map();
+  var simulations = new Map();
 
   return {
     creer: function (jeton, donnees) {
@@ -57,6 +58,30 @@ function creerDepotMemoire() {
       if (!entree || entree.supprimeLe) return false;
       entree.supprimeLe = new Date().toISOString();
       return true;
+    },
+
+
+    /* Une simulation par jeton : une seconde écriture ne remplace pas. */
+    enregistrerSimulation: function (jeton, donnees) {
+      if (simulations.has(jeton)) return;
+      simulations.set(jeton, {
+        jeton: jeton,
+        officine: donnees.officine,
+        telephone: donnees.telephone,
+        simuleLe: donnees.simuleLe,
+        total: donnees.total,
+        nbLaboratoires: donnees.nbLaboratoires,
+        remise: donnees.remise,
+        tauxMoyen: donnees.tauxMoyen,
+        detail: donnees.detail
+      });
+    },
+
+    listerSimulations: function (limite) {
+      var lignes = [];
+      simulations.forEach(function (s) { lignes.push(s); });
+      return lignes.sort(function (a, b) { return a.simuleLe < b.simuleLe ? 1 : -1; })
+                   .slice(0, limite);
     },
 
     /* Journal minimal : ni montants, ni remise (SPEC §1 — pas de collecte). */

@@ -19,6 +19,7 @@ var STATUTS = {
   JETON_EXPIRE: 'jeton-expire',
   CONDITIONS: 'conditions-non-remplies',
   REQUETE_INVALIDE: 'requete-invalide',
+  IDENTITE_INVALIDE: 'identite-invalide',
   PLAFOND_ATTEINT: 'plafond-atteint'
 };
 
@@ -105,9 +106,26 @@ function creerNoyau(options) {
     return 0;
   }
 
-  async function simuler(jeton, montantsBruts) {
+  /*
+   * Identité déclarée par le pharmacien. Revalidée ici : la page peut avoir
+   * été modifiée, et un enregistrement sans nom ni téléphone exploitable
+   * n'aurait aucune valeur.
+   */
+  function identiteRecevable(brut) {
+    var officine = String((brut && brut.officine) || '').trim().slice(0, 80);
+    var telephone = calcul.normaliserTelephone(brut && brut.telephone);
+    if (!calcul.nomValide(officine) || telephone === '') return null;
+    return { officine: officine, telephone: telephone };
+  }
+
+  async function simuler(jeton, montantsBruts, identiteBrute) {
     var statut = await etatJeton(jeton);
     if (statut !== STATUTS.OK) return { statut: statut };
+
+    // Contrôlée avant toute autre chose : le jeton ne doit pas mourir pour
+    // une saisie que l'on refusera ensuite.
+    var identite = identiteRecevable(identiteBrute);
+    if (!identite) return { statut: STATUTS.IDENTITE_INVALIDE };
 
     var montants = assainirMontants(montantsBruts);
     var totaux = calcul.calculerTotaux(montants, bareme.laboratoires);
@@ -127,6 +145,27 @@ function creerNoyau(options) {
     }
 
     var remise = calcul.calculerRemise(totaux, bareme);
+
+    /*
+     * Enregistrement (SPEC § 1, révisé). Après le calcul, et sans pouvoir
+     * l'empêcher : si l'écriture échoue, le pharmacien voit tout de même son
+     * résultat — le jeton est déjà consommé, le lui refuser le priverait de
+     * tout sans rien sauver.
+     */
+    try {
+      await depot.enregistrerSimulation(jeton, {
+        officine: identite.officine,
+        telephone: identite.telephone,
+        simuleLe: new Date(maintenant()).toISOString(),
+        total: totaux.totalCommandes,
+        nbLaboratoires: totaux.lignes.length,
+        remise: remise.remiseAffichee,
+        tauxMoyen: remise.tauxMoyen,
+        detail: totaux.lignes.map(function (l) {
+          return { id: l.id, nom: l.nom, montant: l.montant };
+        })
+      });
+    } catch (e) { /* le résultat prime sur la trace */ }
 
     // Seuls des agrégats sortent : ni taux unitaire, ni remise par ligne.
     return {
@@ -182,7 +221,12 @@ function creerNoyau(options) {
     return { statut: STATUTS.OK };
   }
 
-  /* État de chaque lien émis. Ni montants ni remise : le dépôt n'en a pas. */
+  /* Simulations enregistrées, la plus récente d'abord. */
+  async function listerSimulations(limite) {
+    return depot.listerSimulations(limite || 50);
+  }
+
+  /* État de chaque lien émis. */
   async function listerLiens(limite) {
     var lignes = await depot.lister(limite || 50);
     var instant = maintenant();
@@ -202,6 +246,7 @@ function creerNoyau(options) {
     emettreLien: emettreLien,
     supprimerLien: supprimerLien,
     listerLiens: listerLiens,
+    listerSimulations: listerSimulations,
     laboratoiresPour: laboratoiresPour,
     simuler: simuler
   };

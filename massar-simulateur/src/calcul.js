@@ -182,6 +182,48 @@ var MassarCalcul = (function () {
   }
 
   /*
+   * Téléphone algérien. Normalisé en 0XXXXXXXX(X) : les préfixes +213 et
+   * 00213 sont ramenés au 0 national, espaces et séparateurs écartés.
+   * Renvoie '' si le numéro n'est pas exploitable — jamais une valeur
+   * approchée : mieux vaut refuser que d'enregistrer un numéro faux.
+   *
+   * Mobiles : 10 chiffres (05, 06, 07). Fixes : 9 chiffres (021 Alger, etc.).
+   */
+  function normaliserTelephone(texte) {
+    var chiffres = String(texte == null ? '' : texte).replace(/\D/g, '');
+    if (chiffres.indexOf('00213') === 0) chiffres = '0' + chiffres.slice(5);
+    else if (chiffres.indexOf('213') === 0) chiffres = '0' + chiffres.slice(3);
+    if (chiffres.charAt(0) !== '0') return '';
+    if (chiffres.length !== 9 && chiffres.length !== 10) return '';
+    return chiffres;
+  }
+
+  /* Pour l'affichage : 0555123456 → 05 55 12 34 56. Massar le compose. */
+  function formaterTelephone(texte) {
+    var n = normaliserTelephone(texte);
+    if (n === '') return String(texte == null ? '' : texte);
+    return n.length === 10
+      ? n.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')
+      : n.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+  }
+
+  function telephoneValide(texte) {
+    return normaliserTelephone(texte) !== '';
+  }
+
+  /*
+   * Nom d'officine. Trois lettres au minimum : « 123 » et « ... » sont
+   * écartés. Aucune règle ne distingue un vrai nom d'un « azerty » — c'est
+   * le téléphone qui joue ce rôle, parce qu'il faut y répondre.
+   */
+  function nomValide(texte) {
+    var propre = String(texte == null ? '' : texte).trim();
+    if (propre.length < 3 || propre.length > 80) return false;
+    var lettres = propre.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\u0600-\u06FF]/g, '');
+    return lettres.length >= 3;
+  }
+
+  /*
    * Moyenne mensuelle des achats : le douzième du total annuel saisi.
    * Arrondie à l'entier, comme tout montant affiché — l'écart avec le total
    * divisé par douze n'excède jamais un dinar, et l'affichage reste cohérent
@@ -207,6 +249,10 @@ var MassarCalcul = (function () {
     calculer: calculer,
     evaluerConditions: evaluerConditions,
     moyenneMensuelle: moyenneMensuelle,
+    normaliserTelephone: normaliserTelephone,
+    telephoneValide: telephoneValide,
+    formaterTelephone: formaterTelephone,
+    nomValide: nomValide,
     decrireManque: decrireManque,
     formaterEntier: formaterEntier,
     formaterMontant: formaterMontant,

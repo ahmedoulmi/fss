@@ -17,6 +17,7 @@
   var etat = {
     jeton: jetonDepuisAdresse(),
     officine: '',
+    telephone: '',
     montants: {},
     laboratoires: [],
     dateValidite: ''
@@ -30,13 +31,28 @@
     poserTextes();
 
     el['btn-commencer'].addEventListener('click', function () {
-      etat.officine = el.officine.value.trim();
+      var officine = el.officine.value.trim();
+      var telephone = el.telephone.value.trim();
+
+      if (!calcul.nomValide(officine)) return refuserAccueil(textes.accueil.nomManquant);
+      if (!calcul.telephoneValide(telephone)) {
+        return refuserAccueil(textes.accueil.telephoneManquant);
+      }
+
+      el['accueil-erreur'].hidden = true;
+      etat.officine = officine;
+      etat.telephone = calcul.normaliserTelephone(telephone);
       afficherEcran('saisie');
     });
     el['btn-resultat'].addEventListener('click', envoyerSimulation);
     el['btn-imprimer'].addEventListener('click', function () { window.print(); });
 
     chargerLaboratoires();
+  }
+
+  function refuserAccueil(message) {
+    el['accueil-erreur'].textContent = message;
+    el['accueil-erreur'].hidden = false;
   }
 
   /* Le jeton voyage dans l'adresse : .../?s=<jeton> */
@@ -49,7 +65,8 @@
   }
 
   function recenserElements() {
-    ['officine', 'btn-commencer', 'liste-laboratoires', 'total-saisie',
+    ['officine', 'telephone', 'accueil-erreur', 'accueil-conservation',
+     'btn-commencer', 'liste-laboratoires', 'total-saisie',
      'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
      'total-resultat', 'moyenne-mensuelle', 'moyenne-libelle',
      'recapitulatif-corps', 'remise-taux', 'btn-imprimer',
@@ -78,12 +95,11 @@
     textes.accueil.presentation.forEach(function (phrase) {
       el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));
     });
-    var labelOfficine = document.querySelector('label[for="officine"]');
-    var facultatif = document.createElement('span');
-    facultatif.className = 'facultatif';
-    facultatif.textContent = textes.accueil.officineFacultatif;
-    labelOfficine.appendChild(document.createTextNode(textes.accueil.officine + ' '));
-    labelOfficine.appendChild(facultatif);
+    document.querySelector('label[for="officine"]').textContent =
+      textes.accueil.officine;
+    document.querySelector('label[for="telephone"]').textContent =
+      textes.accueil.telephone;
+    el['accueil-conservation'].textContent = textes.accueil.conservation;
 
     el['accueil-consigne'].textContent = textes.saisie.consigne[0];
     el['btn-commencer'].textContent = textes.accueil.bouton;
@@ -252,7 +268,11 @@
 
     el['btn-resultat'].disabled = true;
 
-    demander('simuler', { jeton: etat.jeton, montants: etat.montants })
+    demander('simuler', {
+      jeton: etat.jeton,
+      montants: etat.montants,
+      identite: { officine: etat.officine, telephone: etat.telephone }
+    })
       .then(function (reponse) {
         if (!reponse) return afficherFin(textes.erreur);
         if (reponse.statut === 'ok') {
@@ -262,6 +282,16 @@
         if (reponse.statut === 'conditions-non-remplies') {
           el['btn-resultat'].disabled = false;
           return rafraichirSaisie();
+        }
+        /*
+         * Le serveur revalide l'identité et peut la refuser là où la page
+         * l'avait acceptée. Le jeton est alors intact : on ramène à l'accueil
+         * pour corriger, plutôt que d'annoncer un lien mort qui ne l'est pas.
+         */
+        if (reponse.statut === 'identite-invalide') {
+          el['btn-resultat'].disabled = false;
+          refuserAccueil(textes.accueil.telephoneManquant);
+          return afficherEcran('accueil');
         }
         afficherFin(finPourStatut(reponse.statut));
       })

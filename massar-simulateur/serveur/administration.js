@@ -47,6 +47,19 @@ function creerAdministration(options) {
   }
 
   /*
+   * Simulations enregistrées. Sous la même clé que le reste : ces données
+   * sont les plus sensibles de l'outil — montants réels d'officines nommées,
+   * avec leur téléphone. Une clé qui fuit les expose toutes.
+   */
+  async function simulations(cle, limite) {
+    if (!cleValide(cle)) return { statut: STATUTS.REQUETE_INVALIDE };
+    return {
+      statut: STATUTS.OK,
+      simulations: await noyau.listerSimulations(limite || 50)
+    };
+  }
+
+  /*
    * Suppression d'un lien. Sous la même clé que l'émission : qui peut créer
    * un lien peut le retirer, et personne d'autre.
    */
@@ -77,7 +90,8 @@ function creerAdministration(options) {
     cleValide: cleValide,
     lister: lister,
     emettre: emettre,
-    supprimer: supprimer
+    supprimer: supprimer,
+    simulations: simulations
   };
 }
 

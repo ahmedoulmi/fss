@@ -14,7 +14,13 @@ var fs = require('node:fs');
 var path = require('node:path');
 
 function creerDepotFichier(chemin) {
-  var jetons = charger(chemin);
+  var contenu = charger(chemin);
+  /*
+   * Ancien format : le fichier était un objet de jetons. Il est relu tel quel
+   * et rangé sous sa clé, pour qu'une mise à jour ne perde aucun lien émis.
+   */
+  var jetons = contenu.jetons || contenu;
+  var simulations = contenu.simulations || {};
 
   function charger(cible) {
     try {
@@ -30,7 +36,11 @@ function creerDepotFichier(chemin) {
     var dossier = path.dirname(chemin);
     fs.mkdirSync(dossier, { recursive: true });
     var temporaire = chemin + '.' + process.pid + '.tmp';
-    fs.writeFileSync(temporaire, JSON.stringify(jetons, null, 2), 'utf8');
+    fs.writeFileSync(
+      temporaire,
+      JSON.stringify({ jetons: jetons, simulations: simulations }, null, 2),
+      'utf8'
+    );
     fs.renameSync(temporaire, chemin);
   }
 
@@ -87,6 +97,30 @@ function creerDepotFichier(chemin) {
       entree.supprimeLe = new Date().toISOString();
       enregistrer();
       return true;
+    },
+
+    /* Une simulation par jeton : une seconde écriture ne remplace pas. */
+    enregistrerSimulation: function (jeton, donnees) {
+      if (Object.prototype.hasOwnProperty.call(simulations, jeton)) return;
+      simulations[jeton] = {
+        jeton: jeton,
+        officine: donnees.officine,
+        telephone: donnees.telephone,
+        simuleLe: donnees.simuleLe,
+        total: donnees.total,
+        nbLaboratoires: donnees.nbLaboratoires,
+        remise: donnees.remise,
+        tauxMoyen: donnees.tauxMoyen,
+        detail: donnees.detail
+      };
+      enregistrer();
+    },
+
+    listerSimulations: function (limite) {
+      return Object.keys(simulations)
+        .map(function (jeton) { return simulations[jeton]; })
+        .sort(function (a, b) { return a.simuleLe < b.simuleLe ? 1 : -1; })
+        .slice(0, limite);
     },
 
     /* Journal minimal : ni montants, ni remise (SPEC §1 — pas de collecte). */

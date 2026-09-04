@@ -35,10 +35,22 @@
       <div class="champ-officine">
         <label for="officine"></label>
         <input type="text" id="officine" name="officine"
-               autocomplete="organization" maxlength="80">
+               autocomplete="organization" maxlength="80" required>
       </div>
 
+      <div class="champ-officine">
+        <label for="telephone"></label>
+        <input type="tel" id="telephone" name="telephone"
+               autocomplete="tel" inputmode="tel" maxlength="20" required>
+      </div>
+
+      <p class="message-blocage" id="accueil-erreur" role="status"
+         aria-live="polite" hidden></p>
+
       <p class="consigne" id="accueil-consigne"></p>
+
+      <!-- Information préalable : elle précède la saisie, jamais l'inverse. -->
+      <p class="consigne" id="accueil-conservation"></p>
 
       <button type="button" class="bouton bouton-principal" id="btn-commencer"></button>
     </section>
