@@ -71,7 +71,8 @@
 
   function recenserElements() {
     ['nom', 'prenom', 'telephone', 'accueil-erreur', 'accueil-conservation',
-     'btn-commencer', 'liste-laboratoires', 'total-saisie',
+     'btn-commencer', 'surtitre-accueil', 'surtitre-saisie',
+     'liste-laboratoires', 'total-saisie',
      'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
      'total-resultat', 'moyenne-mensuelle', 'moyenne-libelle',
      'recapitulatif-corps', 'remise-taux', 'btn-imprimer',
@@ -96,6 +97,7 @@
   function poserTextes() {
     el.signature.textContent = SIGNATURE;
     poserLogo();
+    el['surtitre-accueil'].textContent = textes.accueil.surtitre;
     el['titre-accueil'].textContent = textes.accueil.titre;
     textes.accueil.presentation.forEach(function (phrase) {
       el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));
@@ -110,6 +112,7 @@
     el['accueil-consigne'].textContent = textes.saisie.consigne[0];
     el['btn-commencer'].textContent = textes.accueil.bouton;
 
+    el['surtitre-saisie'].textContent = textes.saisie.surtitre;
     el['titre-saisie'].textContent = textes.saisie.titre;
     textes.saisie.consigne.forEach(function (phrase) {
       el['saisie-consigne'].appendChild(paragraphe(phrase));

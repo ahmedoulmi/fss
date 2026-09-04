@@ -23,10 +23,34 @@ body {
 
 .entete { padding: 0 0 8mm; }
 
-.remise { padding: 6mm 0; }
+/*
+ * Le panneau de nuit est un effet d'écran. Sur papier il coûterait une pleine
+ * page d'encre pour un résultat illisible en photocopie : le bloc revient au
+ * clair, le filet doré suffit à le distinguer.
+ */
+.remise {
+  margin-inline: 0;
+  padding: 6mm 0;
+  background: none;
+  color: var(--m-couleurs-texte);
+  border-block-end: 0.3mm solid var(--m-couleurs-bordure);
+}
 
-.remise-montant { font-size: 28pt; }
-.remise-taux { font-size: 12pt; }
+.remise-libelle { color: var(--m-couleurs-gris-web); }
+.remise-montant { font-size: 28pt; color: var(--m-couleurs-vert-fonce); }
+
+.remise-taux {
+  font-size: 12pt;
+  color: var(--m-couleurs-or);
+  background: none;
+}
+
+/* Une carte à l'écran est un simple bloc sur papier : ni ombre ni cadre. */
+.carte {
+  box-shadow: none;
+  border: 0;
+  padding: 0;
+}
 .logo { height: 28mm; }
 
 .recapitulatif { margin-top: 8mm; }
