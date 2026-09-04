@@ -22,7 +22,11 @@
     aucun: 'Aucun lien émis pour l’instant.',
     copie: 'Copié',
     copier: 'Copier',
-    envoyer: 'Envoyer'
+    envoyer: 'Envoyer',
+    supprimer: 'Supprimer',
+    confirmerSuppression: 'Supprimer ce lien ? Il cessera aussitôt de '
+      + 'fonctionner, y compris s’il a déjà été envoyé.',
+    suppressionRatee: 'La suppression n’a pas abouti. Rechargez la page.'
   };
 
   var cle = '';
@@ -143,6 +147,34 @@
     if (navigator.share) navigator.share({ url: texte }).catch(function () {});
   }
 
+  /*
+   * Suppression d'un lien.
+   *
+   * Le lien meurt pour de bon : celui qui le détiendrait déjà ne verra plus
+   * qu'un lien non valide. D'où la confirmation, qui le dit sans détour.
+   */
+  function supprimerLien(jeton, bouton) {
+    if (!window.confirm(TEXTES.confirmerSuppression)) return;
+    el['admin-erreur'].hidden = true;
+    bouton.disabled = true;
+
+    fetch(adresse('liens') + '?k=' + encodeURIComponent(cle)
+          + '&j=' + encodeURIComponent(jeton), { method: 'DELETE' })
+      .then(function (r) { return r.json(); })
+      .then(function (reponse) {
+        if (reponse.statut !== 'ok') {
+          bouton.disabled = false;
+          return erreur(reponse.statut === 'requete-invalide'
+            ? TEXTES.cleRefusee : TEXTES.suppressionRatee);
+        }
+        rafraichir();
+      })
+      .catch(function () {
+        bouton.disabled = false;
+        erreur(TEXTES.reseau);
+      });
+  }
+
   /* L'adresse d'un lien se reconstitue depuis son jeton : rien à mémoriser. */
   function adresseDuLien(jeton) {
     return new URL('/?s=' + jeton, window.location.href).toString();
@@ -204,6 +236,17 @@
           droite.appendChild(envoi);
         }
       }
+
+      // Sur toutes les lignes : un lien déjà utilisé encombre la liste autant
+      // qu'un autre, et rien n'oblige à le garder sous les yeux.
+      var retrait = document.createElement('button');
+      retrait.type = 'button';
+      retrait.className = 'bouton bouton-menu bouton-retrait';
+      retrait.textContent = TEXTES.supprimer;
+      retrait.addEventListener('click', function () {
+        supprimerLien(lien.jeton, retrait);
+      });
+      droite.appendChild(retrait);
 
       ligne.appendChild(gauche);
       ligne.appendChild(droite);

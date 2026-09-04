@@ -27,7 +27,8 @@ export function creerDepotD1(base) {
 
     async lire(jeton) {
       const ligne = await base
-        .prepare('SELECT officine, cree_le, expire_le, consomme_le FROM jetons WHERE jeton = ?1')
+        .prepare('SELECT officine, cree_le, expire_le, consomme_le, supprime_le ' +
+                 'FROM jetons WHERE jeton = ?1')
         .bind(jeton)
         .first();
       if (!ligne) return null;
@@ -35,10 +36,16 @@ export function creerDepotD1(base) {
         officine: ligne.officine,
         creeLe: ligne.cree_le,
         expireLe: ligne.expire_le,
-        consommeLe: ligne.consomme_le
+        consommeLe: ligne.consomme_le,
+        supprimeLe: ligne.supprime_le
       };
     },
 
+    /*
+     * Les lignes supprimées restent comptées : sans cela, supprimer puis
+     * réémettre suffirait à franchir le plafond quotidien autant de fois
+     * qu'on veut, et le plafond ne protégerait plus rien.
+     */
     async compterDepuis(iso) {
       const ligne = await base
         .prepare('SELECT COUNT(*) AS n FROM jetons WHERE cree_le >= ?1')
@@ -50,7 +57,8 @@ export function creerDepotD1(base) {
     async lister(limite) {
       const r = await base
         .prepare('SELECT jeton, officine, cree_le, expire_le, consomme_le ' +
-                 'FROM jetons ORDER BY cree_le DESC LIMIT ?1')
+                 'FROM jetons WHERE supprime_le IS NULL ' +
+                 'ORDER BY cree_le DESC LIMIT ?1')
         .bind(limite)
         .all();
       return (r.results || []).map((l) => ({
@@ -63,6 +71,19 @@ export function creerDepotD1(base) {
     async consommer(jeton) {
       const resultat = await base
         .prepare('UPDATE jetons SET consomme_le = ?1 WHERE jeton = ?2 AND consomme_le IS NULL')
+        .bind(new Date().toISOString(), jeton)
+        .run();
+      return resultat.meta.changes === 1;
+    },
+
+    /*
+     * Suppression logique : la ligne demeure, mais plus rien ne l'ouvre et
+     * elle disparaît de la liste. Un jeton supprimé ne redevient jamais
+     * valide, et son identifiant n'est pas réattribuable.
+     */
+    async supprimer(jeton) {
+      const resultat = await base
+        .prepare('UPDATE jetons SET supprime_le = ?1 WHERE jeton = ?2 AND supprime_le IS NULL')
         .bind(new Date().toISOString(), jeton)
         .run();
       return resultat.meta.changes === 1;

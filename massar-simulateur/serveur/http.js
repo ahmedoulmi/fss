@@ -95,6 +95,13 @@ function routeAdmin(administration, adresse, requete, reponse) {
       .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
   }
 
+  if (requete.method === 'DELETE') {
+    return administration.supprimer(adresse.searchParams.get('k'),
+                                    adresse.searchParams.get('j'))
+      .then(function (r) { envoyerJson(reponse, 200, r); })
+      .catch(function () { envoyerJson(reponse, 500, { statut: 'erreur' }); });
+  }
+
   if (requete.method !== 'POST') {
     return envoyerJson(reponse, 405, { statut: STATUTS.REQUETE_INVALIDE });
   }

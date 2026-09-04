@@ -43,6 +43,9 @@ function creerNoyau(options) {
     if (typeof jeton !== 'string' || jeton === '') return STATUTS.REQUETE_INVALIDE;
     var entree = await depot.lire(jeton);
     if (!entree) return STATUTS.JETON_INCONNU;
+    // Un lien supprimé n'existe plus pour qui le détient : rien ne distingue
+    // sa réponse de celle d'un jeton jamais émis.
+    if (entree.supprimeLe) return STATUTS.JETON_INCONNU;
     if (entree.consommeLe !== null) return STATUTS.JETON_CONSOMME;
     // Un lien envoyé puis oublié ne doit pas rester ouvrable indéfiniment :
     // le barème vieillit, et sa date de validité avec lui (SPEC §10).
@@ -163,6 +166,22 @@ function creerNoyau(options) {
     return { statut: STATUTS.OK, jeton: jeton, expireLe: echeance };
   }
 
+  /*
+   * Suppression d'un lien émis.
+   *
+   * La ligne n'est pas effacée mais marquée : elle continue de peser dans le
+   * plafond quotidien. Effacer pour de bon offrirait à qui tient la clé un
+   * moyen simple de le contourner, et le plafond est ce qui rend visible
+   * l'émission en masse par laquelle le barème se déduirait.
+   */
+  async function supprimerLien(jeton) {
+    if (typeof jeton !== 'string' || jeton === '') {
+      return { statut: STATUTS.REQUETE_INVALIDE };
+    }
+    if (!(await depot.supprimer(jeton))) return { statut: STATUTS.JETON_INCONNU };
+    return { statut: STATUTS.OK };
+  }
+
   /* État de chaque lien émis. Ni montants ni remise : le dépôt n'en a pas. */
   async function listerLiens(limite) {
     var lignes = await depot.lister(limite || 50);
@@ -181,6 +200,7 @@ function creerNoyau(options) {
   return {
     etatJeton: etatJeton,
     emettreLien: emettreLien,
+    supprimerLien: supprimerLien,
     listerLiens: listerLiens,
     laboratoiresPour: laboratoiresPour,
     simuler: simuler

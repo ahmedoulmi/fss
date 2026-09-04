@@ -87,3 +87,91 @@ test('un blanc ne rattrape pas une clé fausse', async () => {
   assert.equal((await admin.lister(' ' + CLE + 'x ')).statut, STATUTS.REQUETE_INVALIDE);
   assert.equal((await admin.lister(CLE.slice(0, -1) + ' ')).statut, STATUTS.REQUETE_INVALIDE);
 });
+
+/* ── Suppression d'un lien ────────────────────────────────────────────── */
+
+async function unLien(admin, officine) {
+  const r = await admin.emettre(CLE, { officine, base: 'https://exemple.test' });
+  assert.equal(r.statut, STATUTS.OK);
+  return r.jeton;
+}
+
+test('un lien supprimé quitte la liste', async () => {
+  const admin = contexte();
+  const jeton = await unLien(admin, 'Pharmacie A');
+  await unLien(admin, 'Pharmacie B');
+  assert.equal((await admin.lister(CLE)).liens.length, 2);
+
+  assert.equal((await admin.supprimer(CLE, jeton)).statut, STATUTS.OK);
+
+  const restants = (await admin.lister(CLE)).liens;
+  assert.equal(restants.length, 1);
+  assert.equal(restants[0].officine, 'Pharmacie B');
+});
+
+test('un lien supprimé n’ouvre plus rien', async () => {
+  const depot = creerDepotMemoire();
+  const noyau = creerNoyau({ bareme, depot });
+  const admin = creerAdministration({ noyau, cleAttendue: CLE, nouveauJeton });
+
+  const jeton = await unLien(admin, 'Pharmacie A');
+  assert.equal(await noyau.etatJeton(jeton), STATUTS.OK);
+
+  await admin.supprimer(CLE, jeton);
+
+  // Indiscernable d'un jeton jamais émis : rien ne fuit sur ce qui a existé.
+  assert.equal(await noyau.etatJeton(jeton), STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.laboratoiresPour(jeton)).statut, STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.simuler(jeton, {})).statut, STATUTS.JETON_INCONNU);
+});
+
+/*
+ * Le point qui compte. Si supprimer libérait une place, qui tient la clé
+ * émettrait sans limite en supprimant au fur et à mesure — et le plafond,
+ * seul garde-fou contre la déduction du barème, ne servirait plus à rien.
+ */
+test('supprimer ne libère pas de place sous le plafond', async () => {
+  const depot = creerDepotMemoire();
+  const noyau = creerNoyau({ bareme, depot });
+  const admin = creerAdministration({ noyau, cleAttendue: CLE, nouveauJeton });
+
+  const emis = [];
+  for (let i = 0; i < 30; i += 1) emis.push(await unLien(admin, 'P' + i));
+
+  assert.equal(
+    (await admin.emettre(CLE, { officine: 'de trop', base: 'https://exemple.test' })).statut,
+    STATUTS.PLAFOND_ATTEINT
+  );
+
+  for (const jeton of emis) {
+    assert.equal((await admin.supprimer(CLE, jeton)).statut, STATUTS.OK);
+  }
+  assert.equal((await admin.lister(CLE)).liens.length, 0);
+
+  assert.equal(
+    (await admin.emettre(CLE, { officine: 'après le ménage', base: 'https://exemple.test' })).statut,
+    STATUTS.PLAFOND_ATTEINT
+  );
+});
+
+test('supprimer deux fois le même lien reste sans effet', async () => {
+  const admin = contexte();
+  const jeton = await unLien(admin, 'Pharmacie A');
+  assert.equal((await admin.supprimer(CLE, jeton)).statut, STATUTS.OK);
+  assert.equal((await admin.supprimer(CLE, jeton)).statut, STATUTS.JETON_INCONNU);
+});
+
+test('la suppression exige la clé', async () => {
+  const admin = contexte();
+  const jeton = await unLien(admin, 'Pharmacie A');
+
+  assert.equal((await admin.supprimer('', jeton)).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await admin.supprimer(CLE + 'x', jeton)).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await admin.lister(CLE)).liens.length, 1);
+});
+
+test('un jeton absent ou vide ne fait rien croire', async () => {
+  const admin = contexte();
+  assert.equal((await admin.supprimer(CLE, '')).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await admin.supprimer(CLE, 'jeton-inexistant')).statut, STATUTS.JETON_INCONNU);
+});

@@ -6,7 +6,10 @@ CREATE TABLE IF NOT EXISTS jetons (
   officine    TEXT NOT NULL DEFAULT '',
   cree_le     TEXT NOT NULL,
   expire_le   TEXT,
-  consomme_le TEXT
+  consomme_le TEXT,
+  -- Suppression logique. La ligne demeure : elle continue de compter dans le
+  -- plafond quotidien, sans quoi supprimer suffirait à contourner celui-ci.
+  supprime_le TEXT
 );
 
 CREATE INDEX IF NOT EXISTS jetons_consomme_le ON jetons (consomme_le);

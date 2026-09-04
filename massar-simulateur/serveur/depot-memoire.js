@@ -15,7 +15,8 @@ function creerDepotMemoire() {
         officine: (donnees && donnees.officine) || '',
         creeLe: new Date().toISOString(),
         expireLe: (donnees && donnees.expireLe) || null,
-        consommeLe: null
+        consommeLe: null,
+        supprimeLe: null
       });
       return jeton;
     },
@@ -32,6 +33,7 @@ function creerDepotMemoire() {
       return true;
     },
 
+    /* Les lignes supprimées restent comptées : voir le dépôt D1. */
     compterDepuis: function (iso) {
       var n = 0;
       jetons.forEach(function (e) { if (e.creeLe >= iso) n += 1; });
@@ -41,11 +43,20 @@ function creerDepotMemoire() {
     lister: function (limite) {
       var lignes = [];
       jetons.forEach(function (e, jeton) {
+        if (e.supprimeLe) return;
         lignes.push({ jeton: jeton, officine: e.officine, creeLe: e.creeLe,
                       expireLe: e.expireLe || null, consommeLe: e.consommeLe });
       });
       return lignes.sort(function (a, b) { return a.creeLe < b.creeLe ? 1 : -1; })
                    .slice(0, limite);
+    },
+
+    /* Suppression logique : la ligne demeure, plus rien ne l'ouvre. */
+    supprimer: function (jeton) {
+      var entree = jetons.get(jeton);
+      if (!entree || entree.supprimeLe) return false;
+      entree.supprimeLe = new Date().toISOString();
+      return true;
     },
 
     /* Journal minimal : ni montants, ni remise (SPEC §1 — pas de collecte). */

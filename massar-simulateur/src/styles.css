@@ -442,6 +442,13 @@ body {
   border-color: var(--m-couleurs-bordure);
 }
 
+/* Le rouge de la charte est fonctionnel : ici il signale une action sans
+   retour. Il reste sur le texte et la bordure, jamais en aplat. */
+.bouton-retrait {
+  color: var(--m-couleurs-rouge);
+  border-color: var(--m-couleurs-rouge);
+}
+
 .lien-officine { margin: 0; font-size: var(--m-echelle-sm); }
 
 .lien-date {
