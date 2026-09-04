@@ -21,7 +21,7 @@ test('la saisie n’accepte que des entiers positifs', () => {
 });
 
 test('le plafond de ligne borne la faute de frappe', () => {
-  assert.equal(calcul.normaliserSaisie('999999999999'), '1000000000');
+  assert.equal(calcul.normaliserSaisie('999999999999'), '50000000');
 });
 
 test('une ligne vide n’est pas comptée', () => {
@@ -150,4 +150,41 @@ test('le taux affiché est la division des deux montants affichés', () => {
     const refait = (r.remiseAffichee / r.totalCommandes) * 100;
     assert.equal(calcul.formaterTaux(r.tauxMoyen), calcul.formaterTaux(refait));
   });
+});
+
+/* ── Plafond par laboratoire, et moyenne mensuelle ────────────────────── */
+
+test('le plafond borne le laboratoire, jamais le total', () => {
+  const plafond = calcul.CONSTANTES.PLAFOND_LIGNE;
+  assert.equal(plafond, 50000000);
+
+  // Une saisie au-delà du plafond y est ramenée.
+  assert.equal(calcul.montantDepuisSaisie('50000001'), plafond);
+  assert.equal(calcul.montantDepuisSaisie('999999999'), plafond);
+  // En deçà, elle passe telle quelle.
+  assert.equal(calcul.montantDepuisSaisie('49999999'), 49999999);
+
+  // Le total, lui, est une somme : trente lignes au plafond le dépassent
+  // largement, et c'est légitime.
+  const laboratoires = [];
+  const montants = {};
+  for (let i = 0; i < 30; i += 1) {
+    laboratoires.push({ id: 'l' + i, nom: 'L' + i });
+    montants['l' + i] = plafond;
+  }
+  const totaux = calcul.calculerTotaux(montants, laboratoires);
+  assert.equal(totaux.totalCommandes, 30 * plafond);
+  assert.equal(totaux.totalCommandes, 1500000000);
+});
+
+test('la moyenne mensuelle est le douzième du total', () => {
+  assert.equal(calcul.moyenneMensuelle(12000000), 1000000);
+  assert.equal(calcul.moyenneMensuelle(0), 0);
+  // Arrondi à l'entier, comme tout montant affiché.
+  assert.equal(calcul.moyenneMensuelle(100), 8);
+  assert.equal(calcul.moyenneMensuelle(1000000), 83333);
+  // Une entrée qui n'est pas un nombre ne produit pas NaN à l'écran.
+  assert.equal(calcul.moyenneMensuelle(undefined), 0);
+  assert.equal(calcul.moyenneMensuelle('12000000'), 0);
+  assert.equal(calcul.moyenneMensuelle(Infinity), 0);
 });

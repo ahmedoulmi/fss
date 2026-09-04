@@ -137,7 +137,7 @@ test('le plafond de ligne s’applique aussi à un envoi direct', async () => {
     'ex-04': 400000, 'ex-05': 200000
   });
   assert.equal(reponse.statut, STATUTS.OK);
-  assert.equal(reponse.resultat.totalCommandes, 1000000000 + 2000000);
+  assert.equal(reponse.resultat.totalCommandes, 50000000 + 2000000);
 });
 
 test('une requête sans jeton est rejetée', async () => {
