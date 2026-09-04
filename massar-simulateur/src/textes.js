@@ -53,7 +53,8 @@ var MASSAR_TEXTES = {
 
   resultat: {
     libelle: 'Remise annuelle estimée',
-    total: 'Total des commandes',
+    total: 'Total des commandes saisies',
+    moyenneMensuelle: 'Moyenne mensuelle',
     recapitulatif: 'Détail par laboratoire',
     colonneLaboratoire: 'Laboratoire',
     colonneMontant: 'Montant saisi',
@@ -66,6 +67,8 @@ var MASSAR_TEXTES = {
 
   mentions: [
     'Simulation fondée sur les montants que vous saisissez.',
+    'Les remises effectivement obtenues dépendent des conditions, paliers et '
+      + 'clauses propres à chaque fournisseur et à chaque laboratoire.',
     'Conditions au {date}.'
   ],
 

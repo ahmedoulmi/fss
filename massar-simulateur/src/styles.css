@@ -301,6 +301,26 @@ body {
   font-size: var(--m-echelle-md);
 }
 
+/* La moyenne mensuelle éclaire le total sans lui disputer la place :
+   même colonne, un cran plus discret, et pas de trait qui les sépare. */
+.moyenne-resultat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--m-espacement-md);
+  padding: var(--m-espacement-sm) 0;
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  color: var(--m-couleurs-gris);
+}
+
+.moyenne-resultat-libelle { font-size: var(--m-echelle-xs); }
+
+.moyenne-resultat-valeur {
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--m-echelle-sm);
+}
+
 .recapitulatif { margin-top: var(--m-espacement-xl); }
 
 .recapitulatif-titre {

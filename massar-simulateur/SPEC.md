@@ -57,7 +57,9 @@ Taux moyen              = Remise affichée / Total des commandes
   800 000 DA
 - Un montant négatif ou décimal transmis au serveur est écarté, jamais
   réinterprété
-- Plafond par ligne : 1 000 000 000 DA, garde-fou contre la faute de frappe
+- Plafond par laboratoire : **50 000 000 DA**, garde-fou contre la faute de
+  frappe. Il ne s'applique pas au total, qui est une somme et peut
+  légitimement le dépasser
 
 ---
 
@@ -146,7 +148,7 @@ Ordre d'affichage :
 
 1. **Taux moyen puis montant total de la remise estimée**, sur la même ligne —
    en tête, le montant dominant
-2. **Total des commandes**
+2. **Total des commandes saisies**, puis sa **moyenne mensuelle**
 3. **Récapitulatif par laboratoire** — nom et montant saisi uniquement, **sans remise ni taux par ligne**
 4. **Mentions** (§ 6)
 5. **Action unique : impression du récapitulatif**
@@ -161,7 +163,17 @@ même structure.
 Une mention **« pensez à imprimer »** figure sur l'écran, absente du document
 imprimé : le lien meurt après usage, le récapitulatif ne survit que sur papier.
 
-Périodicité annuelle exclusivement. Aucun équivalent mensuel.
+**La remise reste annuelle exclusivement.** Aucun équivalent mensuel n'en est
+donné : le chiffre affiché porte sur l'année, et le présenter au mois
+laisserait entendre un versement périodique qui n'existe pas.
+
+La moyenne mensuelle ne porte que sur les **achats saisis** — le douzième du
+total, affiché sous lui, en plus discret. Elle sert au pharmacien à
+reconnaître son propre rythme et à vérifier qu'il n'a pas confondu montant
+annuel et montant mensuel en saisissant.
+
+*Écart assumé avec la version 1.1, demandé : elle excluait tout équivalent
+mensuel sans distinguer les achats de la remise.*
 
 Aucune autre action, aucun contact affiché, aucun formulaire. La relance se
 fait hors de l'outil.
@@ -175,7 +187,7 @@ Reprend l'écran résultat, dans le même ordre :
 - Identité visuelle Massar
 - Nom de l'officine si renseigné, et date de la simulation
 - Montant total de la remise estimée
-- Total des commandes
+- Total des commandes saisies, et sa moyenne mensuelle
 - Détail par laboratoire — **montants saisis seuls, sans remise ni taux par ligne**
 - Mentions
 
@@ -190,7 +202,14 @@ Présentes à l'écran résultat et sur le document imprimé :
 
 > Simulation fondée sur les montants que vous saisissez.
 
+> Les remises effectivement obtenues dépendent des conditions, paliers et
+> clauses propres à chaque fournisseur et à chaque laboratoire.
+
 > Conditions au 31/12/2026.
+
+La deuxième mention est la garantie que le chiffre affiché soit lu pour ce
+qu'il est : une estimation à partir de montants déclarés, et non un engagement
+sur ce qui sera obtenu.
 
 ---
 
@@ -303,6 +322,24 @@ montants négatifs, plafond.
 **Durée de vie d'un lien jamais utilisé : 3 jours**, réglable à l'émission.
 Le lien s'adresse à un prospect qu'on vient d'appeler ; passé ce délai, il
 faut en émettre un nouveau.
+
+---
+
+## Ce qui a changé depuis la version 1.1
+
+**Mention sur ce dont dépend la remise réelle** (§ 6), demandée. Les conditions,
+paliers et clauses appartiennent aux fournisseurs et aux laboratoires, non à
+Massar : le chiffre affiché est une estimation à partir de montants déclarés,
+et la mention le dit à l'écran comme sur le papier.
+
+**Moyenne mensuelle des achats saisis** (§ 4), demandée. La version 1.1
+excluait tout équivalent mensuel sans distinguer les achats de la remise. La
+distinction est désormais explicite : la remise reste annuelle exclusivement,
+seuls les achats reçoivent une moyenne mensuelle.
+
+**Plafond par laboratoire ramené de 1 000 000 000 à 50 000 000 DA** (§ 2),
+demandé. Le total n'est pas plafonné : il est une somme, et trente
+laboratoires au plafond le portent légitimement à 1 500 000 000 DA.
 
 
 ---

@@ -51,7 +51,8 @@
   function recenserElements() {
     ['officine', 'btn-commencer', 'liste-laboratoires', 'total-saisie',
      'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
-     'total-resultat', 'recapitulatif-corps', 'remise-taux', 'btn-imprimer',
+     'total-resultat', 'moyenne-mensuelle', 'moyenne-libelle',
+     'recapitulatif-corps', 'remise-taux', 'btn-imprimer',
      'logo', 'marque',
      'titre-accueil', 'accueil-presentation', 'accueil-consigne', 'titre-saisie',
      'saisie-consigne', 'total-saisie-libelle', 'titre-resultat',
@@ -96,6 +97,7 @@
 
     el['titre-resultat'].textContent = textes.resultat.libelle;
     el['total-resultat-libelle'].textContent = textes.resultat.total;
+    el['moyenne-libelle'].textContent = textes.resultat.moyenneMensuelle;
     el['recapitulatif-titre'].textContent = textes.resultat.recapitulatif;
     el['colonne-laboratoire'].textContent = textes.resultat.colonneLaboratoire;
     el['colonne-montant'].textContent = textes.resultat.colonneMontant;
@@ -270,6 +272,9 @@
     el.identification.textContent = ligneIdentification();
     el['remise-montant'].textContent = calcul.formaterMontant(resultat.remise);
     el['total-resultat'].textContent = calcul.formaterMontant(resultat.totalCommandes);
+    // Le total saisi est annuel : sa moyenne mensuelle en est le douzième.
+    el['moyenne-mensuelle'].textContent =
+      calcul.formaterMontant(calcul.moyenneMensuelle(resultat.totalCommandes));
     el['remise-taux'].textContent = calcul.formaterTaux(resultat.tauxMoyen);
     el['remise-taux'].setAttribute('title', textes.resultat.tauxMoyen);
 

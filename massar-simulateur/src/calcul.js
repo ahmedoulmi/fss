@@ -15,7 +15,9 @@ var MassarCalcul = (function () {
   var CONSTANTES = {
     MIN_LABORATOIRES: 5,          // SPEC §4 — condition d'accès au résultat
     MIN_TOTAL_COMMANDES: 1000000, // SPEC §4 — en dinars
-    PLAFOND_LIGNE: 1000000000     // garde-fou contre la faute de frappe
+    // Plafond par laboratoire. Il borne la faute de frappe, pas le total :
+    // celui-ci est une somme et peut légitimement le dépasser.
+    PLAFOND_LIGNE: 50000000
   };
 
   /*
@@ -179,6 +181,17 @@ var MassarCalcul = (function () {
     return formaterEntier(valeur) + ' DA';
   }
 
+  /*
+   * Moyenne mensuelle des achats : le douzième du total annuel saisi.
+   * Arrondie à l'entier, comme tout montant affiché — l'écart avec le total
+   * divisé par douze n'excède jamais un dinar, et l'affichage reste cohérent
+   * avec le reste de l'écran.
+   */
+  function moyenneMensuelle(totalAnnuel) {
+    if (typeof totalAnnuel !== 'number' || !isFinite(totalAnnuel)) return 0;
+    return Math.round(totalAnnuel / 12);
+  }
+
   /* Taux moyen : une décimale (SPEC §2). */
   function formaterTaux(pourcentage) {
     return formaterNombre(pourcentage, 1) + ' %';
@@ -193,6 +206,7 @@ var MassarCalcul = (function () {
     calculerRemise: calculerRemise,
     calculer: calculer,
     evaluerConditions: evaluerConditions,
+    moyenneMensuelle: moyenneMensuelle,
     decrireManque: decrireManque,
     formaterEntier: formaterEntier,
     formaterMontant: formaterMontant,
