@@ -76,6 +76,12 @@ export default {
         if (requete.method === 'GET') {
           return json(await administration.lister(adresse.searchParams.get('k')));
         }
+        if (requete.method === 'DELETE') {
+          return json(await administration.supprimer(
+            adresse.searchParams.get('k'),
+            adresse.searchParams.get('j')
+          ));
+        }
         if (requete.method !== 'POST') return json({ statut: 'requete-invalide' }, 405);
 
         const brutAdmin = await requete.text();

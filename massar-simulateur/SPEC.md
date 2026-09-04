@@ -317,6 +317,14 @@ téléphone : c'est là que les liens s'émettent au quotidien.
 - Le copier, ou l'envoyer par le partage natif du téléphone
 - Copier ou renvoyer un lien émis plus tôt et encore en attente
 - Suivre l'état de chaque lien : en attente, utilisé, expiré
+- Supprimer un lien, quel que soit son état
+
+**La suppression est logique, jamais physique.** Le lien disparaît de la liste
+et cesse aussitôt d'ouvrir quoi que ce soit — celui qui le détiendrait déjà ne
+verra plus qu'un lien non valide, indiscernable d'un jeton jamais émis. Mais la
+ligne demeure en base, et continue de peser dans le plafond quotidien ci-après.
+Effacer pour de bon offrirait à qui tient la clé le moyen le plus simple de
+contourner ce plafond : émettre, supprimer, recommencer.
 
 **Ce qu'elle ne voit jamais** : un taux. Elle ne manipule que des jetons. Ni
 montants ni remise ne sont conservés (§ 1 — l'outil n'est pas un dispositif de

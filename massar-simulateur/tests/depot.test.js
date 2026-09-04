@@ -99,8 +99,41 @@ test('le fichier de dépôt ne retient ni montants ni remise', async () => {
   const contenu = fs.readFileSync(chemin, 'utf8');
   assert.ok(!contenu.includes('1000000'), 'un montant a été conservé');
   assert.ok(!contenu.includes('80600'), 'la remise a été conservée');
+  // Liste close : tout champ nouveau doit être ajouté ici sciemment. Ce sont
+  // des dates et un nom d'officine — jamais un montant, jamais une remise.
   assert.deepEqual(
     Object.keys(JSON.parse(contenu)[jeton]).sort(),
-    ['consommeLe', 'creeLe', 'expireLe', 'officine']
+    ['consommeLe', 'creeLe', 'expireLe', 'officine', 'supprimeLe']
   );
+});
+
+test('une suppression survit au redémarrage', async () => {
+  const chemin = fichierTemporaire();
+  const jeton = nouveauJeton();
+
+  let depot = creerDepotFichier(chemin);
+  depot.creer(jeton, { officine: 'Pharmacie A', expireLe: null });
+  assert.equal(depot.supprimer(jeton), true);
+
+  depot = creerDepotFichier(chemin);
+  assert.equal(depot.lister(50).length, 0);
+  assert.equal(depot.supprimer(jeton), false);
+
+  const noyau = creerNoyau({ bareme, depot });
+  assert.equal(await noyau.etatJeton(jeton), STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_INCONNU);
+});
+
+test('un lien supprimé pèse encore sur le plafond après redémarrage', async () => {
+  const chemin = fichierTemporaire();
+  const jeton = nouveauJeton();
+
+  let depot = creerDepotFichier(chemin);
+  depot.creer(jeton, { officine: 'Pharmacie A', expireLe: null });
+  depot.supprimer(jeton);
+
+  depot = creerDepotFichier(chemin);
+  const noyau = creerNoyau({ bareme, depot });
+  const r = await noyau.emettreLien({ jeton: nouveauJeton(), plafondQuotidien: 1 });
+  assert.equal(r.statut, STATUTS.PLAFOND_ATTEINT);
 });

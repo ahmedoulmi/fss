@@ -46,10 +46,24 @@ CREATE TABLE IF NOT EXISTS jetons (
   officine    TEXT NOT NULL DEFAULT '',
   cree_le     TEXT NOT NULL,
   expire_le   TEXT,
-  consomme_le TEXT
+  consomme_le TEXT,
+  supprime_le TEXT
 );
 CREATE INDEX IF NOT EXISTS jetons_consomme_le ON jetons (consomme_le);
 ```
+
+### Si la base existait déjà
+
+La colonne `supprime_le` est arrivée avec le bouton de suppression. Une base
+créée avant ne l'a pas, et la page de gestion restera en erreur tant qu'elle
+manque. Une seule commande à passer dans la même **Console**, une seule fois :
+
+```sql
+ALTER TABLE jetons ADD COLUMN supprime_le TEXT;
+```
+
+Si la réponse dit que la colonne existe déjà, c'est qu'elle y était : rien à
+faire.
 
 ---
 
@@ -126,7 +140,14 @@ Elle permet de :
 - **créer un lien**, avec le nom de l'officine si vous le souhaitez ;
 - le **copier**, ou l'**envoyer** directement par WhatsApp ou SMS — le bouton
   d'envoi apparaît sur téléphone ;
-- **suivre l'état** de chaque lien émis : en attente, utilisé, ou expiré.
+- **suivre l'état** de chaque lien émis : en attente, utilisé, ou expiré ;
+- **supprimer** un lien. Il quitte la liste et cesse aussitôt de fonctionner,
+  même s'il a déjà été envoyé — le pharmacien qui l'ouvrirait ensuite verrait
+  « Lien non valide ». C'est sans retour.
+
+  À savoir : supprimer ne rend pas de place sous le plafond de 30 liens par
+  jour. C'est voulu — sans quoi il suffirait de supprimer au fur et à mesure
+  pour émettre sans limite, et le plafond ne protégerait plus rien.
 
 Cette page ne voit jamais un taux. Elle ne manipule que des jetons.
 

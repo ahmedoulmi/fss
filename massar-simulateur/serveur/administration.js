@@ -46,6 +46,15 @@ function creerAdministration(options) {
     return { statut: STATUTS.OK, liens: await noyau.listerLiens(50) };
   }
 
+  /*
+   * Suppression d'un lien. Sous la même clé que l'émission : qui peut créer
+   * un lien peut le retirer, et personne d'autre.
+   */
+  async function supprimer(cle, jeton) {
+    if (!cleValide(cle)) return { statut: STATUTS.REQUETE_INVALIDE };
+    return noyau.supprimerLien(String(jeton || ''));
+  }
+
   async function emettre(cle, donnees) {
     if (!cleValide(cle)) return { statut: STATUTS.REQUETE_INVALIDE };
 
@@ -64,7 +73,12 @@ function creerAdministration(options) {
     };
   }
 
-  return { cleValide: cleValide, lister: lister, emettre: emettre };
+  return {
+    cleValide: cleValide,
+    lister: lister,
+    emettre: emettre,
+    supprimer: supprimer
+  };
 }
 
 module.exports = { creerAdministration: creerAdministration, memeCle: memeCle };
