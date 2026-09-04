@@ -12,7 +12,7 @@ const bareme = require('../bareme/bareme.exemple.js');
 
 /* Identité déclarée par le pharmacien : exigée depuis que les simulations
    sont enregistrées (SPEC § 1, révisé). */
-const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+const IDENTITE = { nom: 'Benali', prenom: 'Ahmed', telephone: '0555123456' };
 
 
 const CLE = 'cle-de-test-suffisamment-longue-pour-etre-realiste';

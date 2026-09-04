@@ -104,7 +104,8 @@ function creerDepotFichier(chemin) {
       if (Object.prototype.hasOwnProperty.call(simulations, jeton)) return;
       simulations[jeton] = {
         jeton: jeton,
-        officine: donnees.officine,
+        nom: donnees.nom,
+        prenom: donnees.prenom,
         telephone: donnees.telephone,
         simuleLe: donnees.simuleLe,
         total: donnees.total,
@@ -116,9 +117,14 @@ function creerDepotFichier(chemin) {
       enregistrer();
     },
 
+    /* Le libellé du lien vient de la ligne de jeton : une seule vérité. */
     listerSimulations: function (limite) {
       return Object.keys(simulations)
-        .map(function (jeton) { return simulations[jeton]; })
+        .map(function (jeton) {
+          return Object.assign({}, simulations[jeton], {
+            lien: (jetons[jeton] && jetons[jeton].officine) || ''
+          });
+        })
         .sort(function (a, b) { return a.simuleLe < b.simuleLe ? 1 : -1; })
         .slice(0, limite);
     },

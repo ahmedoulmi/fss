@@ -112,10 +112,12 @@ function creerNoyau(options) {
    * n'aurait aucune valeur.
    */
   function identiteRecevable(brut) {
-    var officine = String((brut && brut.officine) || '').trim().slice(0, 80);
+    var nom = String((brut && brut.nom) || '').trim().slice(0, 40);
+    var prenom = String((brut && brut.prenom) || '').trim().slice(0, 40);
     var telephone = calcul.normaliserTelephone(brut && brut.telephone);
-    if (!calcul.nomValide(officine) || telephone === '') return null;
-    return { officine: officine, telephone: telephone };
+    if (!calcul.nomValide(nom) || !calcul.nomValide(prenom)) return null;
+    if (telephone === '') return null;
+    return { nom: nom, prenom: prenom, telephone: telephone };
   }
 
   async function simuler(jeton, montantsBruts, identiteBrute) {
@@ -154,7 +156,8 @@ function creerNoyau(options) {
      */
     try {
       await depot.enregistrerSimulation(jeton, {
-        officine: identite.officine,
+        nom: identite.nom,
+        prenom: identite.prenom,
         telephone: identite.telephone,
         simuleLe: new Date(maintenant()).toISOString(),
         total: totaux.totalCommandes,

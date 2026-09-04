@@ -25,6 +25,7 @@
       + 'première fois, la table « simulations » n’existe probablement pas '
       + 'encore dans la base — voir COMMENT_LANCER_TELEPHONE.md.',
     laboratoires: 'laboratoires',
+    lien: 'lien',
     detail: 'Détail',
     masquer: 'Masquer',
     copie: 'Copié',
@@ -242,10 +243,15 @@
       entete.className = 'lien-ligne';
 
       var gauche = document.createElement('div');
-      gauche.appendChild(paragraphe(s.officine, 'lien-officine'));
+      gauche.appendChild(paragraphe(s.nom + ' ' + s.prenom, 'lien-officine'));
       gauche.appendChild(paragraphe(
         MassarCalcul.formaterTelephone(s.telephone) + ' — ' + dateCourte(s.simuleLe),
         'lien-date'));
+      // Le libellé que Massar a donné au lien : de quoi voir d'un coup d'œil
+      // si celui qui a rempli est bien celui à qui le lien a été envoyé.
+      if (s.lien) {
+        gauche.appendChild(paragraphe(TEXTES.lien + ' « ' + s.lien + ' »', 'lien-date'));
+      }
       gauche.appendChild(paragraphe(
         montant(s.total) + ' · ' + s.nbLaboratoires + ' ' + TEXTES.laboratoires
           + ' · ' + montant(s.remise),

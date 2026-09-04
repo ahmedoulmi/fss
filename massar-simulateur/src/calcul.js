@@ -182,19 +182,23 @@ var MassarCalcul = (function () {
   }
 
   /*
-   * Téléphone algérien. Normalisé en 0XXXXXXXX(X) : les préfixes +213 et
+   * Téléphone algérien mobile. Normalisé en 0XXXXXXXXX : les préfixes +213 et
    * 00213 sont ramenés au 0 national, espaces et séparateurs écartés.
+   *
+   * Dix chiffres, commençant par 05, 06, 07 ou 09. Les fixes sont écartés :
+   * l'outil sert la prospection, et c'est un portable qu'on rappelle.
+   *
    * Renvoie '' si le numéro n'est pas exploitable — jamais une valeur
    * approchée : mieux vaut refuser que d'enregistrer un numéro faux.
-   *
-   * Mobiles : 10 chiffres (05, 06, 07). Fixes : 9 chiffres (021 Alger, etc.).
    */
+  var PREFIXES_MOBILES = /^0[5679]/;
+
   function normaliserTelephone(texte) {
     var chiffres = String(texte == null ? '' : texte).replace(/\D/g, '');
     if (chiffres.indexOf('00213') === 0) chiffres = '0' + chiffres.slice(5);
     else if (chiffres.indexOf('213') === 0) chiffres = '0' + chiffres.slice(3);
-    if (chiffres.charAt(0) !== '0') return '';
-    if (chiffres.length !== 9 && chiffres.length !== 10) return '';
+    if (chiffres.length !== 10) return '';
+    if (!PREFIXES_MOBILES.test(chiffres)) return '';
     return chiffres;
   }
 
@@ -202,9 +206,7 @@ var MassarCalcul = (function () {
   function formaterTelephone(texte) {
     var n = normaliserTelephone(texte);
     if (n === '') return String(texte == null ? '' : texte);
-    return n.length === 10
-      ? n.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')
-      : n.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    return n.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5');
   }
 
   function telephoneValide(texte) {
@@ -212,15 +214,18 @@ var MassarCalcul = (function () {
   }
 
   /*
-   * Nom d'officine. Trois lettres au minimum : « 123 » et « ... » sont
-   * écartés. Aucune règle ne distingue un vrai nom d'un « azerty » — c'est
-   * le téléphone qui joue ce rôle, parce qu'il faut y répondre.
+   * Nom ou prénom du pharmacien. Deux lettres au minimum : « B. » et « 12 »
+   * sont écartés, « Ali » et « اسم » passent.
+   *
+   * Aucune règle ne distingue un vrai nom d'un « azerty » — c'est le
+   * téléphone qui joue ce rôle, parce qu'il faut y répondre. Ces contrôles
+   * n'écartent que le remplissage manifestement vide.
    */
   function nomValide(texte) {
     var propre = String(texte == null ? '' : texte).trim();
-    if (propre.length < 3 || propre.length > 80) return false;
+    if (propre.length < 2 || propre.length > 40) return false;
     var lettres = propre.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\u0600-\u06FF]/g, '');
-    return lettres.length >= 3;
+    return lettres.length >= 2;
   }
 
   /*

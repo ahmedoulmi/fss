@@ -11,7 +11,7 @@ const bareme = require('../bareme/bareme.exemple.js');
 
 /* Identité déclarée par le pharmacien : exigée depuis que les simulations
    sont enregistrées (SPEC § 1, révisé). */
-const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+const IDENTITE = { nom: 'Benali', prenom: 'Ahmed', telephone: '0555123456' };
 
 
 function contexte() {
@@ -214,10 +214,14 @@ test('une identité incomplète est refusée sans consommer le jeton', async () 
   const cas = [
     [undefined, 'aucune identité'],
     [{}, 'identité vide'],
-    [{ officine: 'Pharmacie El Amel' }, 'sans téléphone'],
-    [{ telephone: '0555123456' }, 'sans nom'],
-    [{ officine: 'Ph', telephone: '0555123456' }, 'nom trop court'],
-    [{ officine: 'Pharmacie El Amel', telephone: '12345' }, 'téléphone faux']
+    [{ nom: 'Benali', prenom: 'Ahmed' }, 'sans téléphone'],
+    [{ telephone: '0555123456' }, 'sans nom ni prénom'],
+    [{ nom: 'Benali', telephone: '0555123456' }, 'sans prénom'],
+    [{ prenom: 'Ahmed', telephone: '0555123456' }, 'sans nom'],
+    [{ nom: 'B', prenom: 'Ahmed', telephone: '0555123456' }, 'nom trop court'],
+    [{ nom: 'Benali', prenom: 'A', telephone: '0555123456' }, 'prénom trop court'],
+    [{ nom: 'Benali', prenom: 'Ahmed', telephone: '12345' }, 'téléphone faux'],
+    [{ nom: 'Benali', prenom: 'Ahmed', telephone: '021456789' }, 'fixe, non mobile']
   ];
 
   for (const [identite, libelle] of cas) {
@@ -241,13 +245,15 @@ test('la simulation enregistrée reprend l’identité normalisée', async () =>
   depot.creer(jeton, {});
 
   const reponse = await noyau.simuler(jeton, saisieValide, {
-    officine: '  Pharmacie El Amel  ',
+    nom: '  Benali  ',
+    prenom: '  Ahmed  ',
     telephone: '+213 555 12 34 56'
   });
   assert.equal(reponse.statut, STATUTS.OK);
 
   const [s] = await noyau.listerSimulations(10);
-  assert.equal(s.officine, 'Pharmacie El Amel');
+  assert.equal(s.nom, 'Benali');
+  assert.equal(s.prenom, 'Ahmed');
   assert.equal(s.telephone, '0555123456');
   assert.equal(s.total, reponse.resultat.totalCommandes);
   assert.equal(s.remise, reponse.resultat.remise);

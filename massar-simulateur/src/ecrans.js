@@ -16,7 +16,8 @@
 
   var etat = {
     jeton: jetonDepuisAdresse(),
-    officine: '',
+    nom: '',
+    prenom: '',
     telephone: '',
     montants: {},
     laboratoires: [],
@@ -31,16 +32,20 @@
     poserTextes();
 
     el['btn-commencer'].addEventListener('click', function () {
-      var officine = el.officine.value.trim();
+      var nom = el.nom.value.trim();
+      var prenom = el.prenom.value.trim();
       var telephone = el.telephone.value.trim();
 
-      if (!calcul.nomValide(officine)) return refuserAccueil(textes.accueil.nomManquant);
+      if (!calcul.nomValide(nom) || !calcul.nomValide(prenom)) {
+        return refuserAccueil(textes.accueil.nomManquant);
+      }
       if (!calcul.telephoneValide(telephone)) {
         return refuserAccueil(textes.accueil.telephoneManquant);
       }
 
       el['accueil-erreur'].hidden = true;
-      etat.officine = officine;
+      etat.nom = nom;
+      etat.prenom = prenom;
       etat.telephone = calcul.normaliserTelephone(telephone);
       afficherEcran('saisie');
     });
@@ -65,7 +70,7 @@
   }
 
   function recenserElements() {
-    ['officine', 'telephone', 'accueil-erreur', 'accueil-conservation',
+    ['nom', 'prenom', 'telephone', 'accueil-erreur', 'accueil-conservation',
      'btn-commencer', 'liste-laboratoires', 'total-saisie',
      'message-blocage', 'btn-resultat', 'identification', 'remise-montant',
      'total-resultat', 'moyenne-mensuelle', 'moyenne-libelle',
@@ -95,8 +100,9 @@
     textes.accueil.presentation.forEach(function (phrase) {
       el['accueil-presentation'].appendChild(paragraphe(phrase, 'presentation'));
     });
-    document.querySelector('label[for="officine"]').textContent =
-      textes.accueil.officine;
+    document.querySelector('label[for="nom"]').textContent = textes.accueil.nom;
+    document.querySelector('label[for="prenom"]').textContent =
+      textes.accueil.prenom;
     document.querySelector('label[for="telephone"]').textContent =
       textes.accueil.telephone;
     el['accueil-conservation'].textContent = textes.accueil.conservation;
@@ -271,7 +277,11 @@
     demander('simuler', {
       jeton: etat.jeton,
       montants: etat.montants,
-      identite: { officine: etat.officine, telephone: etat.telephone }
+      identite: {
+        nom: etat.nom,
+        prenom: etat.prenom,
+        telephone: etat.telephone
+      }
     })
       .then(function (reponse) {
         if (!reponse) return afficherFin(textes.erreur);
@@ -327,7 +337,7 @@
 
   function ligneIdentification() {
     var parties = [];
-    if (etat.officine) parties.push(etat.officine);
+    if (etat.nom) parties.push(etat.nom + ' ' + etat.prenom);
     parties.push('Simulation du ' + dateDuJour());
     return parties.join(' — ');
   }
