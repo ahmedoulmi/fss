@@ -66,6 +66,16 @@ export default {
         return json(await noyau.laboratoiresPour(adresse.searchParams.get('s') || ''));
       }
 
+      if (adresse.pathname === '/api/admin/simulations') {
+        if (requete.method !== 'GET') return json({ statut: 'requete-invalide' }, 405);
+        const administration = creerAdministration({
+          noyau,
+          cleAttendue: env.CLE_ADMIN || '',
+          nouveauJeton
+        });
+        return json(await administration.simulations(adresse.searchParams.get('k')));
+      }
+
       if (adresse.pathname === '/api/admin/liens') {
         const administration = creerAdministration({
           noyau,
@@ -111,7 +121,11 @@ export default {
         } catch (e) {
           return json({ statut: 'requete-invalide' }, 400);
         }
-        return json(await noyau.simuler(charge && charge.jeton, charge && charge.montants));
+        return json(await noyau.simuler(
+          charge && charge.jeton,
+          charge && charge.montants,
+          charge && charge.identite
+        ));
       }
 
       return json({ statut: 'requete-invalide' }, 404);

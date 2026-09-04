@@ -65,6 +65,28 @@ ALTER TABLE jetons ADD COLUMN supprime_le TEXT;
 Si la réponse dit que la colonne existe déjà, c'est qu'elle y était : rien à
 faire.
 
+### La table des simulations
+
+Elle est arrivée avec l'enregistrement des simulations. À créer une fois, dans
+la même **Console** :
+
+```sql
+CREATE TABLE IF NOT EXISTS simulations (
+  jeton           TEXT PRIMARY KEY,
+  officine        TEXT NOT NULL,
+  telephone       TEXT NOT NULL DEFAULT '',
+  simule_le       TEXT NOT NULL,
+  total           INTEGER NOT NULL,
+  nb_laboratoires INTEGER NOT NULL,
+  remise          INTEGER NOT NULL,
+  taux_moyen      REAL    NOT NULL,
+  detail          TEXT    NOT NULL
+);
+CREATE INDEX IF NOT EXISTS simulations_simule_le ON simulations (simule_le);
+```
+
+Sans elle, la simulation s'affiche au pharmacien mais rien n'est conservé.
+
 ---
 
 ## 4. Publier le simulateur
@@ -140,6 +162,9 @@ Elle permet de :
 - **créer un lien**, avec le nom de l'officine si vous le souhaitez ;
 - le **copier**, ou l'**envoyer** directement par WhatsApp ou SMS — le bouton
   d'envoi apparaît sur téléphone ;
+- **consulter les simulations enregistrées** : officine, téléphone, date,
+  total, nombre de laboratoires et remise, avec le détail par laboratoire à
+  déplier ;
 - **suivre l'état** de chaque lien émis : en attente, utilisé, ou expiré ;
 - **supprimer** un lien. Il quitte la liste et cesse aussitôt de fonctionner,
   même s'il a déjà été envoyé — le pharmacien qui l'ouvrirait ensuite verrait
@@ -149,7 +174,9 @@ Elle permet de :
   jour. C'est voulu — sans quoi il suffirait de supprimer au fur et à mesure
   pour émettre sans limite, et le plafond ne protégerait plus rien.
 
-Cette page ne voit jamais un taux. Elle ne manipule que des jetons.
+Cette page ne voit jamais un taux unitaire. Elle porte en revanche les achats
+réels d'officines nommées, avec leur téléphone : c'est ce que l'outil a de plus
+sensible, et la clé est ce qui l'ouvre.
 
 ### Ce que la clé engage
 

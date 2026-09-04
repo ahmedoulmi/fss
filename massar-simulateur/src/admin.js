@@ -20,6 +20,10 @@
     creeLe: 'Créé le',
     etats: { 'en-attente': 'en attente', utilise: 'utilisé', expire: 'expiré' },
     aucun: 'Aucun lien émis pour l’instant.',
+    aucuneSimulation: 'Aucune simulation enregistrée pour l’instant.',
+    laboratoires: 'laboratoires',
+    detail: 'Détail',
+    masquer: 'Masquer',
     copie: 'Copié',
     copier: 'Copier',
     envoyer: 'Envoyer',
@@ -37,6 +41,7 @@
     ['titre-admin', 'admin-sans-cle', 'admin-creation', 'admin-officine',
      'btn-creer', 'lien-neuf', 'lien-neuf-libelle', 'lien-neuf-adresse',
      'btn-copier', 'btn-envoyer', 'admin-erreur', 'admin-liste', 'liens',
+     'admin-simulations', 'simulations',
      'logo', 'marque'].forEach(function (id) { el[id] = document.getElementById(id); });
 
     poserLogo();
@@ -53,6 +58,7 @@
 
     el['admin-creation'].hidden = false;
     el['admin-liste'].hidden = false;
+    el['admin-simulations'].hidden = false;
     if (navigator.share) el['btn-envoyer'].hidden = false;
 
     el['btn-creer'].addEventListener('click', creer);
@@ -188,6 +194,86 @@
         afficherListe(reponse.liens || []);
       })
       .catch(function () { erreur(TEXTES.reseau); });
+
+    fetch(adresse('simulations') + '?k=' + encodeURIComponent(cle))
+      .then(function (r) { return r.json(); })
+      .then(function (reponse) {
+        if (reponse.statut !== 'ok') return;
+        afficherSimulations(reponse.simulations || []);
+      })
+      .catch(function () { /* la liste des liens porte déjà le message */ });
+  }
+
+  /*
+   * Simulations enregistrées. Le détail par laboratoire reste replié : la
+   * liste doit rester lisible sur un téléphone, et ces montants n'ont pas à
+   * s'étaler à l'écran dès l'ouverture de la page.
+   */
+  function afficherSimulations(lignes) {
+    var zone = el.simulations;
+    zone.textContent = '';
+
+    if (lignes.length === 0) {
+      zone.appendChild(paragraphe(TEXTES.aucuneSimulation, 'consigne'));
+      return;
+    }
+
+    lignes.forEach(function (s) {
+      var bloc = document.createElement('div');
+      bloc.className = 'simulation';
+
+      var entete = document.createElement('div');
+      entete.className = 'lien-ligne';
+
+      var gauche = document.createElement('div');
+      gauche.appendChild(paragraphe(s.officine, 'lien-officine'));
+      gauche.appendChild(paragraphe(
+        MassarCalcul.formaterTelephone(s.telephone) + ' — ' + dateCourte(s.simuleLe),
+        'lien-date'));
+      gauche.appendChild(paragraphe(
+        montant(s.total) + ' · ' + s.nbLaboratoires + ' ' + TEXTES.laboratoires
+          + ' · ' + montant(s.remise),
+        'simulation-chiffres'));
+
+      var droite = document.createElement('div');
+      droite.className = 'lien-actions';
+
+      var detail = document.createElement('div');
+      detail.className = 'simulation-detail';
+      detail.hidden = true;
+      (s.detail || []).forEach(function (l) {
+        var ligne = document.createElement('div');
+        ligne.className = 'simulation-detail-ligne';
+        var nom = document.createElement('span');
+        nom.textContent = l.nom || l.id;
+        var valeur = document.createElement('span');
+        valeur.textContent = montant(l.montant);
+        ligne.appendChild(nom);
+        ligne.appendChild(valeur);
+        detail.appendChild(ligne);
+      });
+
+      var bascule = document.createElement('button');
+      bascule.type = 'button';
+      bascule.className = 'bouton bouton-menu';
+      bascule.textContent = TEXTES.detail;
+      bascule.addEventListener('click', function () {
+        detail.hidden = !detail.hidden;
+        bascule.textContent = detail.hidden ? TEXTES.detail : TEXTES.masquer;
+      });
+      droite.appendChild(bascule);
+
+      entete.appendChild(gauche);
+      entete.appendChild(droite);
+      bloc.appendChild(entete);
+      bloc.appendChild(detail);
+      zone.appendChild(bloc);
+    });
+  }
+
+  /* Même écriture des montants que sur le simulateur : espaces et « DA ». */
+  function montant(valeur) {
+    return MassarCalcul.formaterMontant(valeur);
   }
 
   function afficherListe(liens) {

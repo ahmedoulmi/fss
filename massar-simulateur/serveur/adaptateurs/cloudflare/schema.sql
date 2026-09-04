@@ -13,3 +13,24 @@ CREATE TABLE IF NOT EXISTS jetons (
 );
 
 CREATE INDEX IF NOT EXISTS jetons_consomme_le ON jetons (consomme_le);
+
+-- Simulations enregistrées (SPEC § 1, révisé).
+--
+-- Un jeton ne servant qu'une fois, il identifie la simulation. Le détail par
+-- laboratoire est rangé en JSON : les identifiants et les montants saisis,
+-- rien d'autre. Les taux n'y figurent pas — mais le montant de remise, rapporté
+-- aux montants saisis sur assez de simulations, permettrait de les retrouver.
+-- Cette base est donc à protéger au même titre que le secret BAREME.
+CREATE TABLE IF NOT EXISTS simulations (
+  jeton           TEXT PRIMARY KEY,
+  officine        TEXT NOT NULL,
+  telephone       TEXT NOT NULL DEFAULT '',
+  simule_le       TEXT NOT NULL,
+  total           INTEGER NOT NULL,
+  nb_laboratoires INTEGER NOT NULL,
+  remise          INTEGER NOT NULL,
+  taux_moyen      REAL    NOT NULL,
+  detail          TEXT    NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS simulations_simule_le ON simulations (simule_le);

@@ -23,7 +23,15 @@ var MASSAR_TEXTES = {
     ],
     bouton: 'Commencer la simulation',
     officine: 'Nom de l’officine',
-    officineFacultatif: '(facultatif)'
+    telephone: 'Téléphone',
+    /*
+     * Information préalable. Elle figure sur l'écran d'accueil, avant toute
+     * saisie : informer après coup n'informe personne.
+     */
+    conservation: 'Vos coordonnées, les montants que vous saisirez et le '
+      + 'résultat sont enregistrés par Massar Development.',
+    nomManquant: 'Indiquez le nom de votre officine.',
+    telephoneManquant: 'Indiquez un numéro de téléphone valide.'
   },
 
   saisie: {

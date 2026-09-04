@@ -10,6 +10,11 @@ const creerDepotMemoire = require('../serveur/depot-memoire.js');
 const { nouveauJeton } = require('../serveur/jetons.js');
 const bareme = require('../bareme/bareme.exemple.js');
 
+/* Identité déclarée par le pharmacien : exigée depuis que les simulations
+   sont enregistrées (SPEC § 1, révisé). */
+const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+
+
 const CLE = 'cle-de-test-suffisamment-longue-pour-etre-realiste';
 
 function contexte(cleAttendue = CLE) {
@@ -122,7 +127,7 @@ test('un lien supprimé n’ouvre plus rien', async () => {
   // Indiscernable d'un jeton jamais émis : rien ne fuit sur ce qui a existé.
   assert.equal(await noyau.etatJeton(jeton), STATUTS.JETON_INCONNU);
   assert.equal((await noyau.laboratoiresPour(jeton)).statut, STATUTS.JETON_INCONNU);
-  assert.equal((await noyau.simuler(jeton, {})).statut, STATUTS.JETON_INCONNU);
+  assert.equal((await noyau.simuler(jeton, {}, IDENTITE)).statut, STATUTS.JETON_INCONNU);
 });
 
 /*

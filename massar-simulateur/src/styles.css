@@ -462,6 +462,39 @@ body {
   border-color: var(--m-couleurs-bordure);
 }
 
+/* Une simulation enregistrée : l'en-tête reprend la ligne d'un lien, le
+   détail se déplie dessous, en retrait et en plus petit. */
+.simulation {
+  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+}
+
+.simulation .lien-ligne { border-bottom: none; }
+
+.simulation-chiffres {
+  margin: 0;
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--m-echelle-xs);
+  color: var(--m-couleurs-vert-fonce);
+}
+
+.simulation-detail {
+  padding: 0 0 var(--m-espacement-sm) var(--m-espacement-md);
+}
+
+.simulation-detail-ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--m-espacement-sm);
+  font-size: var(--m-echelle-xs);
+  padding: 2px 0;
+}
+
+.simulation-detail-ligne span:last-child {
+  font-family: var(--m-typographie-famille-chiffres);
+  font-variant-numeric: tabular-nums;
+}
+
 /* Le rouge de la charte est fonctionnel : ici il signale une action sans
    retour. Il reste sur le texte et la bordure, jamais en aplat. */
 .bouton-retrait {

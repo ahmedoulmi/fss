@@ -9,6 +9,11 @@ const creerDepotMemoire = require('../serveur/depot-memoire.js');
 const { nouveauJeton } = require('../serveur/jetons.js');
 const bareme = require('../bareme/bareme.exemple.js');
 
+/* Identité déclarée par le pharmacien : exigée depuis que les simulations
+   sont enregistrées (SPEC § 1, révisé). */
+const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+
+
 function contexte() {
   const depot = creerDepotMemoire();
   const noyau = creerNoyau({ bareme, depot });
@@ -37,7 +42,7 @@ test('la page ne reçoit aucun taux', async () => {
 
 test('le résultat ne porte que des agrégats', async () => {
   const { noyau, jeton } = contexte();
-  const reponse = await noyau.simuler(jeton, saisieValide);
+  const reponse = await noyau.simuler(jeton, saisieValide, IDENTITE);
   assert.equal(reponse.statut, STATUTS.OK);
   assert.deepEqual(
     Object.keys(reponse.resultat).sort(),
@@ -49,17 +54,17 @@ test('le résultat ne porte que des agrégats', async () => {
 
 test('le jeton ne sert qu’une fois', async () => {
   const { noyau, jeton } = contexte();
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.JETON_CONSOMME);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.JETON_CONSOMME);
 });
 
 test('la déduction par différence est impossible', async () => {
   // Deux simulations ne variant que d'une ligne : la seconde n'aboutit pas.
   const { noyau, jeton } = contexte();
-  const premiere = await noyau.simuler(jeton, saisieValide);
+  const premiere = await noyau.simuler(jeton, saisieValide, IDENTITE);
   const variante = Object.assign({}, saisieValide, { 'ex-01': 1000001 });
-  const seconde = await noyau.simuler(jeton, variante);
+  const seconde = await noyau.simuler(jeton, variante, IDENTITE);
   assert.equal(premiere.statut, STATUTS.OK);
   assert.equal(seconde.statut, STATUTS.JETON_CONSOMME);
   assert.equal(seconde.resultat, undefined);
@@ -70,7 +75,7 @@ test('la liste des laboratoires est fermée aux jetons morts', async () => {
   const saisie = { 'ex-01': 1000000, 'ex-02': 800000, 'ex-03': 600000,
                    'ex-04': 400000, 'ex-05': 200000 };
   assert.equal((await noyau.laboratoiresPour(jeton)).statut, STATUTS.OK);
-  await noyau.simuler(jeton, saisie);
+  await noyau.simuler(jeton, saisie, IDENTITE);
   const apres = await noyau.laboratoiresPour(jeton);
   assert.equal(apres.statut, STATUTS.JETON_CONSOMME);
   assert.equal(apres.laboratoires, undefined);
@@ -81,7 +86,7 @@ test('lire la liste ne consomme pas le jeton', async () => {
   const { noyau, jeton } = contexte();
   await noyau.laboratoiresPour(jeton);
   await noyau.laboratoiresPour(jeton);
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
 });
 
 test('un jeton inconnu n’apprend rien', async () => {
@@ -94,7 +99,7 @@ test('un jeton inconnu n’apprend rien', async () => {
 test('les conditions sont revalidées côté serveur', async () => {
   // Une page modifiée qui force l'envoi ne contourne pas le seuil.
   const { noyau, jeton } = contexte();
-  const reponse = await noyau.simuler(jeton, { 'ex-01': 1000000 });
+  const reponse = await noyau.simuler(jeton, { 'ex-01': 1000000 }, IDENTITE);
   assert.equal(reponse.statut, STATUTS.CONDITIONS);
   assert.equal(reponse.conditions.laboratoiresManquants, 4);
   assert.equal(reponse.resultat, undefined);
@@ -102,8 +107,8 @@ test('les conditions sont revalidées côté serveur', async () => {
 
 test('une requête refusée ne consomme pas le jeton', async () => {
   const { noyau, jeton } = contexte();
-  assert.equal((await noyau.simuler(jeton, { 'ex-01': 1000 })).statut, STATUTS.CONDITIONS);
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, { 'ex-01': 1000 }, IDENTITE)).statut, STATUTS.CONDITIONS);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
 });
 
 test('les montants envoyés sont réassainis', async () => {
@@ -112,7 +117,7 @@ test('les montants envoyés sont réassainis', async () => {
   const reponse = await noyau.simuler(jeton, {
     'ex-01': '1 000 000', 'ex-02': '800000,99', 'ex-03': '600000',
     'ex-04': 400000, 'ex-05': '200000', 'inconnu': 9999999
-  });
+  }, IDENTITE);
   assert.equal(reponse.statut, STATUTS.OK);
   assert.equal(reponse.resultat.totalCommandes, 3000000);
 });
@@ -125,7 +130,7 @@ test('un montant négatif ou décimal est écarté, jamais réinterprété', asy
     'ex-06': -500000,   // écarté, et non transformé en +500 000
     'ex-07': 1500.75,   // écarté, et non arrondi
     'ex-08': Infinity   // écarté
-  });
+  }, IDENTITE);
   assert.equal(reponse.statut, STATUTS.OK);
   assert.equal(reponse.resultat.totalCommandes, 3000000);
 });
@@ -135,20 +140,20 @@ test('le plafond de ligne s’applique aussi à un envoi direct', async () => {
   const reponse = await noyau.simuler(jeton, {
     'ex-01': 999999999999, 'ex-02': 800000, 'ex-03': 600000,
     'ex-04': 400000, 'ex-05': 200000
-  });
+  }, IDENTITE);
   assert.equal(reponse.statut, STATUTS.OK);
   assert.equal(reponse.resultat.totalCommandes, 50000000 + 2000000);
 });
 
 test('une requête sans jeton est rejetée', async () => {
   const { noyau } = contexte();
-  assert.equal((await noyau.simuler('', saisieValide)).statut, STATUTS.REQUETE_INVALIDE);
-  assert.equal((await noyau.simuler(null, saisieValide)).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await noyau.simuler('', saisieValide, IDENTITE)).statut, STATUTS.REQUETE_INVALIDE);
+  assert.equal((await noyau.simuler(null, saisieValide, IDENTITE)).statut, STATUTS.REQUETE_INVALIDE);
 });
 
 test('le journal ne retient ni montants ni remise', async () => {
   const { noyau, depot, jeton } = contexte();
-  await noyau.simuler(jeton, saisieValide);
+  await noyau.simuler(jeton, saisieValide, IDENTITE);
   const lignes = depot.journal();
   assert.equal(lignes.length, 1);
   assert.deepEqual(Object.keys(lignes[0]).sort(), ['consommeLe', 'creeLe', 'jeton']);
@@ -159,8 +164,8 @@ test('deux jetons sont indépendants', async () => {
   const { noyau, depot, jeton } = contexte();
   const second = nouveauJeton();
   depot.creer(second, {});
-  assert.equal((await noyau.simuler(jeton, saisieValide)).statut, STATUTS.OK);
-  assert.equal((await noyau.simuler(second, saisieValide)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(jeton, saisieValide, IDENTITE)).statut, STATUTS.OK);
+  assert.equal((await noyau.simuler(second, saisieValide, IDENTITE)).statut, STATUTS.OK);
 });
 
 test('un lien émis est en attente, puis utilisé', async () => {
@@ -173,7 +178,7 @@ test('un lien émis est en attente, puis utilisé', async () => {
   assert.equal(ligne.etat, 'en-attente');
   assert.equal(ligne.officine, 'Pharmacie A');
 
-  await noyau.simuler(emis.jeton, saisieValide);
+  await noyau.simuler(emis.jeton, saisieValide, IDENTITE);
   liens = await noyau.listerLiens();
   assert.equal(liens.find((l) => l.jeton === emis.jeton).etat, 'utilise');
 });
@@ -197,8 +202,65 @@ test('le plafond quotidien borne l’émission', async () => {
 test('la liste des liens ne porte ni montant ni remise', async () => {
   const { noyau } = contexte();
   const emis = await noyau.emettreLien({ jeton: nouveauJeton() });
-  await noyau.simuler(emis.jeton, saisieValide);
+  await noyau.simuler(emis.jeton, saisieValide, IDENTITE);
   const ligne = (await noyau.listerLiens())[0];
   assert.deepEqual(Object.keys(ligne).sort(),
     ['consommeLe', 'creeLe', 'etat', 'expireLe', 'jeton', 'officine']);
+});
+
+/* ── Identité exigée, et jeton préservé en cas de refus ───────────────── */
+
+test('une identité incomplète est refusée sans consommer le jeton', async () => {
+  const cas = [
+    [undefined, 'aucune identité'],
+    [{}, 'identité vide'],
+    [{ officine: 'Pharmacie El Amel' }, 'sans téléphone'],
+    [{ telephone: '0555123456' }, 'sans nom'],
+    [{ officine: 'Ph', telephone: '0555123456' }, 'nom trop court'],
+    [{ officine: 'Pharmacie El Amel', telephone: '12345' }, 'téléphone faux']
+  ];
+
+  for (const [identite, libelle] of cas) {
+    const depot = creerDepotMemoire();
+    const noyau = creerNoyau({ bareme, depot });
+    const jeton = nouveauJeton();
+    depot.creer(jeton, {});
+
+    assert.equal((await noyau.simuler(jeton, saisieValide, identite)).statut,
+      STATUTS.IDENTITE_INVALIDE, libelle);
+    // Le jeton doit survivre : le pharmacien corrige et recommence.
+    assert.equal(await noyau.etatJeton(jeton), STATUTS.OK, libelle);
+    assert.equal((await noyau.listerSimulations(10)).length, 0, libelle);
+  }
+});
+
+test('la simulation enregistrée reprend l’identité normalisée', async () => {
+  const depot = creerDepotMemoire();
+  const noyau = creerNoyau({ bareme, depot });
+  const jeton = nouveauJeton();
+  depot.creer(jeton, {});
+
+  const reponse = await noyau.simuler(jeton, saisieValide, {
+    officine: '  Pharmacie El Amel  ',
+    telephone: '+213 555 12 34 56'
+  });
+  assert.equal(reponse.statut, STATUTS.OK);
+
+  const [s] = await noyau.listerSimulations(10);
+  assert.equal(s.officine, 'Pharmacie El Amel');
+  assert.equal(s.telephone, '0555123456');
+  assert.equal(s.total, reponse.resultat.totalCommandes);
+  assert.equal(s.remise, reponse.resultat.remise);
+  assert.equal(s.nbLaboratoires, s.detail.length);
+});
+
+test('un jeton déjà consommé n’enregistre pas une seconde simulation', async () => {
+  const depot = creerDepotMemoire();
+  const noyau = creerNoyau({ bareme, depot });
+  const jeton = nouveauJeton();
+  depot.creer(jeton, {});
+
+  await noyau.simuler(jeton, saisieValide, IDENTITE);
+  await noyau.simuler(jeton, saisieValide, IDENTITE);
+  assert.equal((await noyau.listerSimulations(10)).length, 1);
 });

@@ -17,8 +17,27 @@ pharmacien saisit ses achats annuels estimés par laboratoire ; l'outil affiche
 le montant de remise qu'il pourrait percevoir dans le cadre des conditions
 négociées par Massar auprès des laboratoires et des grossistes.
 
-Finalité : convaincre. L'outil n'est ni un engagement, ni un instrument de
-suivi, ni un dispositif de collecte.
+Finalité : convaincre. L'outil n'est pas un engagement.
+
+**Il est en revanche un dispositif de collecte, depuis la révision demandée.**
+Chaque simulation est enregistrée : nom de l'officine, téléphone, montants
+saisis par laboratoire, total, nombre de laboratoires, remise calculée et taux
+moyen. La révision est assumée et sa portée mérite d'être vue en face.
+
+- Le pharmacien en est **informé avant de saisir**, sur l'écran d'accueil, et
+  non après coup. Nom et téléphone sont **obligatoires** : un téléphone
+  auquel il faut répondre décourage la saisie fantaisiste bien mieux qu'un
+  contrôle de forme.
+- La base ainsi constituée contient les **achats réels d'officines nommées**.
+  C'est leur secret commercial. Elle relève de la loi 18-07 sur la protection
+  des données à caractère personnel : finalité, information des personnes,
+  durée de conservation.
+- Rapportés aux montants saisis sur assez de simulations, les montants de
+  remise enregistrés **permettent de retrouver le barème**. Cette base est donc
+  à protéger au même titre que le secret `BAREME` — la clé d'administration
+  qui l'ouvre plus encore.
+
+*Écart assumé avec la version 1.2, demandé : elle excluait toute collecte.*
 
 **Destinataire** : pharmacien prospect.
 **Usage** : lien nominatif à usage unique, transmis individuellement,
@@ -89,14 +108,25 @@ Trois écrans successifs.
 Contenu :
 - Identité visuelle Massar et signature
 - Deux phrases de présentation, pas davantage
-- Champ **nom de l'officine**, facultatif
+- Champ **nom de l'officine**, obligatoire — trois lettres au minimum
+- Champ **téléphone**, obligatoire — numéro algérien, les préfixes `+213` et
+  `00213` sont ramenés au `0` national
 - Consigne de saisie affichée
+- **Information sur l'enregistrement**, avant toute saisie (§ 1)
 - Bouton d'accès à la saisie
+
+Les deux champs sont contrôlés dans la page, puis **revalidés par le serveur**,
+qui ne fait aucune confiance à une page pouvant avoir été modifiée. Une
+identité refusée par le serveur **ne consomme pas le jeton** : le pharmacien
+revient sur l'accueil et corrige.
 
 **Textes retenus :**
 > Massar Development négocie les conditions d'achat auprès des laboratoires et
 > des grossistes, pour les pharmacies d'officine.
 > Estimez le montant de remise que vous pourriez percevoir sur vos achats annuels.
+
+> Vos coordonnées, les montants que vous saisirez et le résultat sont
+> enregistrés par Massar Development.
 
 > Indiquez vos achats annuels par laboratoire, en dinars, hors taxes.
 > Laissez vide les laboratoires qui ne vous concernent pas.
@@ -334,6 +364,25 @@ faut en émettre un nouveau.
 
 ---
 
+## Ce qui a changé depuis la version 1.2
+
+**L'outil devient un dispositif de collecte** (§ 1), demandé. Chaque simulation
+est enregistrée avec le détail par laboratoire et la remise calculée. Le
+pharmacien en est informé sur l'écran d'accueil, avant toute saisie.
+
+**Nom d'officine et téléphone obligatoires** (§ 4), demandés. Le nom doit
+porter trois lettres au moins ; le téléphone doit être un numéro algérien
+exploitable, normalisé en `0XXXXXXXX(X)`. Aucune règle ne distingue un vrai
+nom d'un « azerty » — c'est le téléphone qui joue ce rôle, parce qu'il faut y
+répondre. La connexion Google ou Facebook a été écartée : vérification de
+domaine et revue d'application côté Google et Meta, pour un résultat que le
+téléphone atteint aujourd'hui.
+
+**Consultation des simulations** depuis la page de gestion (§ 12), sous la
+même clé.
+
+---
+
 ## Ce qui a changé depuis la version 1.1
 
 **Mentions du § 6 réécrites**, texte arrêté mot pour mot avec Massar. Elles
@@ -365,6 +414,9 @@ téléphone : c'est là que les liens s'émettent au quotidien.
 - Copier ou renvoyer un lien émis plus tôt et encore en attente
 - Suivre l'état de chaque lien : en attente, utilisé, expiré
 - Supprimer un lien, quel que soit son état
+- **Consulter les simulations enregistrées** : officine, téléphone, date,
+  total, nombre de laboratoires, remise — et le détail par laboratoire, replié
+  par défaut
 
 **La suppression est logique, jamais physique.** Le lien disparaît de la liste
 et cesse aussitôt d'ouvrir quoi que ce soit — celui qui le détiendrait déjà ne
@@ -373,9 +425,13 @@ ligne demeure en base, et continue de peser dans le plafond quotidien ci-après.
 Effacer pour de bon offrirait à qui tient la clé le moyen le plus simple de
 contourner ce plafond : émettre, supprimer, recommencer.
 
-**Ce qu'elle ne voit jamais** : un taux. Elle ne manipule que des jetons. Ni
-montants ni remise ne sont conservés (§ 1 — l'outil n'est pas un dispositif de
-collecte).
+**Ce qu'elle ne voit jamais** : un taux unitaire. Le barème ne lui est pas
+servi, et le détail affiché ne porte que des montants saisis.
+
+**Ce qu'elle voit désormais** : les simulations enregistrées (§ 1, révisé).
+C'est la partie la plus sensible de l'outil — les achats réels d'officines
+nommées, avec leur téléphone. Sous la même clé que le reste : une clé qui fuit
+les expose toutes.
 
 **La clé** vit dans le secret `CLE_ADMIN`. Elle voyage dans l'adresse, mise en
 favori une fois. Sans elle, la page ne montre rien et le serveur ne répond pas.
