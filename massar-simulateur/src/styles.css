@@ -28,16 +28,19 @@ body {
 
 /* ---------- Entête ---------- */
 
+/* L'identité se pose au centre, au-dessus de tout le reste. */
 .entete {
   padding: var(--m-espacement-md) 0 var(--m-espacement-xl);
+  text-align: center;
 }
 
 /* Bloc vertical : la calligraphie surmonte le lettrage. Il lui faut de la
    hauteur pour que « MassarDevelopment » reste lisible. */
 .logo {
   display: block;
-  height: 7rem;
-  width: auto;
+  margin-inline: auto;
+  block-size: 7rem;
+  inline-size: auto;
 }
 
 /* Sans cette règle, `display: block` l'emporte sur l'attribut hidden et
@@ -441,8 +444,19 @@ body {
   color: var(--m-couleurs-gris);
 }
 
+/*
+ * Le récapitulatif, le total et la moyenne partagent la même mesure et donc
+ * le même bord droit : les montants s'alignent d'un bloc à l'autre, et le
+ * nom du laboratoire reste près de son montant.
+ */
+.total-resultat,
+.moyenne-resultat,
 .recapitulatif-table {
-  width: 100%;
+  max-inline-size: var(--m-formes-largeur-chiffres);
+}
+
+.recapitulatif-table {
+  inline-size: 100%;
   border-collapse: collapse;
   font-size: var(--m-echelle-sm);
 }

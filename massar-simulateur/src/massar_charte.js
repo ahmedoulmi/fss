@@ -120,6 +120,10 @@ var MASSAR_CHARTE = {
     rayonLarge: '10px',
     epaisseurTrait: '1px',
     largeurPage: '52rem',
+    /* Mesure des blocs de chiffres. Un couple « libellé — montant » écarté
+       sur toute la largeur de page devient illisible : l'œil perd la ligne
+       entre les deux. Cette mesure les tient ensemble. */
+    largeurChiffres: '26rem',
     ombreCarte: '0 2px 8px rgba(0, 0, 0, 0.12)',
     ombreBadge: '0 2px 8px rgba(0, 0, 0, 0.15)',
     /* Le mouvement se coupe sous prefers-reduced-motion ; voir styles.css. */
