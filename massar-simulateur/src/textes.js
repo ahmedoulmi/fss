@@ -9,6 +9,8 @@ var MASSAR_TEXTES = {
   courriel: 'contact@massardevelopment.com',
 
   accueil: {
+    /* Surtitre de section : deux ou trois mots, jamais une phrase. */
+    surtitre: 'Simulation',
     titre: 'Simulateur de remise',
     presentation: [
       // Formulation reprise des tournures autorisées par les règles
@@ -37,6 +39,7 @@ var MASSAR_TEXTES = {
   },
 
   saisie: {
+    surtitre: 'Vos achats',
     titre: 'Vos achats annuels',
     consigne: [
       'Indiquez vos achats annuels par laboratoire, en dinars, hors taxes.',

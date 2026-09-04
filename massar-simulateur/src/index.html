@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Massar — Simulateur de remise</title>
+<!--
+  Polices de la marque, une seule requête. Les replis de la charte couvrent
+  le cas où ce chargement échoue : la page reste juste, seule l'allure change.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Carlito:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="impression.css" media="print">
 </head>
@@ -29,6 +36,7 @@
 
     <!-- ÉCRAN 1 — ACCUEIL (SPEC §4) -->
     <section id="ecran-accueil" class="ecran" aria-labelledby="titre-accueil" hidden>
+      <p class="surtitre" id="surtitre-accueil"></p>
       <h1 id="titre-accueil" class="titre"></h1>
       <div id="accueil-presentation"></div>
 
@@ -63,6 +71,7 @@
 
     <!-- ÉCRAN 2 — SAISIE (SPEC §4) -->
     <section id="ecran-saisie" class="ecran" aria-labelledby="titre-saisie" hidden>
+      <p class="surtitre" id="surtitre-saisie"></p>
       <h1 id="titre-saisie" class="titre"></h1>
       <div class="consigne" id="saisie-consigne"></div>
 

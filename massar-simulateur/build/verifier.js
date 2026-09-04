@@ -67,6 +67,25 @@ if (MASSAR_CHARTE.provisoire) {
 var servis = fs.readdirSync(path.join(RACINE, 'src'))
   .filter(function (nom) { return /\.(html|css|js)$/.test(nom); });
 
+/*
+ * Certaines fonctions CSS prennent des décimales NUES — l'alpha d'un rgba(),
+ * les points de contrôle d'un cubic-bezier(). Sans unité pour les distinguer,
+ * elles sont indiscernables d'un taux, et une ombre à 0,15 d'opacité fait
+ * lever une fuite là où il n'y en a pas. Un contrôle qui crie à tort finit par
+ * ne plus être écouté : on neutralise donc leurs arguments avant l'examen.
+ *
+ * La liste est fermée à dessein. Aucune de ces fonctions ne saurait porter un
+ * barème, et le nom du laboratoire, lui, reste cherché dans le texte entier.
+ */
+var FONCTIONS_GEOMETRIQUES =
+  /\b(?:rgba?|hsla?|cubic-bezier|steps|scale|scale[XYZ]|translate|translate[XYZ]|rotate|skew|matrix|matrix3d)\s*\([^)]*\)/gi;
+
+function sansValeursGeometriques(contenu) {
+  return contenu.replace(FONCTIONS_GEOMETRIQUES, function (bloc) {
+    return bloc.replace(/[\d.]/g, '0');
+  });
+}
+
 function occurrencesHorsUnite(contenu, valeur) {
   var texte = String(valeur);
   var trouvees = 0;
@@ -87,7 +106,8 @@ function occurrencesHorsUnite(contenu, valeur) {
 }
 
 servis.forEach(function (nom) {
-  var contenu = fs.readFileSync(path.join(RACINE, 'src', nom), 'utf8');
+  var brut = fs.readFileSync(path.join(RACINE, 'src', nom), 'utf8');
+  var contenu = sansValeursGeometriques(brut);
   (bareme.laboratoires || []).forEach(function (labo) {
     if (labo.nom && contenu.indexOf(labo.nom) !== -1) {
       manques.push('FUITE : le nom de « ' + labo.nom + ' » apparaît dans src/' +

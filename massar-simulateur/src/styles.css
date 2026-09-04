@@ -20,7 +20,10 @@ body {
 .page {
   max-width: var(--m-formes-largeur-page);
   margin: 0 auto;
-  padding: var(--m-espacement-lg) var(--m-espacement-md) var(--m-espacement-xxl);
+  /* La marge de page est fluide, comme sur le site : le débord du panneau
+     sombre s'y adosse exactement. */
+  padding-block: var(--m-espacement-lg) var(--m-espacement-xxl);
+  padding-inline: var(--m-espacement-marge-page);
 }
 
 /* ---------- Entête ---------- */
@@ -81,25 +84,92 @@ body {
   max-width: 48ch;
 }
 
+/*
+ * Les boutons ne ressemblent pas à des boutons de formulaire : ils ressemblent
+ * à des étiquettes. Petits, en capitales, en mono, interlettrage large. Au
+ * survol ils se soulèvent — ils ne changent pas de taille.
+ */
 .bouton {
-  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--m-espacement-sm);
+  font-family: var(--m-typographie-famille-mono);
+  font-size: var(--m-echelle-bouton);
+  letter-spacing: var(--m-typographie-interlettrage-mono);
+  text-transform: uppercase;
   cursor: pointer;
   border: var(--m-formes-epaisseur-trait) solid transparent;
-  border-radius: var(--m-formes-rayon);
-  padding: var(--m-espacement-sm) var(--m-espacement-lg);
-  min-height: 3rem;
+  border-radius: var(--m-formes-rayon-badge);
+  padding: 0.72rem 1.25rem;
+  min-block-size: 3rem;
+  transition: transform 0.3s var(--m-formes-ease-sortie),
+              background-color 0.3s var(--m-formes-ease-sortie),
+              border-color 0.3s var(--m-formes-ease-sortie),
+              color 0.3s var(--m-formes-ease-sortie);
 }
 
+.bouton:hover:not(:disabled) { transform: translateY(-2px); }
+
+/*
+ * L'or est l'action principale, le vert la secondaire, le filet la tertiaire
+ * sur fond sombre. UN SEUL bouton or par écran.
+ */
 .bouton-principal {
-  background: var(--m-couleurs-vert-fonce);
-  color: var(--m-couleurs-blanc);
-  font-weight: var(--m-typographie-graisse-appuyee);
+  background: var(--m-couleurs-or);
+  color: var(--m-couleurs-texte);
+  font-weight: 500;
 }
+
+.bouton-principal:hover:not(:disabled) { background: var(--m-couleurs-or-clair); }
 
 .bouton-principal:disabled {
   background: var(--m-couleurs-bordure);
-  color: var(--m-couleurs-gris);
+  color: var(--m-couleurs-gris-web);
   cursor: not-allowed;
+}
+
+/* Sur fond sombre : le filet doré, sans aplat. */
+.bouton-fil {
+  background: transparent;
+  border-color: var(--m-couleurs-or);
+  color: var(--m-couleurs-or-clair);
+  font-weight: 500;
+}
+
+.bouton-fil:hover { background: rgba(184, 145, 47, 0.14); }
+
+/*
+ * Surtitre : mono, capitales, interlettrage large, précédé d'un filet doré.
+ * C'est l'ouverture de section du site, à l'identique.
+ */
+.surtitre {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--m-typographie-famille-mono);
+  font-size: var(--m-echelle-surtitre);
+  letter-spacing: var(--m-typographie-interlettrage-surtitre);
+  text-transform: uppercase;
+  color: var(--m-couleurs-or);
+  margin: 0 0 1.1rem;
+}
+
+.surtitre::before {
+  content: "";
+  display: block;
+  flex: none;
+  inline-size: 26px;
+  block-size: 1px;
+  background: var(--m-couleurs-or);
+}
+
+/* Chapô : deux phrases au plus, et une mesure qui les empêche de s'étaler. */
+.chapo {
+  font-size: var(--m-echelle-chapo);
+  color: var(--m-couleurs-gris-web);
+  max-inline-size: 62ch;
+  margin: 1.1rem 0 0;
 }
 
 /* ---------- Écran 1 ---------- */
@@ -237,20 +307,45 @@ body {
   color: var(--m-couleurs-gris);
 }
 
+/*
+ * LE MOMENT SOMBRE.
+ *
+ * Le clair domine l'outil, le sombre ponctue — et il n'y a ici qu'un seul
+ * moment fort : le montant de remise. C'est l'argument, il porte le fond de
+ * nuit. Rien d'autre dans le simulateur ne doit passer au sombre, sans quoi
+ * la ponctuation ne ponctue plus rien.
+ *
+ * Le débord latéral fait sortir le panneau des marges de page : le bloc va
+ * d'un bord à l'autre, comme une section du site.
+ */
 .remise {
-  padding: var(--m-espacement-xl) 0;
-  border-top: 2px solid var(--m-couleurs-or);
-  border-bottom: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  margin-inline: calc(var(--m-espacement-marge-page) * -1);
+  padding: var(--m-espacement-xl) var(--m-espacement-marge-page);
+  background: var(--m-couleurs-nuit);
+  color: var(--m-couleurs-fond);
+  border-block-start: 2px solid var(--m-couleurs-or);
 }
 
 .remise-libelle {
-  margin: 0 0 var(--m-espacement-sm);
-  font-family: var(--m-typographie-famille-texte);
-  font-size: var(--m-echelle-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 var(--m-espacement-md);
+  font-family: var(--m-typographie-famille-mono);
+  font-size: var(--m-echelle-surtitre);
   font-weight: var(--m-typographie-graisse-normale);
-  letter-spacing: 0.12em;
+  letter-spacing: var(--m-typographie-interlettrage-surtitre);
   text-transform: uppercase;
-  color: var(--m-couleurs-gris);
+  color: var(--m-couleurs-or-clair);
+}
+
+.remise-libelle::before {
+  content: "";
+  display: block;
+  flex: none;
+  inline-size: 26px;
+  block-size: 1px;
+  background: var(--m-couleurs-or-clair);
 }
 
 .remise-ligne {
@@ -267,10 +362,10 @@ body {
   flex: 0 0 auto;
   font-size: var(--m-echelle-lg);
   font-weight: var(--m-typographie-graisse-appuyee);
-  color: var(--m-couleurs-or);
-  background: var(--m-couleurs-fond);
+  color: var(--m-couleurs-or-clair);
+  background: var(--m-couleurs-nuit-panneau);
   border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-or);
-  border-radius: var(--m-formes-rayon);
+  border-radius: var(--m-formes-rayon-badge);
   padding: var(--m-espacement-xs) var(--m-espacement-sm);
   white-space: nowrap;
 }
@@ -281,7 +376,7 @@ body {
   font-weight: var(--m-typographie-graisse-appuyee);
   font-size: var(--m-echelle-resultat);
   line-height: var(--m-typographie-interligne-titre);
-  color: var(--m-couleurs-vert-fonce);
+  color: var(--m-couleurs-blanc);
 }
 
 .total-resultat {
@@ -319,6 +414,19 @@ body {
   font-family: var(--m-typographie-famille-chiffres);
   font-variant-numeric: tabular-nums;
   font-size: var(--m-echelle-sm);
+}
+
+/*
+ * La carte du site : blanc, arrondi, filet léger, ombre courte. Le badge
+ * numéroté qui déborde n'a pas lieu d'être ici — il sert à énumérer, et rien
+ * n'est énuméré dans un récapitulatif.
+ */
+.carte {
+  background: var(--m-couleurs-blanc);
+  border: var(--m-formes-epaisseur-trait) solid var(--m-couleurs-bordure);
+  border-radius: var(--m-formes-rayon);
+  box-shadow: var(--m-formes-ombre-carte);
+  padding: var(--m-espacement-lg);
 }
 
 .recapitulatif { margin-top: var(--m-espacement-xl); }
@@ -399,12 +507,14 @@ body {
 
 .page-admin { max-width: 34rem; }
 
+/* Action secondaire : le vert lisible, jamais le vert de marque en texte. */
 .bouton-second {
-  background: var(--m-couleurs-blanc);
-  color: var(--m-couleurs-vert-fonce);
-  border-color: var(--m-couleurs-vert-fonce);
-  font-weight: var(--m-typographie-graisse-appuyee);
+  background: var(--m-couleurs-vert-bouton);
+  color: var(--m-couleurs-blanc);
+  font-weight: 500;
 }
+
+.bouton-second:hover { background: var(--m-couleurs-vert); }
 
 #btn-creer { margin-top: var(--m-espacement-md); width: 100%; }
 
@@ -453,14 +563,18 @@ body {
   gap: var(--m-espacement-xs);
 }
 
+/* Actions de liste : discrètes, elles ne doivent pas disputer la page. */
 .bouton-menu {
-  min-height: 2.25rem;
+  min-block-size: 2.25rem;
   padding: var(--m-espacement-xs) var(--m-espacement-sm);
-  font-size: var(--m-echelle-xs);
+  font-size: var(--m-echelle-legende);
+  letter-spacing: 0.04em;
   background: var(--m-couleurs-blanc);
-  color: var(--m-couleurs-vert-fonce);
+  color: var(--m-couleurs-vert-bouton);
   border-color: var(--m-couleurs-bordure);
 }
+
+.bouton-menu:hover { border-color: var(--m-couleurs-vert-bouton); }
 
 /* Une simulation enregistrée : l'en-tête reprend la ligne d'un lien, le
    détail se déplie dessous, en retrait et en plus petit. */
@@ -528,4 +642,21 @@ body {
 .lien-etat-utilise {
   color: var(--m-couleurs-vert-fonce);
   border-color: var(--m-couleurs-vert-fonce);
+}
+
+/*
+ * Le mouvement se coupe pour qui le demande, et chaque élément se fige sur son
+ * état FINAL — jamais sur son état de départ, qui laisserait la page inerte.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .bouton:hover:not(:disabled) { transform: none; }
 }

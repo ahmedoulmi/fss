@@ -79,6 +79,12 @@ Taux moyen              = Remise affichée / Total des commandes
 - Plafond par laboratoire : **50 000 000 DA**, garde-fou contre la faute de
   frappe. Il ne s'applique pas au total, qui est une somme et peut
   légitimement le dépasser
+- Plancher par laboratoire : **100 000 DA**. C'est une **condition d'accès**,
+  pas une règle de calcul : le montant saisi reste compté dans le total et
+  reste sous les yeux du pharmacien, mais le résultat demeure fermé tant
+  qu'une ligne est en dessous, et le message nomme la ligne à corriger. Il ne
+  s'applique pas au total, qui a son propre seuil (§ 4). Une ligne **vide**
+  n'est pas une ligne insuffisante : elle n'est simplement pas comptée
 
 ---
 
@@ -157,6 +163,7 @@ qui indique au pharmacien s'il approche du seuil.
 Les deux conditions sont cumulatives :
 - **5 laboratoires minimum** renseignés
 - **Total des commandes ≥ 1 000 000 DA**
+- **Aucune ligne renseignée en dessous de 100 000 DA**
 
 Tant qu'elles ne sont pas remplies, le résultat reste inaccessible et un
 message explicite indique **ce qui manque précisément**.
@@ -259,8 +266,36 @@ financiers, qui viendraient en déduction.
 
 - **Langue** : français uniquement
 - **Support** : conçu pour ordinateur, lisible et utilisable sur téléphone
-- **Charte** : couleurs, polices, échelle typographique et signature lues dans
-  `massar_charte.js`, source unique. Aucune valeur en dur.
+- **Charte** : couleurs, polices, échelle typographique, formes et courbes
+  lues dans `massar_charte.js`, source unique. Aucune valeur en dur.
+
+  **Composition reprise du site `massardevelopment.com`**, d'après le document
+  de composition fourni. Trois motifs, et un principe :
+
+  - **Le clair domine, le sombre ponctue.** Une seule surface sombre dans tout
+    l'outil : le panneau de remise, à l'écran résultat. C'est le moment fort,
+    c'est l'argument. En ajouter une seconde ôterait à la première ce qui fait
+    sa force. Sur le document imprimé le panneau revient au clair — une pleine
+    page d'encre pour un résultat illisible en photocopie n'a pas de sens.
+  - **L'ouverture de section** : surtitre en mono capitales précédé d'un filet
+    doré, puis le titre, puis le chapô. Titre borné à 20 caractères, chapô à
+    62 : c'est ce qui empêche les blocs de s'étaler.
+  - **Les boutons ressemblent à des étiquettes**, pas à des boutons de
+    formulaire : mono, capitales, interlettrage large, rayon serré. L'or est
+    l'action principale, le vert la secondaire, le filet doré la tertiaire sur
+    fond sombre. **Un seul bouton or par écran.**
+
+  Le badge numéroté qui déborde d'une carte — motif signature du site — n'est
+  pas repris : il sert à énumérer, et l'outil n'énumère rien.
+
+  **Les jumeaux de contraste ne sont pas décoratifs.** `vertBouton` et
+  `grisWeb` existent parce que le vert et le gris de marque échouent au seuil
+  de 4,5:1 en petit texte sur fond clair. Les originaux pour les fonds, les
+  filets et les grandes surfaces ; les jumeaux pour tout texte.
+
+  **Les polices de marque sont distantes.** Bricolage Grotesque, Carlito et
+  IBM Plex Mono viennent de Google Fonts. Les replis de la charte couvrent
+  l'échec de ce chargement : la page reste juste, seule l'allure change.
   Les valeurs reprennent celles de la charte Massar Development (révision du
   28 août 2026), avec les mêmes noms de jetons. La marque est **vert et or**,
   l'or au même rang que le vert. Le **rouge est d'usage fonctionnel
@@ -399,6 +434,10 @@ supplément, et les frais financiers, qui viendraient en déduction.
 excluait tout équivalent mensuel sans distinguer les achats de la remise. La
 distinction est désormais explicite : la remise reste annuelle exclusivement,
 seuls les achats reçoivent une moyenne mensuelle.
+
+**Plancher par laboratoire : 100 000 DA** (§ 2 et § 4), demandé. Posé parmi
+les conditions d'accès et non dans le calcul : une ligne trop faible ferme le
+résultat et se voit nommée, au lieu de disparaître du total sans explication.
 
 **Plafond par laboratoire ramené de 1 000 000 000 à 50 000 000 DA** (§ 2),
 demandé. Le total n'est pas plafonné : il est une somme, et trente
