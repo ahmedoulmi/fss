@@ -262,6 +262,18 @@
     }
 
     el['message-blocage'].hidden = false;
+
+    /*
+     * Un montant sous le plancher n'est pas un manque : le message sur les
+     * seuils d'accès et l'adresse de contact seraient hors sujet. On dit
+     * seulement quelle ligne corriger.
+     */
+    var insuffisantes = calcul.decrireLignesInsuffisantes(conditions);
+    if (insuffisantes) {
+      el['message-blocage'].textContent = insuffisantes;
+      return;
+    }
+
     el['message-blocage'].textContent = textes.blocage(
       calcul.decrireManque(conditions), textes.courriel
     );

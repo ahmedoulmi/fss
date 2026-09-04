@@ -15,6 +15,9 @@ var MassarCalcul = (function () {
   var CONSTANTES = {
     MIN_LABORATOIRES: 5,          // SPEC §4 — condition d'accès au résultat
     MIN_TOTAL_COMMANDES: 1000000, // SPEC §4 — en dinars
+    // Plancher par laboratoire. Il ne s'applique pas au total : celui-ci a
+    // son propre seuil, MIN_TOTAL_COMMANDES.
+    MIN_LIGNE: 100000,
     // Plafond par laboratoire. Il borne la faute de frappe, pas le total :
     // celui-ci est une somme et peut légitimement le dépasser.
     PLAFOND_LIGNE: 50000000
@@ -136,11 +139,40 @@ var MassarCalcul = (function () {
     var montantManquant = Math.max(
       0, CONSTANTES.MIN_TOTAL_COMMANDES - totaux.totalCommandes
     );
+    /*
+     * Le plancher par laboratoire est une condition d'accès, au même titre
+     * que le nombre de laboratoires et le total : il ne retire rien du calcul,
+     * il ferme le résultat tant qu'une ligne reste en dessous. Le montant
+     * saisi continue donc de paraître dans le total sous les yeux du
+     * pharmacien, et le message lui dit quelle ligne corriger.
+     */
+    var insuffisantes = (totaux.lignes || []).filter(function (l) {
+      return l.montant < CONSTANTES.MIN_LIGNE;
+    });
     return {
-      accessible: laboratoiresManquants === 0 && montantManquant === 0,
+      accessible: laboratoiresManquants === 0 && montantManquant === 0
+        && insuffisantes.length === 0,
       laboratoiresManquants: laboratoiresManquants,
-      montantManquant: montantManquant
+      montantManquant: montantManquant,
+      lignesInsuffisantes: insuffisantes
     };
+  }
+
+  /*
+   * Les lignes sous le plancher, nommées. Message distinct de « il manque » :
+   * ici rien ne manque, un montant est simplement trop faible pour être
+   * crédible, et le pharmacien doit savoir lequel.
+   */
+  function decrireLignesInsuffisantes(conditions) {
+    var lignes = (conditions && conditions.lignesInsuffisantes) || [];
+    if (lignes.length === 0) return '';
+    var seule = lignes.length === 1;
+    return (seule ? 'Un montant est inférieur à '
+                  : lignes.length + ' montants sont inférieurs à ')
+      + formaterMontant(CONSTANTES.MIN_LIGNE) + ' : '
+      + lignes.map(function (l) { return l.nom; }).join(', ')
+      + (seule ? '. Complétez-le ou laissez-le vide.'
+               : '. Complétez-les ou laissez-les vides.');
   }
 
   /* Ce qui manque, en toutes lettres. */
@@ -259,6 +291,7 @@ var MassarCalcul = (function () {
     formaterTelephone: formaterTelephone,
     nomValide: nomValide,
     decrireManque: decrireManque,
+    decrireLignesInsuffisantes: decrireLignesInsuffisantes,
     formaterEntier: formaterEntier,
     formaterMontant: formaterMontant,
     formaterTaux: formaterTaux

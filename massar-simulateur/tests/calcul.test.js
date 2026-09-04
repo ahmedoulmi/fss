@@ -236,3 +236,71 @@ test('le téléphone s’affiche en groupes lisibles', () => {
   assert.equal(calcul.formaterTelephone('inconnu'), 'inconnu');
   assert.equal(calcul.formaterTelephone('021456789'), '021456789');
 });
+
+/* ── Plancher par laboratoire ─────────────────────────────────────────── */
+
+const troisLabos = [
+  { id: 'a', nom: 'ALPHA' }, { id: 'b', nom: 'BETA' }, { id: 'c', nom: 'GAMMA' }
+];
+
+test('le plancher ferme le résultat sans rien retirer du total', () => {
+  assert.equal(calcul.CONSTANTES.MIN_LIGNE, 100000);
+
+  const t = calcul.calculerTotaux({ a: 99999, b: 2000000, c: 100000 }, troisLabos);
+  // Le montant saisi reste sous les yeux du pharmacien : le total le porte.
+  assert.equal(t.totalCommandes, 2199999);
+  assert.equal(t.nbLaboratoires, 3);
+
+  const conditions = calcul.evaluerConditions(t);
+  assert.deepEqual(conditions.lignesInsuffisantes.map((l) => l.nom), ['ALPHA']);
+
+  // Le plancher est atteint à 100 000 pile : la ligne passe.
+  assert.deepEqual(
+    calcul.evaluerConditions(
+      calcul.calculerTotaux({ c: 100000 }, troisLabos)).lignesInsuffisantes,
+    []
+  );
+});
+
+test('une ligne vide reste vide, elle n’est pas insuffisante', () => {
+  const conditions = calcul.evaluerConditions(
+    calcul.calculerTotaux({ a: 0, b: '' }, troisLabos));
+  assert.deepEqual(conditions.lignesInsuffisantes, []);
+});
+
+test('une ligne sous le plancher ferme le résultat', () => {
+  // Cinq laboratoires et plus d'un million : les seuils d'accès sont tenus.
+  const labos = [];
+  const montants = {};
+  for (let i = 0; i < 6; i += 1) {
+    labos.push({ id: 'l' + i, nom: 'L' + i });
+    montants['l' + i] = 500000;
+  }
+  assert.equal(calcul.evaluerConditions(
+    calcul.calculerTotaux(montants, labos)).accessible, true);
+
+  // Une seule ligne trop faible suffit à fermer.
+  montants.l0 = 50000;
+  const conditions = calcul.evaluerConditions(calcul.calculerTotaux(montants, labos));
+  assert.equal(conditions.accessible, false);
+  assert.equal(conditions.lignesInsuffisantes.length, 1);
+});
+
+test('les lignes insuffisantes sont nommées au pharmacien', () => {
+  const une = calcul.evaluerConditions(calcul.calculerTotaux({ a: 5000 }, troisLabos));
+  assert.equal(
+    calcul.decrireLignesInsuffisantes(une),
+    'Un montant est inférieur à ' + calcul.formaterMontant(100000)
+      + ' : ALPHA. Complétez-le ou laissez-le vide.'
+  );
+
+  const deux = calcul.evaluerConditions(
+    calcul.calculerTotaux({ a: 5000, c: 99999 }, troisLabos));
+  assert.match(calcul.decrireLignesInsuffisantes(deux), /^2 montants sont inférieurs/);
+  assert.match(calcul.decrireLignesInsuffisantes(deux), /ALPHA, GAMMA/);
+  assert.match(calcul.decrireLignesInsuffisantes(deux), /Complétez-les ou laissez-les vides\.$/);
+
+  // Rien à dire quand tout va bien.
+  assert.equal(calcul.decrireLignesInsuffisantes(
+    calcul.evaluerConditions(calcul.calculerTotaux({ b: 200000 }, troisLabos))), '');
+});

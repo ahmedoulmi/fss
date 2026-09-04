@@ -79,6 +79,12 @@ Taux moyen              = Remise affichée / Total des commandes
 - Plafond par laboratoire : **50 000 000 DA**, garde-fou contre la faute de
   frappe. Il ne s'applique pas au total, qui est une somme et peut
   légitimement le dépasser
+- Plancher par laboratoire : **100 000 DA**. C'est une **condition d'accès**,
+  pas une règle de calcul : le montant saisi reste compté dans le total et
+  reste sous les yeux du pharmacien, mais le résultat demeure fermé tant
+  qu'une ligne est en dessous, et le message nomme la ligne à corriger. Il ne
+  s'applique pas au total, qui a son propre seuil (§ 4). Une ligne **vide**
+  n'est pas une ligne insuffisante : elle n'est simplement pas comptée
 
 ---
 
@@ -157,6 +163,7 @@ qui indique au pharmacien s'il approche du seuil.
 Les deux conditions sont cumulatives :
 - **5 laboratoires minimum** renseignés
 - **Total des commandes ≥ 1 000 000 DA**
+- **Aucune ligne renseignée en dessous de 100 000 DA**
 
 Tant qu'elles ne sont pas remplies, le résultat reste inaccessible et un
 message explicite indique **ce qui manque précisément**.
@@ -399,6 +406,10 @@ supplément, et les frais financiers, qui viendraient en déduction.
 excluait tout équivalent mensuel sans distinguer les achats de la remise. La
 distinction est désormais explicite : la remise reste annuelle exclusivement,
 seuls les achats reçoivent une moyenne mensuelle.
+
+**Plancher par laboratoire : 100 000 DA** (§ 2 et § 4), demandé. Posé parmi
+les conditions d'accès et non dans le calcul : une ligne trop faible ferme le
+résultat et se voit nommée, au lieu de disparaître du total sans explication.
 
 **Plafond par laboratoire ramené de 1 000 000 000 à 50 000 000 DA** (§ 2),
 demandé. Le total n'est pas plafonné : il est une somme, et trente

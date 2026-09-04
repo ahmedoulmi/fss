@@ -270,3 +270,21 @@ test('un jeton déjà consommé n’enregistre pas une seconde simulation', asyn
   await noyau.simuler(jeton, saisieValide, IDENTITE);
   assert.equal((await noyau.listerSimulations(10)).length, 1);
 });
+
+test('le serveur refuse aussi une ligne sous le plancher', async () => {
+  const depot = creerDepotMemoire();
+  const noyau = creerNoyau({ bareme, depot });
+  const jeton = nouveauJeton();
+  depot.creer(jeton, {});
+
+  // Une page modifiée pourrait envoyer un montant que la page refuse.
+  const saisie = Object.assign({}, saisieValide, { 'ex-01': 50000 });
+  const reponse = await noyau.simuler(jeton, saisie, IDENTITE);
+
+  assert.equal(reponse.statut, STATUTS.CONDITIONS);
+  assert.equal(reponse.conditions.lignesInsuffisantes.length, 1);
+
+  // Rien n'est calculé, donc rien n'est divulgué : le jeton reste vivant.
+  assert.equal(await noyau.etatJeton(jeton), STATUTS.OK);
+  assert.equal((await noyau.listerSimulations(10)).length, 0);
+});
