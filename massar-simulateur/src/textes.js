@@ -65,10 +65,17 @@ var MASSAR_TEXTES = {
       'accessible après fermeture de cette page.'
   },
 
+  /*
+   * Mentions du § 6, dans l'ordre. Texte arrêté avec Massar, mot pour mot :
+   * il engage l'entreprise devant un pharmacien prospect et ne se retouche
+   * pas au passage.
+   */
   mentions: [
-    'Simulation fondée sur les montants que vous saisissez.',
-    'Les remises effectivement obtenues dépendent des conditions, paliers et '
-      + 'clauses propres à chaque fournisseur et à chaque laboratoire.',
+    'Estimation établie à partir des seuls montants que vous saisissez.',
+    'Les remises réellement obtenues dépendent des conditions fournisseur '
+      + 'et laboratoire.',
+    'Le montant affiché ne comprend pas les unités gratuites (UG), et n’a pas '
+      + 'été diminué des frais financiers applicables à certaines remises.',
     'Conditions au {date}.'
   ],
 

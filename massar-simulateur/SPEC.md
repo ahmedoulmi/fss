@@ -200,16 +200,25 @@ complet renseigné.
 
 Présentes à l'écran résultat et sur le document imprimé :
 
-> Simulation fondée sur les montants que vous saisissez.
+> Estimation établie à partir des seuls montants que vous saisissez.
 
-> Les remises effectivement obtenues dépendent des conditions, paliers et
-> clauses propres à chaque fournisseur et à chaque laboratoire.
+> Les remises réellement obtenues dépendent des conditions fournisseur et
+> laboratoire.
+
+> Le montant affiché ne comprend pas les unités gratuites (UG), et n'a pas été
+> diminué des frais financiers applicables à certaines remises.
 
 > Conditions au 31/12/2026.
 
-La deuxième mention est la garantie que le chiffre affiché soit lu pour ce
-qu'il est : une estimation à partir de montants déclarés, et non un engagement
-sur ce qui sera obtenu.
+**Texte arrêté avec Massar, mot pour mot.** Ces quatre phrases engagent
+l'entreprise devant un pharmacien prospect : elles ne se retouchent pas au
+passage d'une refonte, et toute modification se demande.
+
+Elles bornent le chiffre affiché dans les deux sens. Les deux premières
+disent qu'il s'agit d'une estimation à partir de montants déclarés, et non
+d'un engagement sur ce qui sera obtenu. La troisième nomme ce qui n'y est
+pas : les unités gratuites, qui viennent en supplément, et les frais
+financiers, qui viendraient en déduction.
 
 ---
 
@@ -327,10 +336,11 @@ faut en émettre un nouveau.
 
 ## Ce qui a changé depuis la version 1.1
 
-**Mention sur ce dont dépend la remise réelle** (§ 6), demandée. Les conditions,
-paliers et clauses appartiennent aux fournisseurs et aux laboratoires, non à
-Massar : le chiffre affiché est une estimation à partir de montants déclarés,
-et la mention le dit à l'écran comme sur le papier.
+**Mentions du § 6 réécrites**, texte arrêté mot pour mot avec Massar. Elles
+disent désormais ce dont dépend la remise réelle — les conditions fournisseur
+et laboratoire, qui n'appartiennent pas à Massar — et ce que le montant
+affiché ne contient pas : les unités gratuites (UG), qui viennent en
+supplément, et les frais financiers, qui viendraient en déduction.
 
 **Moyenne mensuelle des achats saisis** (§ 4), demandée. La version 1.1
 excluait tout équivalent mensuel sans distinguer les achats de la remise. La
