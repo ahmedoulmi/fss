@@ -14,7 +14,7 @@ const bareme = require('../bareme/bareme.exemple.js');
 
 /* Identité déclarée par le pharmacien : exigée depuis que les simulations
    sont enregistrées (SPEC § 1, révisé). */
-const IDENTITE = { officine: 'Pharmacie du Centre', telephone: '0555123456' };
+const IDENTITE = { nom: 'Benali', prenom: 'Ahmed', telephone: '0555123456' };
 
 
 const saisieValide = {
@@ -124,12 +124,14 @@ test('la simulation enregistrée porte exactement ce qui a été demandé', asyn
 
   const enregistree = JSON.parse(fs.readFileSync(chemin, 'utf8')).simulations[jeton];
   assert.deepEqual(Object.keys(enregistree).sort(), [
-    'detail', 'jeton', 'nbLaboratoires', 'officine', 'remise',
+    'detail', 'jeton', 'nbLaboratoires', 'nom', 'prenom', 'remise',
     'simuleLe', 'tauxMoyen', 'telephone', 'total'
   ]);
 
-  // Le nom retenu est celui que le pharmacien déclare, pas l'étiquette du lien.
-  assert.equal(enregistree.officine, 'Pharmacie du Centre');
+  // Le nom retenu est celui que le pharmacien déclare, pas l'étiquette du
+  // lien — celle-ci se rapproche à la lecture, sans être recopiée.
+  assert.equal(enregistree.nom, 'Benali');
+  assert.equal(enregistree.prenom, 'Ahmed');
   assert.equal(enregistree.telephone, '0555123456');
   assert.equal(enregistree.total, 3000000);
   assert.equal(enregistree.nbLaboratoires, 5);
@@ -154,7 +156,7 @@ test('une simulation refusée n’enregistre rien', async () => {
 
   // Sans téléphone exploitable, le jeton doit rester vivant et rien être écrit.
   const refus = await creerNoyau({ bareme, depot })
-    .simuler(jeton, saisieValide, { officine: 'Pharmacie du Centre', telephone: '12' });
+    .simuler(jeton, saisieValide, { nom: 'Benali', prenom: 'Ahmed', telephone: '12' });
   assert.equal(refus.statut, STATUTS.IDENTITE_INVALIDE);
 
   const contenu = JSON.parse(fs.readFileSync(chemin, 'utf8'));
@@ -191,4 +193,24 @@ test('un lien supprimé pèse encore sur le plafond après redémarrage', async 
   const noyau = creerNoyau({ bareme, depot });
   const r = await noyau.emettreLien({ jeton: nouveauJeton(), plafondQuotidien: 1 });
   assert.equal(r.statut, STATUTS.PLAFOND_ATTEINT);
+});
+
+
+test('la simulation lue porte le libellé du lien, sans l’avoir recopié', async () => {
+  const chemin = fichierTemporaire();
+  const depot = creerDepotFichier(chemin);
+  const noyau = creerNoyau({ bareme, depot });
+  const jeton = nouveauJeton();
+  depot.creer(jeton, { officine: 'Pharmacie du Centre' });
+
+  await noyau.simuler(jeton, saisieValide, IDENTITE);
+
+  const [lue] = await noyau.listerSimulations(10);
+  assert.equal(lue.lien, 'Pharmacie du Centre');
+  assert.equal(lue.nom, 'Benali');
+
+  // Le libellé n'est pas dans la ligne enregistrée : il vient de la ligne de
+  // jeton. Une seule vérité, donc rien à resynchroniser.
+  const brut = JSON.parse(fs.readFileSync(chemin, 'utf8')).simulations[jeton];
+  assert.equal(brut.lien, undefined);
 });

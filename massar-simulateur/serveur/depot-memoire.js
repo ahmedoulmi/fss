@@ -66,7 +66,8 @@ function creerDepotMemoire() {
       if (simulations.has(jeton)) return;
       simulations.set(jeton, {
         jeton: jeton,
-        officine: donnees.officine,
+        nom: donnees.nom,
+        prenom: donnees.prenom,
         telephone: donnees.telephone,
         simuleLe: donnees.simuleLe,
         total: donnees.total,
@@ -77,9 +78,15 @@ function creerDepotMemoire() {
       });
     },
 
+    /* Le libellé du lien vient de la ligne de jeton : une seule vérité. */
     listerSimulations: function (limite) {
       var lignes = [];
-      simulations.forEach(function (s) { lignes.push(s); });
+      simulations.forEach(function (s, jeton) {
+        var jetonLigne = jetons.get(jeton);
+        lignes.push(Object.assign({}, s, {
+          lien: (jetonLigne && jetonLigne.officine) || ''
+        }));
+      });
       return lignes.sort(function (a, b) { return a.simuleLe < b.simuleLe ? 1 : -1; })
                    .slice(0, limite);
     },

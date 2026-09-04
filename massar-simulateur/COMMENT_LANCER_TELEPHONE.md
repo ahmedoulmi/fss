@@ -71,9 +71,11 @@ Elle est arrivée avec l'enregistrement des simulations. À créer une fois, dan
 la même **Console** :
 
 ```sql
+DROP TABLE IF EXISTS simulations;
 CREATE TABLE IF NOT EXISTS simulations (
   jeton           TEXT PRIMARY KEY,
-  officine        TEXT NOT NULL,
+  nom             TEXT NOT NULL,
+  prenom          TEXT NOT NULL,
   telephone       TEXT NOT NULL DEFAULT '',
   simule_le       TEXT NOT NULL,
   total           INTEGER NOT NULL,
@@ -85,7 +87,12 @@ CREATE TABLE IF NOT EXISTS simulations (
 CREATE INDEX IF NOT EXISTS simulations_simule_le ON simulations (simule_le);
 ```
 
-Sans elle, la simulation s'affiche au pharmacien mais rien n'est conservé.
+Le `DROP` en tête efface les simulations déjà enregistrées : il est là parce
+que la table a changé de forme — l'officine unique est devenue nom + prénom.
+S'il y en avait que vous vouliez garder, relevez-les avant.
+
+Sans cette table, la simulation s'affiche au pharmacien mais rien n'est
+conservé, et la page de gestion le signale.
 
 ---
 
@@ -162,9 +169,9 @@ Elle permet de :
 - **créer un lien**, avec le nom de l'officine si vous le souhaitez ;
 - le **copier**, ou l'**envoyer** directement par WhatsApp ou SMS — le bouton
   d'envoi apparaît sur téléphone ;
-- **consulter les simulations enregistrées** : officine, téléphone, date,
-  total, nombre de laboratoires et remise, avec le détail par laboratoire à
-  déplier ;
+- **consulter les simulations enregistrées** : nom et prénom déclarés,
+  téléphone, date, libellé du lien, total, nombre de laboratoires et remise,
+  avec le détail par laboratoire à déplier ;
 - **suivre l'état** de chaque lien émis : en attente, utilisé, ou expiré ;
 - **supprimer** un lien. Il quitte la liste et cesse aussitôt de fonctionner,
   même s'il a déjà été envoyé — le pharmacien qui l'ouvrirait ensuite verrait

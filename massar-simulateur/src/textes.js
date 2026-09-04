@@ -22,7 +22,8 @@ var MASSAR_TEXTES = {
       'Estimez le montant de remise que vous pourriez percevoir sur vos achats annuels.'
     ],
     bouton: 'Commencer la simulation',
-    officine: 'Nom de l’officine',
+    nom: 'Nom',
+    prenom: 'Prénom',
     telephone: 'Téléphone',
     /*
      * Information préalable. Elle figure sur l'écran d'accueil, avant toute
@@ -30,8 +31,9 @@ var MASSAR_TEXTES = {
      */
     conservation: 'Vos coordonnées, les montants que vous saisirez et le '
       + 'résultat sont enregistrés par Massar Development.',
-    nomManquant: 'Indiquez le nom de votre officine.',
-    telephoneManquant: 'Indiquez un numéro de téléphone valide.'
+    nomManquant: 'Indiquez votre nom et votre prénom.',
+    telephoneManquant: 'Indiquez un numéro de téléphone mobile : dix chiffres, '
+      + 'commençant par 05, 06, 07 ou 09.'
   },
 
   saisie: {

@@ -20,14 +20,14 @@ négociées par Massar auprès des laboratoires et des grossistes.
 Finalité : convaincre. L'outil n'est pas un engagement.
 
 **Il est en revanche un dispositif de collecte, depuis la révision demandée.**
-Chaque simulation est enregistrée : nom de l'officine, téléphone, montants
-saisis par laboratoire, total, nombre de laboratoires, remise calculée et taux
-moyen. La révision est assumée et sa portée mérite d'être vue en face.
+Chaque simulation est enregistrée : nom et prénom du pharmacien, téléphone,
+montants saisis par laboratoire, total, nombre de laboratoires, remise calculée
+et taux moyen. La révision est assumée et sa portée mérite d'être vue en face.
 
 - Le pharmacien en est **informé avant de saisir**, sur l'écran d'accueil, et
-  non après coup. Nom et téléphone sont **obligatoires** : un téléphone
-  auquel il faut répondre décourage la saisie fantaisiste bien mieux qu'un
-  contrôle de forme.
+  non après coup. Nom, prénom et téléphone sont **obligatoires** : un
+  téléphone auquel il faut répondre décourage la saisie fantaisiste bien mieux
+  qu'un contrôle de forme.
 - La base ainsi constituée contient les **achats réels d'officines nommées**.
   C'est leur secret commercial. Elle relève de la loi 18-07 sur la protection
   des données à caractère personnel : finalité, information des personnes,
@@ -108,9 +108,12 @@ Trois écrans successifs.
 Contenu :
 - Identité visuelle Massar et signature
 - Deux phrases de présentation, pas davantage
-- Champ **nom de l'officine**, obligatoire — trois lettres au minimum
-- Champ **téléphone**, obligatoire — numéro algérien, les préfixes `+213` et
-  `00213` sont ramenés au `0` national
+- Champs **nom** et **prénom** du pharmacien, obligatoires — deux lettres au
+  minimum chacun
+- Champ **téléphone**, obligatoire — **mobile algérien : dix chiffres,
+  commençant par 05, 06, 07 ou 09**. Les préfixes `+213` et `00213` sont
+  ramenés au `0` national ; les fixes sont écartés, c'est un portable qu'on
+  rappelle
 - Consigne de saisie affichée
 - **Information sur l'enregistrement**, avant toute saisie (§ 1)
 - Bouton d'accès à la saisie
@@ -370,9 +373,10 @@ faut en émettre un nouveau.
 est enregistrée avec le détail par laboratoire et la remise calculée. Le
 pharmacien en est informé sur l'écran d'accueil, avant toute saisie.
 
-**Nom d'officine et téléphone obligatoires** (§ 4), demandés. Le nom doit
-porter trois lettres au moins ; le téléphone doit être un numéro algérien
-exploitable, normalisé en `0XXXXXXXX(X)`. Aucune règle ne distingue un vrai
+**Nom, prénom et téléphone obligatoires** (§ 4), demandés. Nom et prénom
+doivent porter deux lettres au moins ; le téléphone doit être un **mobile**
+algérien — dix chiffres, préfixe 05, 06, 07 ou 09 — normalisé en
+`0XXXXXXXXX`. Aucune règle ne distingue un vrai
 nom d'un « azerty » — c'est le téléphone qui joue ce rôle, parce qu'il faut y
 répondre. La connexion Google ou Facebook a été écartée : vérification de
 domaine et revue d'application côté Google et Meta, pour un résultat que le
@@ -414,9 +418,12 @@ téléphone : c'est là que les liens s'émettent au quotidien.
 - Copier ou renvoyer un lien émis plus tôt et encore en attente
 - Suivre l'état de chaque lien : en attente, utilisé, expiré
 - Supprimer un lien, quel que soit son état
-- **Consulter les simulations enregistrées** : officine, téléphone, date,
-  total, nombre de laboratoires, remise — et le détail par laboratoire, replié
-  par défaut
+- **Consulter les simulations enregistrées** : nom et prénom déclarés,
+  téléphone, date, **libellé du lien**, total, nombre de laboratoires, remise —
+  et le détail par laboratoire, replié par défaut. Le libellé permet de voir
+  d'un coup d'œil si celui qui a rempli est bien celui à qui le lien a été
+  envoyé. Il n'est pas recopié dans la simulation : il vit dans la ligne du
+  jeton et se rapproche à la lecture, pour qu'il n'en existe qu'une version
 
 **La suppression est logique, jamais physique.** Le lien disparaît de la liste
 et cesse aussitôt d'ouvrir quoi que ce soit — celui qui le détiendrait déjà ne

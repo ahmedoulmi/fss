@@ -101,13 +101,14 @@ export function creerDepotD1(base) {
       await base
         .prepare(
           'INSERT OR IGNORE INTO simulations ' +
-          '(jeton, officine, telephone, simule_le, total, nb_laboratoires, ' +
+          '(jeton, nom, prenom, telephone, simule_le, total, nb_laboratoires, ' +
           ' remise, taux_moyen, detail) ' +
-          'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)'
+          'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)'
         )
         .bind(
           jeton,
-          donnees.officine,
+          donnees.nom,
+          donnees.prenom,
           donnees.telephone,
           donnees.simuleLe,
           donnees.total,
@@ -119,16 +120,26 @@ export function creerDepotD1(base) {
         .run();
     },
 
+    /*
+     * Le libellé du lien est rapproché ici, depuis la table des jetons : il
+     * n'est pas recopié dans la simulation, pour qu'il n'en existe qu'une
+     * seule version. Jointure à gauche — une simulation reste lisible même
+     * si son jeton venait à manquer.
+     */
     async listerSimulations(limite) {
       const r = await base
-        .prepare('SELECT jeton, officine, telephone, simule_le, total, ' +
-                 '       nb_laboratoires, remise, taux_moyen, detail ' +
-                 'FROM simulations ORDER BY simule_le DESC LIMIT ?1')
+        .prepare('SELECT s.jeton, s.nom, s.prenom, s.telephone, s.simule_le, ' +
+                 '       s.total, s.nb_laboratoires, s.remise, s.taux_moyen, ' +
+                 '       s.detail, j.officine AS lien ' +
+                 'FROM simulations s LEFT JOIN jetons j ON j.jeton = s.jeton ' +
+                 'ORDER BY s.simule_le DESC LIMIT ?1')
         .bind(limite)
         .all();
       return (r.results || []).map((l) => ({
         jeton: l.jeton,
-        officine: l.officine,
+        nom: l.nom,
+        prenom: l.prenom,
+        lien: l.lien || '',
         telephone: l.telephone,
         simuleLe: l.simule_le,
         total: l.total,
