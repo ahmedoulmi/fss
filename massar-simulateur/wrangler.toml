@@ -22,5 +22,4 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "JETONS"
 database_name = "massar-jetons"
-# Remplacer par l'identifiant rendu par : npx wrangler d1 create massar-jetons
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "a6119265-2d23-4fba-8aad-ffc6eceaf616"
